@@ -1,26 +1,44 @@
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+} from "react";
 
-// Initial training profile values
-export const initialTrainingProfile = {
-  primaryGoal: "",
-  secondaryGoal: "",
-  experienceLevel: "",
-  trainingLocation: "",
-  trainingDaysPerWeek: "3",
-  sessionDurationMinutes: "60",
-  weightUnit: "kg",
-};
+import {
+  usePersistentState,
+} from "../hooks/usePersistentState";
 
-// Create the shared context
-const TrainingProfileContext = createContext(null);
+const TrainingProfileContext =
+  createContext(null);
 
-// Provide training profile data to the application
-export function TrainingProfileProvider({ children }) {
-  const [profile, setProfile] = useState(null);
+const STORAGE_KEY =
+  "gym-tracker:profile:v1";
+
+function isValidProfile(value) {
+  return (
+    value === null ||
+    (
+      typeof value === "object" &&
+      !Array.isArray(value)
+    )
+  );
+}
+
+export function TrainingProfileProvider({
+  children,
+}) {
+  // Null means the user has not saved a profile yet.
+  const [profile, setProfile] =
+    usePersistentState(
+      STORAGE_KEY,
+      null,
+      isValidProfile
+    );
 
   function saveProfile(updatedProfile) {
-    setProfile(updatedProfile);
+    setProfile({
+      ...updatedProfile,
+    });
   }
 
   return (
@@ -35,9 +53,10 @@ export function TrainingProfileProvider({ children }) {
   );
 }
 
-// Custom hook for accessing the training profile
 export function useTrainingProfile() {
-  const context = useContext(TrainingProfileContext);
+  const context = useContext(
+    TrainingProfileContext
+  );
 
   if (!context) {
     throw new Error(

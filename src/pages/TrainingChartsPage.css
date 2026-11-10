@@ -1,0 +1,478 @@
+
+/* ==========================================
+   TRAINING CHARTS
+========================================== */
+
+.tc-page,
+.tc-page * {
+  box-sizing: border-box;
+}
+
+.tc-page {
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 26px 22px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.tc-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.tc-back-link:hover {
+  text-decoration: underline;
+}
+
+.tc-header {
+  margin-bottom: 25px;
+}
+
+.tc-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.tc-header h1 {
+  margin: 8px 0 10px;
+  color: #fafafa;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.25;
+}
+
+.tc-header p {
+  max-width: 700px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   PANELS
+========================================== */
+
+.tc-panel {
+  min-width: 0;
+  margin-bottom: 18px;
+  padding: 21px;
+  border: 1px solid #303036;
+  border-radius: 13px;
+  background-color: #18181b;
+}
+
+.tc-panel-heading {
+  margin-bottom: 20px;
+}
+
+.tc-panel-heading h2 {
+  margin: 0 0 8px;
+  color: #fafafa;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.tc-panel-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+.tc-filters {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.4fr)
+    minmax(0, 1.2fr)
+    minmax(0, 0.8fr);
+  gap: 14px;
+}
+
+.tc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  color: #d4d4d8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tc-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 45px;
+  padding: 10px 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background-color: #111113;
+  color: #fafafa;
+  font: inherit;
+  font-size: 12px;
+}
+
+.tc-field select:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   STATISTICS
+========================================== */
+
+.tc-stats-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tc-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #303036;
+  border-radius: 11px;
+  background-color: #18181b;
+}
+
+.tc-stat-card > span {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.tc-stat-card > strong {
+  color: #fafafa;
+  font-size: clamp(17px, 2.5vw, 24px);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-stat-card > small {
+  color: #a1a1aa;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   SVG CHARTS
+========================================== */
+
+.tc-chart-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
+
+.tc-svg-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.tc-chart-footnote {
+  margin: 12px 0 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.tc-empty-chart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px dashed #3f3f46;
+  border-radius: 10px;
+  background-color: #111113;
+  text-align: center;
+}
+
+.tc-empty-chart strong {
+  color: #fafafa;
+  font-size: 13px;
+}
+
+.tc-empty-chart p {
+  max-width: 440px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   DATA TABLE
+========================================== */
+
+.tc-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #303036;
+  border-radius: 9px;
+}
+
+.tc-data-table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tc-data-table th,
+.tc-data-table td {
+  padding: 13px 14px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tc-data-table thead {
+  background-color: #27272a;
+}
+
+.tc-data-table th {
+  color: #d4d4d8;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tc-data-table tbody tr {
+  border-top: 1px solid #303036;
+}
+
+.tc-data-table tbody tr:nth-child(even) {
+  background-color: #1f1f23;
+}
+
+.tc-data-table td {
+  color: #d4d4d8;
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-data-table td strong {
+  display: block;
+  color: #fafafa;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tc-data-table td small {
+  display: block;
+  margin-top: 5px;
+  color: #a1a1aa;
+  font-size: 10px;
+}
+
+.tc-info-note {
+  margin: 13px 0 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   EXPLANATIONS
+========================================== */
+
+.tc-explanations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tc-explanations p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.tc-explanations strong {
+  color: #e4e4e7;
+}
+
+.tc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tc-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 10px 15px;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  background-color: #27272a;
+  color: #fafafa;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tc-secondary-link:hover {
+  border-color: #86efac;
+}
+
+.tc-primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid #22c55e;
+  border-radius: 9px;
+  background-color: #22c55e;
+  color: #052e16;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.tc-primary-link:hover {
+  background-color: #4ade80;
+}
+
+/* ==========================================
+   EMPTY HISTORY
+========================================== */
+
+.tc-empty-page {
+  padding: 30px 22px;
+  text-align: center;
+}
+
+.tc-empty-page h2 {
+  margin: 0 0 12px;
+  font-size: 19px;
+}
+
+.tc-empty-page p {
+  max-width: 540px;
+  margin: 0 auto 14px;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.tc-empty-page .tc-primary-link {
+  margin-top: 10px;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.tc-page a:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 850px) {
+  .tc-filters {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .tc-filters .tc-field:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .tc-stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  .tc-page {
+    padding: 20px 12px 48px;
+  }
+
+  .tc-panel {
+    padding: 16px;
+  }
+
+  .tc-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .tc-filters .tc-field:first-child {
+    grid-column: auto;
+  }
+
+  .tc-stats-grid {
+    gap: 9px;
+  }
+
+  .tc-stat-card {
+    padding: 13px;
+  }
+
+  .tc-stat-card > strong {
+    font-size: 20px;
+  }
+
+  .tc-svg-chart {
+    max-width: none;
+  }
+
+  .tc-links {
+    flex-direction: column;
+  }
+
+  .tc-secondary-link {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .tc-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tc-page * {
+    scroll-behavior: auto;
+  }
+}

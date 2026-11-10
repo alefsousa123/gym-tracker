@@ -1,0 +1,606 @@
+
+/* ==========================================
+   BODY MEASUREMENTS
+========================================== */
+
+.bm-page,
+.bm-page * {
+  box-sizing: border-box;
+}
+
+.bm-page {
+  width: 100%;
+  max-width: 1050px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 26px 22px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.bm-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.bm-back-link:hover {
+  text-decoration: underline;
+}
+
+.bm-header {
+  margin-bottom: 25px;
+}
+
+.bm-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.bm-header h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.25;
+}
+
+.bm-header p {
+  max-width: 700px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   PANELS
+========================================== */
+
+.bm-panel {
+  min-width: 0;
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid #303036;
+  border-radius: 13px;
+  background: #18181b;
+}
+
+.bm-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.bm-section-heading h2 {
+  margin: 0 0 7px;
+  color: #fafafa;
+  font-size: 18px;
+}
+
+.bm-section-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.bm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bm-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.bm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bm-field > span {
+  color: #e4e4e7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bm-field > small {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.bm-field > input,
+.bm-field > select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background: #111113;
+  color: #fafafa;
+  color-scheme: dark;
+  font: inherit;
+  font-size: 13px;
+}
+
+.bm-input-wrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background: #111113;
+  overflow: hidden;
+}
+
+.bm-input-wrapper input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fafafa;
+  font: inherit;
+  font-size: 13px;
+}
+
+.bm-input-wrapper input::placeholder {
+  color: #71717a;
+}
+
+.bm-unit {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-left: 1px solid #303036;
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bm-input-wrapper:focus-within,
+.bm-field > input:focus-visible,
+.bm-field > select:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 2px;
+}
+
+.bm-existing-note {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background: #202024;
+  color: #d4d4d8;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   BUTTONS AND FEEDBACK
+========================================== */
+
+.bm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bm-primary-button,
+.bm-secondary-button {
+  min-height: 44px;
+  padding: 11px 17px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bm-primary-button {
+  border: 1px solid #22c55e;
+  background: #22c55e;
+  color: #052e16;
+}
+
+.bm-primary-button:hover {
+  background: #4ade80;
+}
+
+.bm-secondary-button {
+  border: 1px solid #52525b;
+  background: #27272a;
+  color: #fafafa;
+}
+
+.bm-secondary-button:hover {
+  border-color: #86efac;
+}
+
+.bm-feedback {
+  margin: 0;
+  padding: 11px 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.bm-feedback.is-success {
+  background: #12281b;
+  color: #86efac;
+}
+
+.bm-feedback.is-error {
+  background: #301717;
+  color: #fca5a5;
+}
+
+.bm-feedback.is-info {
+  background: #1e293b;
+  color: #bfdbfe;
+}
+
+/* ==========================================
+   MEASUREMENT SELECTOR
+========================================== */
+
+.bm-chart-select {
+  max-width: 360px;
+  margin-bottom: 18px;
+}
+
+/* ==========================================
+   STATISTICS
+========================================== */
+
+.bm-stats-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.bm-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #303036;
+  border-radius: 10px;
+  background: #111113;
+}
+
+.bm-stat-card > span {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.bm-stat-card > strong {
+  color: #fafafa;
+  font-size: clamp(18px, 2.5vw, 25px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.bm-stat-card > small {
+  color: #a1a1aa;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   SVG CHART
+========================================== */
+
+.bm-chart-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
+
+.bm-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.bm-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 170px;
+  padding: 20px;
+  border: 1px dashed #3f3f46;
+  border-radius: 10px;
+  text-align: center;
+  background: #111113;
+}
+
+.bm-chart-empty strong {
+  color: #fafafa;
+  font-size: 13px;
+}
+
+.bm-chart-empty p {
+  max-width: 450px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.bm-chart-note {
+  margin: 13px 0 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   HISTORY CARDS
+========================================== */
+
+.bm-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.bm-history-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #303036;
+  border-radius: 10px;
+  background: #111113;
+}
+
+.bm-history-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.bm-history-top > strong {
+  color: #fafafa;
+  font-size: 13px;
+}
+
+.bm-history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bm-history-actions button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid #52525b;
+  border-radius: 7px;
+  background: #27272a;
+  color: #fafafa;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.bm-history-actions button:hover {
+  border-color: #86efac;
+}
+
+.bm-history-actions .bm-delete-button {
+  border-color: #783333;
+  color: #fca5a5;
+}
+
+.bm-history-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.bm-value-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 100px;
+  padding: 10px 12px;
+  border: 1px solid #303036;
+  border-radius: 8px;
+  background: #202024;
+}
+
+.bm-value-chip > span {
+  color: #a1a1aa;
+  font-size: 10px;
+}
+
+.bm-value-chip > strong {
+  color: #fafafa;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-empty {
+  padding: 22px;
+  border: 1px dashed #3f3f46;
+  border-radius: 9px;
+  background: #111113;
+}
+
+.bm-empty strong {
+  color: #fafafa;
+  font-size: 13px;
+}
+
+.bm-empty p {
+  margin: 8px 0 0;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+/* ==========================================
+   GUIDANCE AND PRIVACY
+========================================== */
+
+.bm-guidance {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.bm-guidance p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.bm-guidance strong {
+  color: #e4e4e7;
+}
+
+.bm-privacy {
+  padding: 18px 20px;
+  border-left: 3px solid #71717a;
+  border-radius: 9px;
+  background: #202024;
+}
+
+.bm-privacy h2 {
+  margin: 0 0 10px;
+  color: #fafafa;
+  font-size: 15px;
+}
+
+.bm-privacy p {
+  margin: 0 0 10px;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.bm-privacy p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.bm-page button:focus-visible,
+.bm-page a:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 750px) {
+  .bm-stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .bm-stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  .bm-page {
+    padding: 20px 12px 48px;
+  }
+
+  .bm-panel {
+    padding: 16px;
+  }
+
+  .bm-form-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .bm-stats-grid {
+    gap: 9px;
+  }
+
+  .bm-stat-card {
+    padding: 13px;
+  }
+
+  .bm-history-card {
+    padding: 13px;
+  }
+
+  .bm-svg {
+    max-width: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .bm-actions {
+    flex-direction: column;
+  }
+
+  .bm-primary-button,
+  .bm-secondary-button {
+    width: 100%;
+  }
+
+  .bm-history-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bm-value-chip {
+    flex: 1 1 120px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-page * {
+    scroll-behavior: auto;
+  }
+}

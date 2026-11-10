@@ -20,26 +20,28 @@ import {
 import "./WeeklySchedulePage.css";
 
 function WorkoutsPage() {
-  const { weeklySchedule } = useWeeklySchedule();
+  const { weeklySchedule } =
+    useWeeklySchedule();
 
-  const { appliedPlan } = useWorkoutPlan();
+  const { appliedPlan } =
+    useWorkoutPlan();
 
-  const {
-    activeWorkout,
-    lastWorkout,
-  } = useWorkoutSession();
+  const { activeWorkout } =
+    useWorkoutSession();
 
-  const hasSchedule = weeklySchedule !== null;
+  const hasSchedule =
+    weeklySchedule !== null;
 
   const splitName = hasSchedule
     ? getSplitById(
         weeklySchedule.splitId
-      ).name
+      )?.name ?? "Custom Split"
     : null;
 
-  const workoutCount = hasSchedule
+  const workoutDays = hasSchedule
     ? weeklySchedule.days.filter(
-        (day) => day.activity === "workout"
+        (day) =>
+          day.activity === "workout"
       ).length
     : 0;
 
@@ -59,44 +61,48 @@ function WorkoutsPage() {
         : "Recommended Plan"
     : null;
 
-  const completedSessionSets =
+  const activeCompletedSets =
     activeWorkout?.exercises.reduce(
       (total, exercise) =>
-        total + exercise.completedSets.length,
+        total +
+        (exercise.completedSets?.length ?? 0),
       0
     ) ?? 0;
 
   return (
-    <div className="workouts-hub-page">
+    <main className="workouts-hub-page">
       <header className="schedule-page-heading">
         <span className="schedule-eyebrow">
-          TRAINING
+          TRAINING MANAGEMENT
         </span>
 
         <h1>Workouts</h1>
 
         <p>
-          Start today's training, follow recommended
-          programs, customize exercises, and
-          organize your weekly schedule.
+          Plan your weekly training,
+          choose your exercises, and
+          complete your workout sessions.
         </p>
       </header>
 
       <div className="workouts-hub-grid">
-        {/* Today's training */}
+        {/* ==================================
+            TODAY'S WORKOUT
+        ================================== */}
+
         <section className="workouts-hub-card">
           <span className="workouts-hub-tag">
             {activeWorkout
-              ? "WORKOUT IN PROGRESS"
-              : "AVAILABLE NOW"}
+              ? "IN PROGRESS"
+              : "TRAINING"}
           </span>
 
           <h2>Today's Workout</h2>
 
           <p>
             {activeWorkout
-              ? `Continue ${activeWorkout.sessionName}. You have recorded ${completedSessionSets} sets.`
-              : "Follow your scheduled session, record every set, track your weights, and use the rest timer."}
+              ? `Continue ${activeWorkout.sessionName}. You have recorded ${activeCompletedSets} sets.`
+              : "Follow your scheduled session, confirm sets, record actual weights, and use the exercise and rest timers."}
           </p>
 
           <Link to="/workouts/today">
@@ -106,37 +112,22 @@ function WorkoutsPage() {
           </Link>
         </section>
 
-        {/* Recommended workout programs */}
+        {/* ==================================
+            WORKOUT BUILDER
+        ================================== */}
+
         <section className="workouts-hub-card">
           <span className="workouts-hub-tag">
-            AVAILABLE NOW
-          </span>
-
-          <h2>Recommended Plans</h2>
-
-          <p>
-            Discover workout plans based on your
-            goals, experience, available equipment,
-            and weekly training frequency.
-          </p>
-
-          <Link to="/workouts/plans">
-            Explore Recommended Plans →
-          </Link>
-        </section>
-
-        {/* Workout Builder */}
-        <section className="workouts-hub-card">
-          <span className="workouts-hub-tag">
-            AVAILABLE NOW
+            CUSTOMIZATION
           </span>
 
           <h2>Workout Builder</h2>
 
           <p>
-            Create a custom training program,
-            choose exercises, and configure
-            sets, repetitions, rest, and loads.
+            Create your own workout program.
+            Choose exercises and configure
+            sets, repetitions, rest periods,
+            and manual weights.
           </p>
 
           <Link to="/workouts/builder">
@@ -144,18 +135,43 @@ function WorkoutsPage() {
           </Link>
         </section>
 
-        {/* Weekly calendar */}
+        {/* ==================================
+            RECOMMENDED PLANS
+        ================================== */}
+
         <section className="workouts-hub-card">
           <span className="workouts-hub-tag">
-            AVAILABLE NOW
+            PLANNING
+          </span>
+
+          <h2>Recommended Plans</h2>
+
+          <p>
+            Explore workout programs based on
+            your goals, experience level,
+            available equipment, and schedule.
+          </p>
+
+          <Link to="/workouts/plans">
+            Explore Recommended Plans →
+          </Link>
+        </section>
+
+        {/* ==================================
+            WEEKLY SCHEDULE
+        ================================== */}
+
+        <section className="workouts-hub-card">
+          <span className="workouts-hub-tag">
+            SCHEDULE
           </span>
 
           <h2>Weekly Schedule</h2>
 
           <p>
-            Organize training sessions, rest days,
-            and active recovery throughout
-            the week.
+            Organize workout days, training
+            sessions, rest days, and active
+            recovery throughout the week.
           </p>
 
           <Link to="/workouts/schedule">
@@ -166,21 +182,24 @@ function WorkoutsPage() {
         </section>
       </div>
 
-      {/* Current program */}
+      {/* ==================================
+          SELECTED WORKOUT PROGRAM
+      ================================== */}
+
       {appliedPlan && (
         <section className="workouts-hub-summary">
-          <h2>My Selected Workout Plan</h2>
+          <h2>Current Workout Program</h2>
 
           <p>
             {appliedPlan.name}
             {" · "}
             {planType}
             {" · "}
-            {planExerciseCount} exercise entries
+            {appliedPlan.sessions.length}
+            {" "}sessions
             {" · "}
-            {appliedPlan.location === "home"
-              ? "At Home"
-              : "At the Gym"}
+            {planExerciseCount}
+            {" "}exercise entries
           </p>
 
           <Link
@@ -191,59 +210,49 @@ function WorkoutsPage() {
               marginBottom: 0,
             }}
           >
-            Customize My Plan →
+            Customize Current Program →
           </Link>
         </section>
       )}
 
-      {/* Weekly schedule */}
+      {/* ==================================
+          WEEKLY SCHEDULE SUMMARY
+      ================================== */}
+
       <section className="workouts-hub-summary">
-        <h2>My Weekly Schedule</h2>
+        <h2>Current Weekly Schedule</h2>
 
         {hasSchedule ? (
           <p>
-            Current Split: {splitName}
+            {splitName}
             {" · "}
-            {workoutCount} workout days per week.
+            {workoutDays}
+            {" "}
+            {workoutDays === 1
+              ? "workout day"
+              : "workout days"}
+            {" "}per week
           </p>
         ) : (
           <p>
-            You have not saved a weekly schedule yet.
-            Create one manually or apply a
-            recommended workout plan.
+            No weekly schedule saved yet.
+            You can create one or apply
+            a recommended workout plan.
           </p>
         )}
+
+        <Link
+          to="/workouts/schedule"
+          className="schedule-back-link"
+          style={{
+            marginTop: "12px",
+            marginBottom: 0,
+          }}
+        >
+          View Weekly Schedule →
+        </Link>
       </section>
-
-      {/* Last finished session */}
-      {lastWorkout && (
-        <section className="workouts-hub-summary">
-          <h2>Last Workout</h2>
-
-          <p>
-            {lastWorkout.sessionName}
-            {" · "}
-            {lastWorkout.totalCompletedSets} sets
-            recorded
-            {" · "}
-            {lastWorkout.status === "completed"
-              ? "Completed"
-              : "Partially Completed"}
-          </p>
-
-          <Link
-            to="/workouts/today"
-            className="schedule-back-link"
-            style={{
-              marginTop: "12px",
-              marginBottom: 0,
-            }}
-          >
-            View Session Summary →
-          </Link>
-        </section>
-      )}
-    </div>
+    </main>
   );
 }
 

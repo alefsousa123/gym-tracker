@@ -2,33 +2,51 @@
 import {
   createContext,
   useContext,
-  useState,
 } from "react";
 
-// Create a context for home equipment
+import {
+  usePersistentState,
+} from "../hooks/usePersistentState";
+
 const EquipmentContext = createContext(null);
 
-// Share equipment data across the application
-export function EquipmentProvider({ children }) {
-  const [homeEquipment, setHomeEquipment] = useState([]);
+const STORAGE_KEY =
+  "gym-tracker:equipment:v1";
 
-  // Add or remove an equipment item
+function isValidEquipment(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) => typeof item === "string"
+    )
+  );
+}
+
+export function EquipmentProvider({
+  children,
+}) {
+  const [homeEquipment, setHomeEquipment] =
+    usePersistentState(
+      STORAGE_KEY,
+      [],
+      isValidEquipment
+    );
+
   function toggleHomeEquipment(equipmentName) {
-    setHomeEquipment((previousEquipment) => {
-      const alreadySelected =
-        previousEquipment.includes(equipmentName);
-
-      if (alreadySelected) {
-        return previousEquipment.filter(
+    setHomeEquipment((previous) => {
+      if (previous.includes(equipmentName)) {
+        return previous.filter(
           (item) => item !== equipmentName
         );
       }
 
-      return [...previousEquipment, equipmentName];
+      return [
+        ...previous,
+        equipmentName,
+      ];
     });
   }
 
-  // Reset the home setup to bodyweight only
   function clearHomeEquipment() {
     setHomeEquipment([]);
   }
@@ -46,7 +64,6 @@ export function EquipmentProvider({ children }) {
   );
 }
 
-// Custom hook to access home equipment
 export function useEquipment() {
   const context = useContext(EquipmentContext);
 

@@ -10,107 +10,200 @@ import {
   normalizeExerciseTarget,
 } from "../utils/workoutTargets";
 
+import {
+  usePersistentState,
+} from "../hooks/usePersistentState";
+
 const WorkoutSessionContext = createContext(null);
 
-const REVIEW_STORAGE_KEY =
-  "gym-tracker-training-review-v1";
+const KEYS = {
+  active: "gym-tracker:active-workout:v1",
+  history: "gym-tracker:workout-history:v1",
+  legacyLast: "gym-tracker:last-workout:v1",
+  rest: "gym-tracker:rest-timer:v1",
+  timed: "gym-tracker:timed-set:v1",
+  review: "gym-tracker-training-review-v1",
+};
 
 const REVIEW_INTERVAL_MS =
   14 * 24 * 60 * 60 * 1000;
 
-const initialRestTimer = {
+const emptyRestTimer = {
   status: "idle",
   endsAt: null,
   remainingSeconds: 0,
 };
 
-function readReviewData() {
-  const fallback = {
-    firstCompletedAt: null,
-    lastPromptedAt: null,
-    entries: [],
-  };
+const emptyTimedTimer = {
+  status: "idle",
+  workoutId: null,
+  exerciseId: null,
+  setNumber: null,
+  totalMs: 0,
+  remainingMs: 0,
+  elapsedMs: 0,
+  endsAt: null,
+};
+
+const emptyReviewData = {
+  firstCompletedAt: null,
+  lastPromptedAt: null,
+  entries: [],
+};
+
+// Validate the basic workout structure
+function isWorkout(value) {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof value.id === "string" &&
+    typeof value.startedAt === "string" &&
+    Array.isArray(value.exercises)
+  );
+}
+
+function isOptionalWorkout(value) {
+  return value === null || isWorkout(value);
+}
+
+function isFinishedWorkout(value) {
+  return (
+    isWorkout(value) &&
+    typeof value.finishedAt === "string"
+  );
+}
+
+function isValidHistory(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(isFinishedWorkout)
+  );
+}
+
+function isTimer(value) {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof value.status === "string"
+  );
+}
+
+function isReviewData(value) {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Array.isArray(value.entries)
+  );
+}
+
+// Import the last saved workout from Stage 14
+// only when no workout-history key exists.
+function loadInitialHistory() {
+  if (typeof window === "undefined") {
+    return [];
+  }
 
   try {
-    const saved = localStorage.getItem(
-      REVIEW_STORAGE_KEY
+    const raw = window.localStorage.getItem(
+      KEYS.legacyLast
     );
 
-    if (!saved) {
-      return fallback;
+    if (!raw) {
+      return [];
     }
 
-    const parsed = JSON.parse(saved);
+    const previousWorkout = JSON.parse(raw);
 
-    return {
-      firstCompletedAt:
-        parsed.firstCompletedAt ?? null,
-      lastPromptedAt:
-        parsed.lastPromptedAt ?? null,
-      entries: Array.isArray(parsed.entries)
-        ? parsed.entries
-        : [],
-    };
+    if (isFinishedWorkout(previousWorkout)) {
+      return [previousWorkout];
+    }
+
+    return [];
   } catch {
-    return fallback;
+    return [];
   }
 }
 
 export function WorkoutSessionProvider({
   children,
 }) {
+  // ========================================
+  // PERSISTENT WORKOUT DATA
+  // ========================================
+
   const [activeWorkout, setActiveWorkout] =
-    useState(null);
+    usePersistentState(
+      KEYS.active,
+      null,
+      isOptionalWorkout
+    );
 
-  const [lastWorkout, setLastWorkout] =
-    useState(null);
+  const [workoutHistory, setWorkoutHistory] =
+    usePersistentState(
+      KEYS.history,
+      loadInitialHistory,
+      isValidHistory
+    );
 
-  const [restTimer, setRestTimer] = useState(
-    initialRestTimer
+  // Newest workout first
+  const sortedWorkoutHistory = [
+    ...workoutHistory,
+  ].sort(
+    (first, second) =>
+      Date.parse(second.finishedAt) -
+      Date.parse(first.finishedAt)
   );
 
-  const [reviewData, setReviewData] = useState(
-    readReviewData
-  );
+  // Existing pages can keep using lastWorkout
+  const lastWorkout =
+    sortedWorkoutHistory[0] ?? null;
+
+  const [restTimer, setRestTimer] =
+    usePersistentState(
+      KEYS.rest,
+      emptyRestTimer,
+      isTimer
+    );
+
+  const [timedSetTimer, setTimedSetTimer] =
+    usePersistentState(
+      KEYS.timed,
+      emptyTimedTimer,
+      isTimer
+    );
+
+  const [reviewData, setReviewData] =
+    usePersistentState(
+      KEYS.review,
+      emptyReviewData,
+      isReviewData
+    );
 
   const [reviewOpen, setReviewOpen] =
     useState(false);
 
-  // Keep the check-in schedule across page reloads.
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        REVIEW_STORAGE_KEY,
-        JSON.stringify(reviewData)
-      );
-    } catch {
-      // The app can still work without storage.
-    }
-  }, [reviewData]);
+  // ========================================
+  // REST TIMER RECOVERY
+  // ========================================
 
-  // Finish the rest period at its actual deadline.
   useEffect(() => {
     if (restTimer.status !== "running") {
       return;
     }
 
-    const delay = Math.max(
-      0,
-      restTimer.endsAt - Date.now()
-    );
-
-    const timeoutId = setTimeout(() => {
+    function checkDeadline() {
       setRestTimer((current) => {
         if (current.status !== "running") {
           return current;
         }
 
-        const remaining = Math.max(
-          0,
-          current.endsAt - Date.now()
-        );
-
-        if (remaining > 0) {
+        if (
+          Number.isFinite(current.endsAt) &&
+          Date.now() < current.endsAt
+        ) {
           return current;
         }
 
@@ -120,10 +213,66 @@ export function WorkoutSessionProvider({
           remainingSeconds: 0,
         };
       });
-    }, delay + 50);
+    }
 
-    return () => clearTimeout(timeoutId);
+    checkDeadline();
+
+    const intervalId = setInterval(
+      checkDeadline,
+      500
+    );
+
+    return () => clearInterval(intervalId);
   }, [restTimer.status, restTimer.endsAt]);
+
+  // ========================================
+  // TIMED EXERCISE RECOVERY
+  // ========================================
+
+  useEffect(() => {
+    if (timedSetTimer.status !== "running") {
+      return;
+    }
+
+    function checkDeadline() {
+      setTimedSetTimer((current) => {
+        if (current.status !== "running") {
+          return current;
+        }
+
+        if (
+          Number.isFinite(current.endsAt) &&
+          Date.now() < current.endsAt
+        ) {
+          return current;
+        }
+
+        return {
+          ...current,
+          status: "finished",
+          endsAt: null,
+          remainingMs: 0,
+          elapsedMs: current.totalMs,
+        };
+      });
+    }
+
+    checkDeadline();
+
+    const intervalId = setInterval(
+      checkDeadline,
+      250
+    );
+
+    return () => clearInterval(intervalId);
+  }, [
+    timedSetTimer.status,
+    timedSetTimer.endsAt,
+  ]);
+
+  // ========================================
+  // START A WORKOUT
+  // ========================================
 
   function startWorkout({
     plan,
@@ -158,7 +307,6 @@ export function WorkoutSessionProvider({
       planName: plan.name,
       sessionId: session.id,
       sessionName: session.name,
-
       splitId: plan.splitId,
       location: plan.location,
       weightUnit: plan.weightUnit ?? "kg",
@@ -167,10 +315,14 @@ export function WorkoutSessionProvider({
       exercises: workoutExercises,
     });
 
-    setRestTimer(initialRestTimer);
+    setRestTimer(emptyRestTimer);
+    setTimedSetTimer(emptyTimedTimer);
   }
 
-  // Record actual results without modifying planned targets.
+  // ========================================
+  // RECORD A SET
+  // ========================================
+
   function recordSet(exerciseId, setData) {
     setActiveWorkout((previousWorkout) => {
       if (!previousWorkout) {
@@ -191,40 +343,43 @@ export function WorkoutSessionProvider({
               return exercise;
             }
 
+            const newSet = {
+              setNumber:
+                exercise.completedSets.length + 1,
+
+              completedAt:
+                new Date().toISOString(),
+
+              targetType:
+                exercise.target.targetType,
+
+              reps: setData.reps ?? null,
+              durationSeconds:
+                setData.durationSeconds ?? null,
+              weight: setData.weight ?? null,
+
+              effort: setData.effort ?? null,
+              technique: setData.technique ?? null,
+            };
+
             return {
               ...exercise,
 
               completedSets: [
                 ...exercise.completedSets,
-
-                {
-                  setNumber:
-                    exercise.completedSets.length + 1,
-
-                  completedAt:
-                    new Date().toISOString(),
-
-                  targetType:
-                    exercise.target.targetType,
-
-                  reps: setData.reps ?? null,
-
-                  durationSeconds:
-                    setData.durationSeconds ?? null,
-
-                  weight: setData.weight ?? null,
-
-                  // Optional historical fields.
-                  effort: setData.effort ?? null,
-                  technique:
-                    setData.technique ?? null,
-                },
+                newSet,
               ],
             };
           }
         ),
       };
     });
+
+    setTimedSetTimer((current) =>
+      current.exerciseId === exerciseId
+        ? emptyTimedTimer
+        : current
+    );
   }
 
   function undoLastSet(exerciseId) {
@@ -241,11 +396,13 @@ export function WorkoutSessionProvider({
             exercise.exerciseId === exerciseId
               ? {
                   ...exercise,
+
                   completedSets:
                     exercise.completedSets.slice(
                       0,
                       -1
                     ),
+
                   skipped: false,
                 }
               : exercise
@@ -274,7 +431,17 @@ export function WorkoutSessionProvider({
         ),
       };
     });
+
+    setTimedSetTimer((current) =>
+      current.exerciseId === exerciseId
+        ? emptyTimedTimer
+        : current
+    );
   }
+
+  // ========================================
+  // REST TIMER
+  // ========================================
 
   function startRest(seconds) {
     const duration = Number(seconds);
@@ -283,7 +450,7 @@ export function WorkoutSessionProvider({
       !Number.isFinite(duration) ||
       duration <= 0
     ) {
-      setRestTimer(initialRestTimer);
+      setRestTimer(emptyRestTimer);
       return;
     }
 
@@ -296,15 +463,15 @@ export function WorkoutSessionProvider({
   }
 
   function pauseRest() {
-    setRestTimer((timer) => {
-      if (timer.status !== "running") {
-        return timer;
+    setRestTimer((current) => {
+      if (current.status !== "running") {
+        return current;
       }
 
       const remainingSeconds = Math.max(
         0,
         Math.ceil(
-          (timer.endsAt - Date.now()) / 1000
+          (current.endsAt - Date.now()) / 1000
         )
       );
 
@@ -320,64 +487,186 @@ export function WorkoutSessionProvider({
   }
 
   function resumeRest() {
-    setRestTimer((timer) => {
+    setRestTimer((current) => {
       if (
-        timer.status !== "paused" ||
-        timer.remainingSeconds <= 0
+        current.status !== "paused" ||
+        current.remainingSeconds <= 0
       ) {
-        return timer;
+        return current;
       }
 
       return {
-        ...timer,
+        ...current,
         status: "running",
 
         endsAt:
           Date.now() +
-          timer.remainingSeconds * 1000,
+          current.remainingSeconds * 1000,
       };
     });
   }
 
   function addRestTime(seconds = 30) {
-    const extraSeconds = Math.max(
+    const extra = Math.max(
       0,
       Math.floor(Number(seconds) || 0)
     );
 
-    setRestTimer((timer) => {
-      if (timer.status === "running") {
+    setRestTimer((current) => {
+      if (current.status === "running") {
         return {
-          ...timer,
+          ...current,
 
           endsAt:
             Math.max(
-              timer.endsAt,
-              Date.now()
+              Date.now(),
+              current.endsAt
             ) +
-            extraSeconds * 1000,
+            extra * 1000,
         };
       }
 
-      if (timer.status === "paused") {
+      if (current.status === "paused") {
         return {
-          ...timer,
+          ...current,
 
           remainingSeconds:
-            timer.remainingSeconds +
-            extraSeconds,
+            current.remainingSeconds + extra,
         };
       }
 
-      return timer;
+      return current;
     });
   }
 
   function clearRestTimer() {
-    setRestTimer(initialRestTimer);
+    setRestTimer(emptyRestTimer);
   }
 
-  // Called only when a workout is finalized.
+  // ========================================
+  // TIMED EXERCISES
+  // ========================================
+
+  function startTimedSet({
+    workoutId,
+    exerciseId,
+    setNumber,
+    targetSeconds,
+  }) {
+    if (
+      !activeWorkout ||
+      activeWorkout.id !== workoutId
+    ) {
+      return;
+    }
+
+    const seconds = Math.max(
+      1,
+      Math.min(
+        3600,
+        Math.round(Number(targetSeconds) || 30)
+      )
+    );
+
+    const totalMs = seconds * 1000;
+
+    setTimedSetTimer({
+      status: "running",
+      workoutId,
+      exerciseId,
+      setNumber,
+
+      totalMs,
+      remainingMs: totalMs,
+      elapsedMs: 0,
+      endsAt: Date.now() + totalMs,
+    });
+  }
+
+  function pauseTimedSet() {
+    setTimedSetTimer((current) => {
+      if (current.status !== "running") {
+        return current;
+      }
+
+      const remainingMs = Math.max(
+        0,
+        current.endsAt - Date.now()
+      );
+
+      return {
+        ...current,
+
+        status:
+          remainingMs > 0
+            ? "paused"
+            : "finished",
+
+        endsAt: null,
+        remainingMs,
+
+        elapsedMs:
+          current.totalMs - remainingMs,
+      };
+    });
+  }
+
+  function resumeTimedSet() {
+    setTimedSetTimer((current) => {
+      if (
+        current.status !== "paused" ||
+        current.remainingMs <= 0
+      ) {
+        return current;
+      }
+
+      return {
+        ...current,
+        status: "running",
+
+        endsAt:
+          Date.now() + current.remainingMs,
+      };
+    });
+  }
+
+  function stopTimedSet() {
+    setTimedSetTimer((current) => {
+      if (
+        current.status !== "running" &&
+        current.status !== "paused"
+      ) {
+        return current;
+      }
+
+      const remainingMs =
+        current.status === "running"
+          ? Math.max(
+              0,
+              current.endsAt - Date.now()
+            )
+          : current.remainingMs;
+
+      return {
+        ...current,
+        status: "stopped",
+        endsAt: null,
+        remainingMs,
+
+        elapsedMs:
+          current.totalMs - remainingMs,
+      };
+    });
+  }
+
+  function clearTimedSet() {
+    setTimedSetTimer(emptyTimedTimer);
+  }
+
+  // ========================================
+  // FINISH WORKOUT AND SAVE HISTORY
+  // ========================================
+
   function checkForTrainingReview(finishedAt) {
     const firstCompletedAt =
       reviewData.firstCompletedAt ??
@@ -393,6 +682,7 @@ export function WorkoutSessionProvider({
 
     setReviewData((previous) => ({
       ...previous,
+
       firstCompletedAt:
         previous.firstCompletedAt ??
         finishedAt,
@@ -433,9 +723,8 @@ export function WorkoutSessionProvider({
     const finishedAt =
       new Date().toISOString();
 
-    setLastWorkout({
+    const completedWorkout = {
       ...activeWorkout,
-
       finishedAt,
 
       status: fullyCompleted
@@ -443,20 +732,54 @@ export function WorkoutSessionProvider({
         : "partial",
 
       totalCompletedSets,
+    };
+
+    // Keep every finished workout, not only the last.
+    setWorkoutHistory((previousHistory) => {
+      const alreadySaved = previousHistory.some(
+        (workout) =>
+          workout.id === completedWorkout.id
+      );
+
+      if (alreadySaved) {
+        return previousHistory;
+      }
+
+      return [
+        completedWorkout,
+        ...previousHistory,
+      ];
     });
 
     setActiveWorkout(null);
-    setRestTimer(initialRestTimer);
+    setRestTimer(emptyRestTimer);
+    setTimedSetTimer(emptyTimedTimer);
 
     checkForTrainingReview(finishedAt);
   }
 
   function discardWorkout() {
     setActiveWorkout(null);
-    setRestTimer(initialRestTimer);
+    setRestTimer(emptyRestTimer);
+    setTimedSetTimer(emptyTimedTimer);
   }
 
-  // Optional check-in, not required for completing sets.
+  // ========================================
+  // DELETE A HISTORY RECORD
+  // ========================================
+
+  function deleteWorkout(workoutId) {
+    setWorkoutHistory((previousHistory) =>
+      previousHistory.filter(
+        (workout) => workout.id !== workoutId
+      )
+    );
+  }
+
+  // ========================================
+  // OPTIONAL TRAINING REVIEW
+  // ========================================
+
   function submitTrainingReview({
     difficulty,
     technique,
@@ -482,10 +805,10 @@ export function WorkoutSessionProvider({
     setReviewOpen(false);
   }
 
-  // Dismissing postpones the next prompt.
   function dismissTrainingReview() {
     setReviewData((previous) => ({
       ...previous,
+
       lastPromptedAt:
         new Date().toISOString(),
     }));
@@ -497,8 +820,14 @@ export function WorkoutSessionProvider({
     <WorkoutSessionContext.Provider
       value={{
         activeWorkout,
+
+        workoutHistory:
+          sortedWorkoutHistory,
+
         lastWorkout,
+
         restTimer,
+        timedSetTimer,
         reviewOpen,
 
         startWorkout,
@@ -512,8 +841,15 @@ export function WorkoutSessionProvider({
         addRestTime,
         clearRestTimer,
 
+        startTimedSet,
+        pauseTimedSet,
+        resumeTimedSet,
+        stopTimedSet,
+        clearTimedSet,
+
         finishWorkout,
         discardWorkout,
+        deleteWorkout,
 
         submitTrainingReview,
         dismissTrainingReview,

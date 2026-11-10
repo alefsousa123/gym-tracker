@@ -3,6 +3,7 @@ import {
   Navigate,
   Route,
   Routes,
+  useParams,
 } from "react-router";
 
 import "./App.css";
@@ -17,6 +18,13 @@ import WeeklySchedulePage from "./pages/WeeklySchedulePage";
 import WorkoutPlansPage from "./pages/WorkoutPlansPage";
 import WorkoutBuilderPage from "./pages/WorkoutBuilderPage";
 import TodaysWorkoutPage from "./pages/TodaysWorkoutPage";
+
+import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
+import ConsistencyPage from "./pages/ConsistencyPage";
+import TrainingInsightsPage from "./pages/TrainingInsightsPage";
+import TrainingChartsPage from "./pages/TrainingChartsPage";
+import BodyFatEstimatorPage from "./pages/BodyFatEstimatorPage";
+import BodyMeasurementsPage from "./pages/BodyMeasurementsPage";
 
 import TodayWorkoutOverview from "./components/workouts/TodayWorkoutOverview";
 
@@ -51,6 +59,27 @@ import {
   WorkoutSessionProvider,
 } from "./context/WorkoutSessionContext";
 
+// ==========================================
+// LEGACY HISTORY REDIRECT
+// ==========================================
+
+function LegacyHistoryRedirect() {
+  const { workoutId } = useParams();
+
+  return (
+    <Navigate
+      to={`/progress/history/${encodeURIComponent(
+        workoutId
+      )}`}
+      replace
+    />
+  );
+}
+
+// ==========================================
+// MAIN APPLICATION
+// ==========================================
+
 function App() {
   return (
     <TrainingProfileProvider>
@@ -60,7 +89,8 @@ function App() {
             <WorkoutSessionProvider>
               <Routes>
                 <Route element={<AppLayout />}>
-                  {/* Home */}
+                  {/* HOME */}
+
                   <Route
                     path="/"
                     element={
@@ -71,13 +101,15 @@ function App() {
                     }
                   />
 
-                  {/* Dashboard */}
+                  {/* DASHBOARD */}
+
                   <Route
                     path="/dashboard"
                     element={<DashboardPage />}
                   />
 
-                  {/* Workouts */}
+                  {/* WORKOUTS */}
+
                   <Route
                     path="/workouts"
                     element={<WorkoutsPage />}
@@ -103,7 +135,79 @@ function App() {
                     element={<WorkoutBuilderPage />}
                   />
 
-                  {/* Exercise Library */}
+                  {/* PROGRESS */}
+
+                  <Route
+                    path="/progress"
+                    element={<ProgressPage />}
+                  />
+
+                  <Route
+                    path="/progress/history"
+                    element={<WorkoutHistoryPage />}
+                  />
+
+                  <Route
+                    path="/progress/history/:workoutId"
+                    element={<WorkoutHistoryPage />}
+                  />
+
+                  <Route
+                    path="/progress/consistency"
+                    element={<ConsistencyPage />}
+                  />
+
+                  <Route
+                    path="/progress/performance"
+                    element={<TrainingInsightsPage />}
+                  />
+
+                  <Route
+                    path="/progress/charts"
+                    element={<TrainingChartsPage />}
+                  />
+
+                  <Route
+                    path="/progress/body-fat"
+                    element={<BodyFatEstimatorPage />}
+                  />
+
+                  <Route
+                    path="/progress/measurements"
+                    element={<BodyMeasurementsPage />}
+                  />
+
+                  {/* LEGACY ROUTE REDIRECTS */}
+
+                  <Route
+                    path="/workouts/history"
+                    element={
+                      <Navigate
+                        to="/progress/history"
+                        replace
+                      />
+                    }
+                  />
+
+                  <Route
+                    path="/workouts/history/:workoutId"
+                    element={
+                      <LegacyHistoryRedirect />
+                    }
+                  />
+
+                  <Route
+                    path="/workouts/consistency"
+                    element={
+                      <Navigate
+                        to="/progress/consistency"
+                        replace
+                      />
+                    }
+                  />
+
+                  {/* EXERCISES */}
+
                   <Route
                     path="/exercises"
                     element={<ExercisesPage />}
@@ -114,13 +218,8 @@ function App() {
                     element={<ExerciseDetailsPage />}
                   />
 
-                  {/* Progress */}
-                  <Route
-                    path="/progress"
-                    element={<ProgressPage />}
-                  />
+                  {/* SETTINGS */}
 
-                  {/* Settings */}
                   <Route
                     path="/settings"
                     element={<SettingsPage />}
@@ -136,7 +235,8 @@ function App() {
                     element={<EquipmentPage />}
                   />
 
-                  {/* Legacy redirects */}
+                  {/* LEGACY SETTINGS REDIRECTS */}
+
                   <Route
                     path="/profile"
                     element={
@@ -157,11 +257,13 @@ function App() {
                     }
                   />
 
-                  {/* Not Found */}
+                  {/* NOT FOUND */}
+
                   <Route
                     path="*"
                     element={<NotFoundPage />}
                   />
+
                 </Route>
               </Routes>
             </WorkoutSessionProvider>

@@ -1,9 +1,12 @@
 
 import {
   useEffect,
-  useRef,
   useState,
 } from "react";
+
+import {
+  useWorkoutSession,
+} from "../../context/WorkoutSessionContext";
 
 import "./TimedSetTimer.css";
 
@@ -23,11 +26,23 @@ function formatMilliseconds(milliseconds) {
 }
 
 function TimedSetTimer({
+  workoutId,
+  exerciseId,
+  setNumber,
   targetSeconds,
   onDurationChange,
-  onBusyChange,
 }) {
-  const totalSeconds = Math.max(
+  const {
+    timedSetTimer,
+
+    startTimedSet,
+    pauseTimedSet,
+    resumeTimedSet,
+    stopTimedSet,
+    clearTimedSet,
+  } = useWorkoutSession();
+
+  const seconds = Math.max(
     1,
     Math.min(
       3600,
@@ -35,171 +50,124 @@ function TimedSetTimer({
     )
   );
 
-  const totalMs = totalSeconds * 1000;
+  const defaultTotalMs = seconds * 1000;
 
-  const [status, setStatus] = useState("idle");
-  const [remainingMs, setRemainingMs] =
-    useState(totalMs);
+  // This timer belongs to one exact exercise
+  // and one exact set of the current workout.
+  const isCurrentTimer =
+    timedSetTimer.workoutId === workoutId &&
+    timedSetTimer.exerciseId === exerciseId &&
+    timedSetTimer.setNumber === setNumber;
 
-  const endAtRef = useRef(null);
+  const timer = isCurrentTimer
+    ? timedSetTimer
+    : {
+        status: "idle",
+        totalMs: defaultTotalMs,
+        remainingMs: defaultTotalMs,
+        elapsedMs: 0,
+        endsAt: null,
+      };
 
-  // Calculate the time from a real deadline
-  // instead of decrementing a counter each second.
+  const [now, setNow] = useState(Date.now());
+
+  // Update the visible countdown without
+  // modifying the saved timer every second.
   useEffect(() => {
-    if (status !== "running") {
+    if (timer.status !== "running") {
       return;
     }
 
-    function updateClock() {
-      const millisecondsLeft = Math.max(
-        0,
-        endAtRef.current - Date.now()
-      );
+    setNow(Date.now());
 
-      setRemainingMs(millisecondsLeft);
-    }
-
-    updateClock();
-
-    const intervalId = setInterval(
-      updateClock,
-      200
-    );
+    const intervalId = setInterval(() => {
+      setNow(Date.now());
+    }, 200);
 
     return () => clearInterval(intervalId);
-  }, [status]);
+  }, [timer.status, timer.endsAt]);
 
-  // When the countdown finishes, fill the actual
-  // duration but do not complete the set automatically.
-  useEffect(() => {
-    if (
-      status !== "running" ||
-      remainingMs > 0
-    ) {
-      return;
-    }
-
-    setStatus("finished");
-    onDurationChange(String(totalSeconds));
-    onBusyChange(false);
-  }, [
-    status,
-    remainingMs,
-    totalSeconds,
-    onDurationChange,
-    onBusyChange,
-  ]);
-
-  // Unlock the parent form when leaving this timer.
-  useEffect(() => {
-    return () => {
-      onBusyChange(false);
-    };
-  }, [onBusyChange]);
-
-  function handleStart() {
-    setRemainingMs(totalMs);
-
-    endAtRef.current =
-      Date.now() + totalMs;
-
-    setStatus("running");
-    onBusyChange(true);
-  }
-
-  function handlePause() {
-    if (status !== "running") {
-      return;
-    }
-
-    const millisecondsLeft = Math.max(
-      0,
-      endAtRef.current - Date.now()
-    );
-
-    setRemainingMs(millisecondsLeft);
-    setStatus("paused");
-  }
-
-  function handleResume() {
-    if (status !== "paused") {
-      return;
-    }
-
-    endAtRef.current =
-      Date.now() + remainingMs;
-
-    setStatus("running");
-  }
-
-  function handleStopEarly() {
-    if (
-      status !== "running" &&
-      status !== "paused"
-    ) {
-      return;
-    }
-
-    const millisecondsLeft =
-      status === "running"
-        ? Math.max(
-            0,
-            endAtRef.current - Date.now()
-          )
-        : remainingMs;
-
-    const elapsedSeconds = Math.min(
-      totalSeconds,
-      Math.max(
-        1,
-        Math.ceil(
-          (totalMs - millisecondsLeft) / 1000
+  const remainingMs =
+    timer.status === "running"
+      ? Math.max(
+          0,
+          timer.endsAt - now
         )
-      )
-    );
+      : timer.remainingMs;
 
-    setRemainingMs(millisecondsLeft);
-    setStatus("stopped");
-
-    onDurationChange(
-      String(elapsedSeconds)
-    );
-
-    onBusyChange(false);
-  }
-
-  function handleReset() {
-    setStatus("idle");
-    setRemainingMs(totalMs);
-    endAtRef.current = null;
-
-    onBusyChange(false);
-  }
-
-  const elapsedSeconds = Math.min(
-    totalSeconds,
-    Math.max(
-      0,
-      Math.ceil(
-        (totalMs - remainingMs) / 1000
-      )
-    )
-  );
-
-  const displayTime =
-    status === "stopped"
-      ? formatMilliseconds(
-          totalMs - remainingMs
+  const elapsedMs =
+    timer.status === "running"
+      ? Math.max(
+          0,
+          timer.totalMs - remainingMs
         )
-      : formatMilliseconds(remainingMs);
+      : timer.elapsedMs;
 
   const progress = Math.max(
     0,
     Math.min(
       100,
-      ((totalMs - remainingMs) / totalMs) * 100
+      (elapsedMs / timer.totalMs) * 100
     )
   );
+
+  // Recover the actual duration after reloading
+  // or when the exercise timer is stopped.
+  useEffect(() => {
+    if (!isCurrentTimer) {
+      return;
+    }
+
+    if (timer.status === "finished") {
+      onDurationChange(
+        String(
+          Math.round(timer.totalMs / 1000)
+        )
+      );
+    }
+
+    if (timer.status === "stopped") {
+      onDurationChange(
+        String(
+          Math.max(
+            1,
+            Math.ceil(timer.elapsedMs / 1000)
+          )
+        )
+      );
+    }
+  }, [
+    isCurrentTimer,
+    timer.status,
+    timer.totalMs,
+    timer.elapsedMs,
+    onDurationChange,
+  ]);
+
+  const displayTime =
+    timer.status === "stopped"
+      ? formatMilliseconds(elapsedMs)
+      : formatMilliseconds(remainingMs);
+
+  function handleStart() {
+    startTimedSet({
+      workoutId,
+      exerciseId,
+      setNumber,
+      targetSeconds: seconds,
+    });
+  }
+
+  const statusMessage = {
+    idle: "Start when you are ready.",
+    running:
+      "Hold your position. Maintain controlled technique.",
+    paused: "Timer paused.",
+    finished:
+      "Time completed! Confirm the set below.",
+    stopped:
+      "Time recorded. Confirm the set below.",
+  };
 
   return (
     <div className="timed-set-timer">
@@ -207,7 +175,7 @@ function TimedSetTimer({
         <span>EXERCISE TIMER</span>
 
         <span>
-          Target: {totalSeconds} sec
+          Target: {seconds} sec
         </span>
       </div>
 
@@ -219,7 +187,14 @@ function TimedSetTimer({
         {displayTime}
       </div>
 
-      <div className="timed-set-progress">
+      <div
+        className="timed-set-progress"
+        role="progressbar"
+        aria-label="Timed exercise progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
+      >
         <div
           style={{
             width: `${progress}%`,
@@ -228,23 +203,10 @@ function TimedSetTimer({
       </div>
 
       <p className="timed-set-message">
-        {status === "idle" &&
-          "Start when you are ready."}
-
-        {status === "running" &&
-          "Hold your position. Focus on controlled technique."}
-
-        {status === "paused" &&
-          "Timer paused."}
-
-        {status === "finished" &&
-          "Time completed! Confirm the set below."}
-
-        {status === "stopped" &&
-          `${elapsedSeconds} seconds recorded. Confirm the set below.`}
+        {statusMessage[timer.status]}
       </p>
 
-      {status === "idle" && (
+      {timer.status === "idle" && (
         <button
           type="button"
           className="timed-set-primary"
@@ -254,12 +216,12 @@ function TimedSetTimer({
         </button>
       )}
 
-      {status === "running" && (
+      {timer.status === "running" && (
         <div className="timed-set-actions">
           <button
             type="button"
             className="timed-set-secondary"
-            onClick={handlePause}
+            onClick={pauseTimedSet}
           >
             Pause
           </button>
@@ -267,19 +229,19 @@ function TimedSetTimer({
           <button
             type="button"
             className="timed-set-secondary"
-            onClick={handleStopEarly}
+            onClick={stopTimedSet}
           >
             Stop Early
           </button>
         </div>
       )}
 
-      {status === "paused" && (
+      {timer.status === "paused" && (
         <div className="timed-set-actions">
           <button
             type="button"
             className="timed-set-primary"
-            onClick={handleResume}
+            onClick={resumeTimedSet}
           >
             Resume
           </button>
@@ -287,28 +249,27 @@ function TimedSetTimer({
           <button
             type="button"
             className="timed-set-secondary"
-            onClick={handleStopEarly}
+            onClick={stopTimedSet}
           >
             Stop Early
           </button>
         </div>
       )}
 
-      {(status === "finished" ||
-        status === "stopped") && (
+      {(timer.status === "finished" ||
+        timer.status === "stopped") && (
         <button
           type="button"
           className="timed-set-secondary"
-          onClick={handleReset}
+          onClick={clearTimedSet}
         >
           Restart Timer
         </button>
       )}
 
       <p className="timed-set-note">
-        The timer measures your exercise.
-        You can also enter the actual
-        duration manually.
+        The timer tracks exercise duration.
+        You may also enter the actual time manually.
       </p>
     </div>
   );

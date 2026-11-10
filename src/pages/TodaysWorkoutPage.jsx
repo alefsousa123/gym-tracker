@@ -1,5 +1,9 @@
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import { Link } from "react-router";
 
 import { exercises } from "../data/exercises";
@@ -26,24 +30,9 @@ import {
 
 import "./TodaysWorkoutPage.css";
 
-function findExercise(id) {
+function findExercise(exerciseId) {
   return exercises.find(
-    (exercise) => exercise.id === id
-  );
-}
-
-function formatTime(seconds) {
-  const safe = Math.max(
-    0,
-    Math.ceil(seconds)
-  );
-
-  const minutes = Math.floor(safe / 60);
-  const remainder = safe % 60;
-
-  return (
-    `${String(minutes).padStart(2, "0")}:` +
-    String(remainder).padStart(2, "0")
+    (exercise) => exercise.id === exerciseId
   );
 }
 
@@ -53,11 +42,25 @@ function describeTarget(target) {
     : `${target.minReps}–${target.maxReps} reps`;
 }
 
-function getDayId() {
-  const index =
-    (new Date().getDay() + 6) % 7;
+function formatTime(seconds) {
+  const safe = Math.max(
+    0,
+    Math.ceil(seconds)
+  );
 
-  return daysOfWeek[index].id;
+  const minutes = Math.floor(safe / 60);
+  const remaining = safe % 60;
+
+  return (
+    `${String(minutes).padStart(2, "0")}:` +
+    String(remaining).padStart(2, "0")
+  );
+}
+
+function getTodayId() {
+  return daysOfWeek[
+    (new Date().getDay() + 6) % 7
+  ].id;
 }
 
 function TodaysWorkoutPage() {
@@ -69,7 +72,9 @@ function TodaysWorkoutPage() {
   const {
     activeWorkout,
     lastWorkout,
+
     restTimer,
+    timedSetTimer,
     reviewOpen,
 
     startWorkout,
@@ -90,7 +95,11 @@ function TodaysWorkoutPage() {
     dismissTrainingReview,
   } = useWorkoutSession();
 
-  const todayId = getDayId();
+  // ========================================
+  // TODAY'S SCHEDULE
+  // ========================================
+
+  const todayId = getTodayId();
 
   const todaySchedule =
     weeklySchedule?.days.find(
@@ -123,6 +132,10 @@ function TodaysWorkoutPage() {
         session.id === selectedSessionId
     ) ?? appliedPlan?.sessions[0];
 
+  // ========================================
+  // ACTIVE EXERCISE
+  // ========================================
+
   const [focusedExerciseId, setFocusedExerciseId] =
     useState(null);
 
@@ -145,16 +158,27 @@ function TodaysWorkoutPage() {
 
   const target = currentExercise?.target;
 
-  const currentCompleted =
+  const completedForExercise =
     currentExercise?.completedSets.length ?? 0;
 
-  const currentPlanned =
+  const plannedForExercise =
     Number(target?.sets ?? 0);
 
   const remainingSets = Math.max(
     0,
-    currentPlanned - currentCompleted
+    plannedForExercise - completedForExercise
   );
+
+  const currentIndex =
+    activeWorkout?.exercises.findIndex(
+      (exercise) =>
+        exercise.exerciseId ===
+        currentExercise?.exerciseId
+    ) ?? -1;
+
+  // ========================================
+  // QUICK SET FORM
+  // ========================================
 
   const [repsInput, setRepsInput] =
     useState("");
@@ -164,11 +188,6 @@ function TodaysWorkoutPage() {
 
   const [weightInput, setWeightInput] =
     useState("");
-
-  // Prevent recording a timed set before its timer
-  // is finished or explicitly stopped.
-  const [holdTimerBusy, setHoldTimerBusy] =
-    useState(false);
 
   const [formError, setFormError] =
     useState("");
@@ -185,57 +204,57 @@ function TodaysWorkoutPage() {
   const [reviewTechnique, setReviewTechnique] =
     useState("");
 
-  // Initialize the inputs for each exercise and set.
+  // Restore the planned values or the most recent
+  // actual values when moving to another set.
   useEffect(() => {
     if (!currentExercise) {
       return;
     }
 
-    const currentTarget = currentExercise.target;
-
-    const lastSet =
+    const previousSet =
       currentExercise.completedSets.at(-1);
 
     setRepsInput(
       String(
-        lastSet?.reps ??
-        currentTarget.maxReps ??
+        previousSet?.reps ??
+        target.maxReps ??
         12
       )
     );
 
     setDurationInput(
       String(
-        lastSet?.durationSeconds ??
-        currentTarget.durationSeconds ??
+        previousSet?.durationSeconds ??
+        target.durationSeconds ??
         30
       )
     );
 
-    const initialWeight =
-      lastSet?.weight ??
-      currentTarget.weight;
+    const previousWeight =
+      previousSet?.weight ??
+      target.weight;
 
     setWeightInput(
-      initialWeight === "" ||
-      initialWeight === null ||
-      initialWeight === undefined
+      previousWeight === "" ||
+      previousWeight === null ||
+      previousWeight === undefined
         ? ""
-        : String(initialWeight)
+        : String(previousWeight)
     );
 
-    setHoldTimerBusy(false);
     setFormError("");
   }, [
     activeWorkout?.id,
     currentExercise?.exerciseId,
-    currentCompleted,
+    completedForExercise,
   ]);
 
-  // Update the visible rest clock.
-  const [now, setNow] = useState(
-    Date.now()
-  );
+  // ========================================
+  // TIMERS
+  // ========================================
+
+  const [now, setNow] =
+    useState(Date.now());
 
   useEffect(() => {
     if (restTimer.status !== "running") {
@@ -254,7 +273,7 @@ function TodaysWorkoutPage() {
     restTimer.endsAt,
   ]);
 
-  const secondsLeft =
+  const restSecondsLeft =
     restTimer.status === "running"
       ? Math.max(
           0,
@@ -263,6 +282,32 @@ function TodaysWorkoutPage() {
           )
         )
       : restTimer.remainingSeconds;
+
+  // An active timed exercise cannot be confirmed
+  // before its countdown is paused and stopped
+  // or has naturally finished.
+  const currentTimedSet =
+    Boolean(
+      activeWorkout &&
+      currentExercise &&
+      target?.targetType === "duration"
+    ) &&
+    timedSetTimer.workoutId === activeWorkout.id &&
+    timedSetTimer.exerciseId ===
+      currentExercise.exerciseId &&
+    timedSetTimer.setNumber ===
+      completedForExercise + 1;
+
+  const timedSetBusy =
+    currentTimedSet &&
+    (
+      timedSetTimer.status === "running" ||
+      timedSetTimer.status === "paused"
+    );
+
+  // ========================================
+  // WORKOUT PROGRESS
+  // ========================================
 
   const totalSets =
     activeWorkout?.exercises.reduce(
@@ -293,13 +338,6 @@ function TodaysWorkoutPage() {
           Number(exercise.target.sets)
     ) ?? false;
 
-  const currentIndex =
-    activeWorkout?.exercises.findIndex(
-      (exercise) =>
-        exercise.exerciseId ===
-        currentExercise?.exerciseId
-    ) ?? -1;
-
   const finishedToday =
     Boolean(lastWorkout?.finishedAt) &&
     new Date(
@@ -307,7 +345,10 @@ function TodaysWorkoutPage() {
     ).toDateString() ===
       new Date().toDateString();
 
-  // Find the next exercise with unfinished sets.
+  // ========================================
+  // SESSION ACTIONS
+  // ========================================
+
   function findNextExercise(currentId) {
     if (!activeWorkout) {
       return null;
@@ -323,6 +364,7 @@ function TodaysWorkoutPage() {
       ...activeWorkout.exercises.slice(
         currentPosition + 1
       ),
+
       ...activeWorkout.exercises.slice(
         0,
         currentPosition
@@ -358,11 +400,11 @@ function TodaysWorkoutPage() {
     setFormError("");
   }
 
-  // Record a completed set.
   function handleCompleteSet(event) {
     event.preventDefault();
 
     if (
+      !activeWorkout ||
       !currentExercise ||
       currentExercise.skipped ||
       remainingSets === 0
@@ -370,22 +412,21 @@ function TodaysWorkoutPage() {
       return;
     }
 
-    if (holdTimerBusy) {
+    if (timedSetBusy) {
       setFormError(
-        "Finish or stop the exercise timer before recording this set."
+        "Finish or stop the exercise timer first."
       );
-
       return;
     }
 
-    const timed =
+    const isTimed =
       target.targetType === "duration";
 
-    const reps = timed
+    const reps = isTimed
       ? null
       : Number(repsInput);
 
-    const durationSeconds = timed
+    const durationSeconds = isTimed
       ? Number(durationInput)
       : null;
 
@@ -399,7 +440,7 @@ function TodaysWorkoutPage() {
         : Number(weightText);
 
     if (
-      !timed &&
+      !isTimed &&
       (
         !Number.isInteger(reps) ||
         reps < 1 ||
@@ -409,12 +450,11 @@ function TodaysWorkoutPage() {
       setFormError(
         "Enter a valid repetition count."
       );
-
       return;
     }
 
     if (
-      timed &&
+      isTimed &&
       (
         !Number.isInteger(durationSeconds) ||
         durationSeconds < 1 ||
@@ -424,7 +464,6 @@ function TodaysWorkoutPage() {
       setFormError(
         "Enter a valid duration in seconds."
       );
-
       return;
     }
 
@@ -438,7 +477,6 @@ function TodaysWorkoutPage() {
       setFormError(
         "Enter a valid weight or leave it blank."
       );
-
       return;
     }
 
@@ -454,13 +492,9 @@ function TodaysWorkoutPage() {
     setFormError("");
 
     const completedAfter =
-      currentCompleted + 1;
+      completedForExercise + 1;
 
-    const moreSets =
-      completedAfter < currentPlanned;
-
-    if (moreSets) {
-      // Rest starts after the exercise is recorded.
+    if (completedAfter < plannedForExercise) {
       startRest(target.restSeconds);
       return;
     }
@@ -524,16 +558,14 @@ function TodaysWorkoutPage() {
     setShowEarlyFinish(false);
     setShowDiscard(false);
     setFocusedExerciseId(null);
-    setHoldTimerBusy(false);
   }
 
   function handleDiscard() {
     discardWorkout();
 
-    setShowDiscard(false);
     setShowEarlyFinish(false);
+    setShowDiscard(false);
     setFocusedExerciseId(null);
-    setHoldTimerBusy(false);
   }
 
   function handleReviewSubmit(event) {
@@ -555,6 +587,10 @@ function TodaysWorkoutPage() {
     setReviewTechnique("");
   }
 
+  // ========================================
+  // PAGE
+  // ========================================
+
   return (
     <div className="today-workout-page">
       <header className="today-simple-heading">
@@ -565,9 +601,9 @@ function TodaysWorkoutPage() {
         <span>GYM TRACKER</span>
       </header>
 
-      {/* ======================================
-          BEFORE STARTING A WORKOUT
-      ====================================== */}
+      {/* ====================================
+          NO ACTIVE WORKOUT
+      ==================================== */}
 
       {!activeWorkout && (
         <>
@@ -601,8 +637,8 @@ function TodaysWorkoutPage() {
               <h1>No Workout Plan Yet</h1>
 
               <p>
-                Choose a recommended plan
-                or create your own workout.
+                Choose a recommended plan or
+                create your own workout.
               </p>
 
               <Link
@@ -619,8 +655,7 @@ function TodaysWorkoutPage() {
               </span>
 
               <h1>
-                {selectedSession?.name ??
-                  "Workout"}
+                {selectedSession?.name ?? "Workout"}
               </h1>
 
               <p>{appliedPlan.name}</p>
@@ -632,9 +667,7 @@ function TodaysWorkoutPage() {
 
                 <select
                   id="todaySession"
-                  value={
-                    selectedSession?.id ?? ""
-                  }
+                  value={selectedSession?.id ?? ""}
                   onChange={(event) =>
                     setSelectedSessionId(
                       event.target.value
@@ -660,7 +693,7 @@ function TodaysWorkoutPage() {
                   <p className="today-small-note">
                     Today is a scheduled rest or
                     recovery day. Starting a
-                    session is optional.
+                    workout is optional.
                   </p>
                 )}
 
@@ -684,22 +717,17 @@ function TodaysWorkoutPage() {
                         key={exerciseId}
                         className="today-start-item"
                       >
-                        <span>
-                          {index + 1}
-                        </span>
+                        <span>{index + 1}</span>
 
                         <div>
                           <strong>
-                            {exercise?.name ??
-                              "Exercise"}
+                            {exercise?.name ?? "Exercise"}
                           </strong>
 
                           <small>
                             {exerciseTarget.sets}
                             {" "}sets ·{" "}
-                            {describeTarget(
-                              exerciseTarget
-                            )}
+                            {describeTarget(exerciseTarget)}
                           </small>
                         </div>
                       </div>
@@ -723,9 +751,9 @@ function TodaysWorkoutPage() {
         </>
       )}
 
-      {/* ======================================
+      {/* ====================================
           ACTIVE WORKOUT
-      ====================================== */}
+      ==================================== */}
 
       {activeWorkout && currentExercise && (
         <>
@@ -750,16 +778,14 @@ function TodaysWorkoutPage() {
             </div>
           </section>
 
-          {/* All exercises are complete or skipped */}
+          {/* All exercises completed or skipped */}
           {allFinished ? (
             <section className="today-simple-card today-ready-finish">
               <div className="today-finished-icon">
                 ✓
               </div>
 
-              <h1>
-                All Exercises Finished
-              </h1>
+              <h1>All Exercises Finished</h1>
 
               <p>
                 You recorded {completedSets}
@@ -831,7 +857,8 @@ function TodaysWorkoutPage() {
                               Restore Exercise
                             </button>
                           ) : (
-                            exercise.completedSets.length > 0 && (
+                            exercise.completedSets.length >
+                              0 && (
                               <button
                                 type="button"
                                 className="today-secondary-button"
@@ -870,21 +897,17 @@ function TodaysWorkoutPage() {
                     currentExercise.exerciseId
                   }
                   exerciseName={
-                    exerciseInfo?.name ??
-                    "Exercise"
+                    exerciseInfo?.name ?? "Exercise"
                   }
                   variant="thumbnail"
                 />
 
                 <div>
                   <h1>
-                    {exerciseInfo?.name ??
-                      "Exercise"}
+                    {exerciseInfo?.name ?? "Exercise"}
                   </h1>
 
-                  <p>
-                    {describeTarget(target)}
-                  </p>
+                  <p>{describeTarget(target)}</p>
 
                   <Link
                     to={`/exercises/${currentExercise.exerciseId}`}
@@ -895,9 +918,7 @@ function TodaysWorkoutPage() {
               </div>
 
               <div className="today-set-count">
-                <strong>
-                  {remainingSets}
-                </strong>
+                <strong>{remainingSets}</strong>
 
                 <span>
                   {remainingSets === 1
@@ -908,17 +929,17 @@ function TodaysWorkoutPage() {
 
               <div className="today-set-dots">
                 {Array.from(
-                  { length: currentPlanned },
+                  { length: plannedForExercise },
                   (_, index) => (
                     <span
                       key={index}
                       className={
-                        index < currentCompleted
+                        index < completedForExercise
                           ? "is-complete"
                           : ""
                       }
                     >
-                      {index < currentCompleted
+                      {index < completedForExercise
                         ? "✓"
                         : index + 1}
                     </span>
@@ -926,17 +947,17 @@ function TodaysWorkoutPage() {
                 )}
               </div>
 
-              {/* ======================================
-                  TIMED EXERCISE
-              ====================================== */}
-
+              {/* Timed exercise, e.g. Plank */}
               {target.targetType === "duration" &&
                 !currentExercise.skipped &&
                 remainingSets > 0 && (
                 <TimedSetTimer
-                  key={
-                    `${currentExercise.exerciseId}-` +
-                    currentCompleted
+                  workoutId={activeWorkout.id}
+                  exerciseId={
+                    currentExercise.exerciseId
+                  }
+                  setNumber={
+                    completedForExercise + 1
                   }
                   targetSeconds={
                     Number(target.durationSeconds)
@@ -944,98 +965,92 @@ function TodaysWorkoutPage() {
                   onDurationChange={
                     setDurationInput
                   }
-                  onBusyChange={
-                    setHoldTimerBusy
-                  }
                 />
               )}
 
-              {/* ======================================
-                  QUICK SET FORM
-              ====================================== */}
-
+              {/* Quick set confirmation */}
               {!currentExercise.skipped &&
                 remainingSets > 0 && (
-                  <form
-                    className="today-quick-form"
-                    onSubmit={handleCompleteSet}
-                  >
-                    <div className="today-quick-fields">
-                      {target.targetType ===
-                      "duration" ? (
-                        <label>
-                          Actual Seconds
-                          <input
-                            type="number"
-                            min="1"
-                            max="3600"
-                            step="1"
-                            value={durationInput}
-                            onChange={(event) =>
-                              setDurationInput(
-                                event.target.value
-                              )
-                            }
-                          />
-                        </label>
-                      ) : (
-                        <label>
-                          Reps
-                          <input
-                            type="number"
-                            min="1"
-                            max="100"
-                            step="1"
-                            value={repsInput}
-                            onChange={(event) =>
-                              setRepsInput(
-                                event.target.value
-                              )
-                            }
-                          />
-                        </label>
-                      )}
-
+                <form
+                  className="today-quick-form"
+                  onSubmit={handleCompleteSet}
+                >
+                  <div className="today-quick-fields">
+                    {target.targetType ===
+                    "duration" ? (
                       <label>
-                        Weight (
-                        {activeWorkout.weightUnit})
+                        Actual Seconds
                         <input
                           type="number"
-                          min="0"
-                          step="any"
-                          placeholder="Optional"
-                          value={weightInput}
+                          min="1"
+                          max="3600"
+                          step="1"
+                          value={durationInput}
+                          disabled={timedSetBusy}
                           onChange={(event) =>
-                            setWeightInput(
+                            setDurationInput(
                               event.target.value
                             )
                           }
                         />
                       </label>
-                    </div>
-
-                    {formError && (
-                      <p
-                        className="today-error"
-                        role="alert"
-                      >
-                        {formError}
-                      </p>
+                    ) : (
+                      <label>
+                        Reps
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          step="1"
+                          value={repsInput}
+                          onChange={(event) =>
+                            setRepsInput(
+                              event.target.value
+                            )
+                          }
+                        />
+                      </label>
                     )}
 
-                    <button
-                      type="submit"
-                      className="today-main-button"
-                      disabled={holdTimerBusy}
+                    <label>
+                      Weight ({activeWorkout.weightUnit})
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="Optional"
+                        value={weightInput}
+                        onChange={(event) =>
+                          setWeightInput(
+                            event.target.value
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+
+                  {formError && (
+                    <p
+                      className="today-error"
+                      role="alert"
                     >
-                      {holdTimerBusy
-                        ? "Finish Timer First"
-                        : `✓ Complete Set ${
-                            currentCompleted + 1
-                          }`}
-                    </button>
-                  </form>
-                )}
+                      {formError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="today-main-button"
+                    disabled={timedSetBusy}
+                  >
+                    {timedSetBusy
+                      ? "Finish Timer First"
+                      : `✓ Complete Set ${
+                          completedForExercise + 1
+                        }`}
+                  </button>
+                </form>
+              )}
 
               {currentExercise.skipped && (
                 <p className="today-small-note">
@@ -1047,41 +1062,35 @@ function TodaysWorkoutPage() {
 
               {remainingSets === 0 &&
                 !currentExercise.skipped && (
-                <p className="today-small-note">
-                  All sets recorded for
-                  this exercise.
-                </p>
-              )}
+                <>
+                  <p className="today-small-note">
+                    All sets recorded for
+                    this exercise.
+                  </p>
 
-              {remainingSets === 0 &&
-                !currentExercise.skipped && (
-                <button
-                  type="button"
-                  className="today-main-button"
-                  onClick={() => {
-                    const next = findNextExercise(
-                      currentExercise.exerciseId
-                    );
-
-                    if (next) {
-                      setFocusedExerciseId(
-                        next.exerciseId
+                  <button
+                    type="button"
+                    className="today-main-button"
+                    onClick={() => {
+                      const next = findNextExercise(
+                        currentExercise.exerciseId
                       );
-                    }
-                  }}
-                >
-                  Next Exercise →
-                </button>
+
+                      if (next) {
+                        setFocusedExerciseId(
+                          next.exerciseId
+                        );
+                      }
+                    }}
+                  >
+                    Next Exercise →
+                  </button>
+                </>
               )}
 
-              {/* ======================================
-                  MORE OPTIONS
-              ====================================== */}
-
+              {/* Advanced controls, hidden by default */}
               <details className="today-more-options">
-                <summary>
-                  More Options
-                </summary>
+                <summary>More Options</summary>
 
                 <div className="today-options-content">
                   <div className="today-option-group">
@@ -1119,7 +1128,7 @@ function TodaysWorkoutPage() {
                     </div>
                   </div>
 
-                  {currentCompleted > 0 && (
+                  {completedForExercise > 0 && (
                     <button
                       type="button"
                       className="today-secondary-button"
@@ -1133,9 +1142,7 @@ function TodaysWorkoutPage() {
                     <button
                       type="button"
                       className="today-secondary-button"
-                      onClick={
-                        handleSkipExercise
-                      }
+                      onClick={handleSkipExercise}
                     >
                       {currentExercise.skipped
                         ? "Restore Exercise"
@@ -1169,10 +1176,7 @@ function TodaysWorkoutPage() {
             </section>
           )}
 
-          {/* ======================================
-              EARLY FINISH CONFIRMATION
-          ====================================== */}
-
+          {/* Finish early confirmation */}
           {showEarlyFinish && (
             <div className="today-dialog-backdrop">
               <section
@@ -1211,10 +1215,7 @@ function TodaysWorkoutPage() {
             </div>
           )}
 
-          {/* ======================================
-              DISCARD CONFIRMATION
-          ====================================== */}
-
+          {/* Discard confirmation */}
           {showDiscard && (
             <div className="today-dialog-backdrop">
               <section
@@ -1255,83 +1256,77 @@ function TodaysWorkoutPage() {
         </>
       )}
 
-      {/* ======================================
-          REST TIMER — FOREGROUND OVERLAY
-      ====================================== */}
-
+      {/* Rest timer in the foreground */}
       {activeWorkout &&
         restTimer.status !== "idle" && (
-          <div className="today-dialog-backdrop">
-            <section
-              className="today-dialog today-rest-dialog"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="restTitle"
+        <div className="today-dialog-backdrop">
+          <section
+            className="today-dialog today-rest-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="restTitle"
+          >
+            <span className="today-simple-eyebrow">
+              RECOVERY
+            </span>
+
+            <h2 id="restTitle">
+              {restTimer.status === "done"
+                ? "Rest Complete"
+                : "Rest Between Sets"}
+            </h2>
+
+            <div className="today-big-timer">
+              {restTimer.status === "done"
+                ? "00:00"
+                : formatTime(restSecondsLeft)}
+            </div>
+
+            <p>
+              Take the time you need
+              before continuing.
+            </p>
+
+            <button
+              type="button"
+              className="today-main-button"
+              onClick={clearRestTimer}
             >
-              <span className="today-simple-eyebrow">
-                RECOVERY
-              </span>
+              {restTimer.status === "done"
+                ? "Continue Workout"
+                : "Skip Rest"}
+            </button>
 
-              <h2 id="restTitle">
-                {restTimer.status === "done"
-                  ? "Rest Complete"
-                  : "Rest Between Sets"}
-              </h2>
+            {restTimer.status !== "done" && (
+              <div className="today-timer-actions">
+                <button
+                  type="button"
+                  onClick={
+                    restTimer.status === "running"
+                      ? pauseRest
+                      : resumeRest
+                  }
+                >
+                  {restTimer.status === "running"
+                    ? "Pause"
+                    : "Resume"}
+                </button>
 
-              <div className="today-big-timer">
-                {restTimer.status === "done"
-                  ? "00:00"
-                  : formatTime(secondsLeft)}
+                <button
+                  type="button"
+                  onClick={() =>
+                    addRestTime(30)
+                  }
+                >
+                  +30 sec
+                </button>
               </div>
+            )}
+          </section>
+        </div>
+      )}
 
-              <p>
-                Take the time you need
-                before continuing.
-              </p>
-
-              <button
-                type="button"
-                className="today-main-button"
-                onClick={clearRestTimer}
-              >
-                {restTimer.status === "done"
-                  ? "Continue Workout"
-                  : "Skip Rest"}
-              </button>
-
-              {restTimer.status !== "done" && (
-                <div className="today-timer-actions">
-                  <button
-                    type="button"
-                    onClick={
-                      restTimer.status === "running"
-                        ? pauseRest
-                        : resumeRest
-                    }
-                  >
-                    {restTimer.status === "running"
-                      ? "Pause"
-                      : "Resume"}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addRestTime(30)
-                    }
-                  >
-                    +30 sec
-                  </button>
-                </div>
-              )}
-            </section>
-          </div>
-        )}
-
-      {/* ======================================
-          OPTIONAL BIWEEKLY REVIEW
-      ====================================== */}
-
+      {/* Optional biweekly feedback */}
       {!activeWorkout && reviewOpen && (
         <div className="today-dialog-backdrop">
           <form
@@ -1356,6 +1351,7 @@ function TodaysWorkoutPage() {
 
             <label className="today-review-field">
               Overall Difficulty
+
               <select
                 required
                 value={reviewDifficulty}
@@ -1386,6 +1382,7 @@ function TodaysWorkoutPage() {
             <label className="today-review-field">
               Were You Generally Able to
               Maintain Good Technique?
+
               <select
                 required
                 value={reviewTechnique}

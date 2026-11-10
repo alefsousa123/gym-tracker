@@ -1,0 +1,526 @@
+
+/* ==========================================
+   PERFORMANCE & PROGRESSION
+========================================== */
+
+.ti-page,
+.ti-page * {
+  box-sizing: border-box;
+}
+
+.ti-page {
+  width: 100%;
+  max-width: 980px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 26px 22px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.ti-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.ti-back-link:hover {
+  text-decoration: underline;
+}
+
+.ti-header {
+  margin-bottom: 25px;
+}
+
+.ti-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.ti-header h1 {
+  margin: 8px 0 10px;
+  color: #fafafa;
+  font-size: clamp(26px, 4vw, 35px);
+  line-height: 1.25;
+}
+
+.ti-header p {
+  max-width: 680px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+.ti-summary {
+  display: grid;
+  grid-template-columns:
+    1.5fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ti-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #303036;
+  border-radius: 11px;
+  background-color: #18181b;
+}
+
+.ti-summary span {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ti-summary strong {
+  color: #fafafa;
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   PANELS
+========================================== */
+
+.ti-panel {
+  min-width: 0;
+  margin-bottom: 16px;
+  padding: 21px;
+  border: 1px solid #303036;
+  border-radius: 13px;
+  background-color: #18181b;
+}
+
+.ti-section-heading {
+  margin-bottom: 17px;
+}
+
+.ti-section-heading h2 {
+  margin: 0 0 8px;
+  color: #fafafa;
+  font-size: 18px;
+}
+
+.ti-section-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SESSION SELECT
+========================================== */
+
+.ti-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  color: #d4d4d8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ti-field select,
+.ti-field input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background-color: #111113;
+  color: #fafafa;
+  font: inherit;
+  font-size: 13px;
+}
+
+.ti-field select:focus-visible,
+.ti-field input:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   EXERCISE CARDS
+========================================== */
+
+.ti-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ti-exercise-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ti-exercise-heading > div {
+  min-width: 0;
+}
+
+.ti-exercise-heading h2 {
+  margin: 7px 0 8px;
+  color: #fafafa;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.ti-exercise-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.ti-review-label {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background-color: #12281b;
+  color: #86efac;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.ti-target-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #303036;
+  border-radius: 8px;
+  background-color: #111113;
+}
+
+.ti-target-row span {
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.ti-target-row strong {
+  color: #fafafa;
+  font-size: 12px;
+}
+
+/* ==========================================
+   RECENT SESSION RECORDS
+========================================== */
+
+.ti-records {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.ti-record-row {
+  display: grid;
+  grid-template-columns:
+    minmax(100px, 0.7fr)
+    minmax(0, 1.3fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #303036;
+  border-radius: 8px;
+  background-color: #111113;
+}
+
+.ti-record-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ti-record-row span,
+.ti-record-row small {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ti-record-row strong {
+  color: #fafafa;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ti-no-records {
+  margin: 0;
+  padding: 12px;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+/* ==========================================
+   PROGRESSION OPPORTUNITY
+========================================== */
+
+.ti-progression-box {
+  padding: 17px;
+  border: 1px solid #365c43;
+  border-radius: 10px;
+  background-color: #13251a;
+}
+
+.ti-progression-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 11px;
+}
+
+.ti-progression-heading span {
+  color: #86efac;
+  font-size: 20px;
+}
+
+.ti-progression-heading strong {
+  color: #dcfce7;
+  font-size: 13px;
+}
+
+.ti-progression-box p {
+  margin: 0 0 11px;
+  color: #d4d4d8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ti-progression-box p strong {
+  color: #fafafa;
+}
+
+.ti-update-form {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 18px 0 11px;
+}
+
+.ti-primary-button,
+.ti-primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid #22c55e;
+  border-radius: 9px;
+  background-color: #22c55e;
+  color: #052e16;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ti-primary-button:hover,
+.ti-primary-link:hover {
+  background-color: #4ade80;
+}
+
+.ti-help {
+  display: block;
+  color: #a1a1aa;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   NO REVIEW STATE
+========================================== */
+
+.ti-neutral-box {
+  padding: 14px 16px;
+  border: 1px solid #303036;
+  border-radius: 9px;
+  background-color: #202024;
+}
+
+.ti-neutral-box strong {
+  color: #e4e4e7;
+  font-size: 12px;
+}
+
+.ti-neutral-box p {
+  margin: 7px 0 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   FEEDBACK
+========================================== */
+
+.ti-feedback {
+  margin: 13px 0 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ti-feedback.is-success {
+  background-color: #12281b;
+  color: #86efac;
+}
+
+.ti-feedback.is-error {
+  background-color: #301717;
+  color: #fca5a5;
+}
+
+/* ==========================================
+   EXPLANATION
+========================================== */
+
+.ti-explanation {
+  margin: 0 0 12px;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.ti-bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.ti-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  background-color: #27272a;
+  color: #fafafa;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ti-secondary-link:hover {
+  border-color: #86efac;
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.ti-empty {
+  text-align: center;
+}
+
+.ti-empty h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.ti-empty p {
+  margin-bottom: 19px;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.ti-page a:focus-visible,
+.ti-page button:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  .ti-summary {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .ti-summary > div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .ti-page {
+    padding: 20px 12px 48px;
+  }
+
+  .ti-panel {
+    padding: 16px;
+  }
+
+  .ti-exercise-heading {
+    flex-direction: column;
+  }
+
+  .ti-update-form {
+    grid-template-columns: 1fr;
+  }
+
+  .ti-primary-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .ti-summary {
+    gap: 9px;
+  }
+
+  .ti-summary > div {
+    padding: 13px;
+  }
+
+  .ti-record-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .ti-bottom-links {
+    flex-direction: column;
+  }
+
+  .ti-secondary-link {
+    width: 100%;
+  }
+}

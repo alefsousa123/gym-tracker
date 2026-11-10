@@ -1,0 +1,409 @@
+
+/* ==========================================
+   BODY FAT ESTIMATOR
+========================================== */
+
+.bf-page,
+.bf-page * {
+  box-sizing: border-box;
+}
+
+.bf-page {
+  width: 100%;
+  max-width: 950px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 26px 22px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.bf-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.bf-back-link:hover {
+  text-decoration: underline;
+}
+
+.bf-header {
+  margin-bottom: 25px;
+}
+
+.bf-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+.bf-header h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.25;
+  color: #fafafa;
+}
+
+.bf-header p {
+  max-width: 650px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   PANELS
+========================================== */
+
+.bf-panel {
+  min-width: 0;
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid #303036;
+  border-radius: 13px;
+  background: #18181b;
+}
+
+.bf-section-heading {
+  margin-bottom: 22px;
+}
+
+.bf-section-heading h2 {
+  margin: 0 0 7px;
+  color: #fafafa;
+  font-size: 18px;
+}
+
+.bf-section-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.bf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.bf-measurement-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.bf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bf-field-label {
+  color: #e4e4e7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bf-field-description {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.bf-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 45px;
+  padding: 11px 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background: #111113;
+  color: #fafafa;
+  font: inherit;
+  font-size: 12px;
+}
+
+.bf-input-wrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background: #111113;
+  overflow: hidden;
+}
+
+.bf-input-wrapper input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fafafa;
+  font: inherit;
+  font-size: 13px;
+}
+
+.bf-input-wrapper input::placeholder {
+  color: #71717a;
+}
+
+.bf-input-unit {
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
+  border-left: 1px solid #303036;
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bf-field select:focus-visible,
+.bf-input-wrapper:focus-within {
+  outline: 2px solid #4ade80;
+  outline-offset: 2px;
+}
+
+.bf-measurement-note {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.bf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bf-primary-button,
+.bf-secondary-button {
+  min-height: 44px;
+  padding: 11px 17px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bf-primary-button {
+  border: 1px solid #22c55e;
+  background: #22c55e;
+  color: #052e16;
+}
+
+.bf-primary-button:hover {
+  background: #4ade80;
+}
+
+.bf-secondary-button {
+  border: 1px solid #52525b;
+  background: #27272a;
+  color: #fafafa;
+}
+
+.bf-secondary-button:hover {
+  border-color: #a1a1aa;
+}
+
+/* ==========================================
+   RESULT
+========================================== */
+
+.bf-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.bf-result-label {
+  color: #a1a1aa;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.bf-result-value {
+  color: #fafafa;
+  font-size: clamp(40px, 8vw, 60px);
+  font-weight: 800;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.bf-result > p {
+  max-width: 620px;
+  margin: 0;
+  color: #d4d4d8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.bf-result-divider {
+  width: 100%;
+  height: 1px;
+  margin: 5px 0;
+  background: #303036;
+}
+
+.bf-result .bf-result-note {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.bf-error {
+  padding: 15px;
+  border: 1px solid #7f1d1d;
+  border-radius: 9px;
+  background: #291719;
+}
+
+.bf-error strong {
+  color: #fecaca;
+  font-size: 13px;
+}
+
+.bf-error p {
+  margin: 8px 0 0;
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   EXPLANATION
+========================================== */
+
+.bf-information {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bf-information article {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #303036;
+  border-radius: 9px;
+  background: #111113;
+}
+
+.bf-information h3 {
+  margin: 0 0 9px;
+  color: #fafafa;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.bf-information p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   PRIVACY
+========================================== */
+
+.bf-privacy {
+  padding: 18px 20px;
+  border: 1px solid #303036;
+  border-radius: 11px;
+  background: #202024;
+}
+
+.bf-privacy h2 {
+  margin: 0 0 10px;
+  color: #fafafa;
+  font-size: 15px;
+}
+
+.bf-privacy p {
+  margin: 0 0 11px;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.bf-privacy p:last-child {
+  margin-bottom: 0;
+}
+
+.bf-page button:focus-visible,
+.bf-page a:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  .bf-measurement-grid {
+    gap: 13px;
+  }
+}
+
+@media (max-width: 600px) {
+  .bf-page {
+    padding: 20px 12px 48px;
+  }
+
+  .bf-panel {
+    padding: 16px;
+  }
+
+  .bf-measurement-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bf-information {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .bf-actions {
+    flex-direction: column;
+  }
+
+  .bf-primary-button,
+  .bf-secondary-button {
+    width: 100%;
+  }
+
+  .bf-privacy {
+    padding: 16px;
+  }
+}

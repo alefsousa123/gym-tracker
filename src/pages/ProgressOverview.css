@@ -1,0 +1,438 @@
+
+/* ==========================================
+   TRAINING PROGRESS OVERVIEW
+========================================== */
+
+.gp-page,
+.gp-page * {
+  box-sizing: border-box;
+}
+
+.gp-page {
+  width: 100%;
+  max-width: 1120px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.gp-heading {
+  margin-bottom: 25px;
+}
+
+.gp-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.gp-heading h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(27px, 4vw, 36px);
+  line-height: 1.25;
+}
+
+.gp-heading p {
+  max-width: 700px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   STATISTIC CARDS
+========================================== */
+
+.gp-stats-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.gp-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #303036;
+  border-radius: 12px;
+  background-color: #18181b;
+}
+
+.gp-stat-card > span {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.gp-stat-card > strong {
+  color: #fafafa;
+  font-size: clamp(23px, 4vw, 30px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.gp-stat-card > small {
+  color: #a1a1aa;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   PANELS
+========================================== */
+
+.gp-panel {
+  min-width: 0;
+  margin-bottom: 18px;
+  padding: 21px;
+  border: 1px solid #303036;
+  border-radius: 13px;
+  background-color: #18181b;
+}
+
+.gp-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.gp-section-heading h2 {
+  margin: 0 0 7px;
+  color: #fafafa;
+  font-size: 18px;
+}
+
+.gp-section-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gp-section-heading > a {
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gp-section-heading > a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   WEEKLY CHART
+========================================== */
+
+.gp-chart-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.gp-weekly-chart {
+  display: grid;
+  grid-template-columns:
+    repeat(8, minmax(55px, 1fr));
+  gap: 12px;
+  min-width: 500px;
+  height: 215px;
+}
+
+.gp-week-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 0;
+}
+
+.gp-week-column > strong {
+  color: #e4e4e7;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gp-week-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 62px;
+  height: 140px;
+  overflow: hidden;
+  border-radius: 8px 8px 5px 5px;
+  background-color: #27272a;
+}
+
+.gp-week-fill {
+  width: 100%;
+  border-radius: 7px 7px 0 0;
+  background-color: #52665a;
+  transition: height 0.2s ease;
+}
+
+.gp-week-fill.is-goal-met {
+  background-color: #22c55e;
+}
+
+.gp-week-column > span {
+  color: #a1a1aa;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gp-week-column > small {
+  color: #86efac;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.gp-chart-note {
+  margin: 17px 0 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   ANALYSIS CARDS
+========================================== */
+
+.gp-analysis-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.gp-analysis-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #303036;
+  border-radius: 12px;
+  background-color: #18181b;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gp-analysis-card:hover {
+  border-color: #22c55e;
+  background-color: #1a251d;
+}
+
+.gp-analysis-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-color: #14532d;
+  color: #86efac;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.gp-analysis-card strong {
+  color: #fafafa;
+  font-size: 15px;
+}
+
+.gp-analysis-card p {
+  flex: 1;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.gp-analysis-action {
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   RECENT WORKOUTS
+========================================== */
+
+.gp-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.gp-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #303036;
+  border-radius: 9px;
+  background-color: #111113;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gp-history-row:hover {
+  border-color: #365c43;
+}
+
+.gp-history-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gp-history-info strong {
+  color: #fafafa;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.gp-history-info span {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.gp-history-status {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border-radius: 6px;
+  background-color: #302414;
+  color: #fde68a;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.gp-history-status.is-complete {
+  background-color: #12281b;
+  color: #86efac;
+}
+
+.gp-chevron {
+  color: #71717a;
+  font-size: 24px;
+}
+
+.gp-empty {
+  padding: 20px;
+  border: 1px dashed #3f3f46;
+  border-radius: 9px;
+}
+
+.gp-empty strong {
+  color: #fafafa;
+  font-size: 13px;
+}
+
+.gp-empty p {
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gp-empty a {
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ==========================================
+   FOOTER NOTE
+========================================== */
+
+.gp-storage-note {
+  margin: 8px 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.gp-page a:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 800px) {
+  .gp-stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .gp-page {
+    padding: 20px 12px 48px;
+  }
+
+  .gp-panel {
+    padding: 16px;
+  }
+
+  .gp-stat-card {
+    padding: 14px;
+  }
+
+  .gp-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gp-analysis-card {
+    padding: 17px;
+  }
+}
+
+@media (max-width: 420px) {
+  .gp-stats-grid {
+    gap: 9px;
+  }
+
+  .gp-stat-card strong {
+    font-size: 24px;
+  }
+
+  .gp-history-status {
+    display: none;
+  }
+
+  .gp-history-row {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gp-week-fill {
+    transition: none;
+  }
+}
