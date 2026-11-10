@@ -1,0 +1,523 @@
+
+/* ==========================================
+   WEEKLY SCHEDULE PAGE
+========================================== */
+
+.weekly-schedule-page,
+.weekly-schedule-page *,
+.workouts-hub-page,
+.workouts-hub-page * {
+  box-sizing: border-box;
+}
+
+.weekly-schedule-page,
+.workouts-hub-page {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+
+.schedule-back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.schedule-back-link:hover {
+  text-decoration: underline;
+}
+
+.schedule-page-heading {
+  margin-bottom: 26px;
+}
+
+.schedule-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.schedule-page-heading h1 {
+  margin: 8px 0 10px;
+  color: #fafafa;
+  font-size: clamp(27px, 4vw, 38px);
+}
+
+.schedule-page-heading p {
+  max-width: 680px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Main sections */
+
+.schedule-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.schedule-panel {
+  padding: 22px;
+  border: 1px solid #303036;
+  border-radius: 14px;
+  background-color: #18181b;
+}
+
+.schedule-section-heading {
+  margin-bottom: 18px;
+}
+
+.schedule-section-heading h2 {
+  margin: 0 0 7px;
+  color: #fafafa;
+  font-size: 19px;
+}
+
+.schedule-section-heading p {
+  max-width: 680px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Split selection */
+
+.schedule-split-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  max-width: 370px;
+}
+
+.schedule-split-field label,
+.schedule-day-field label {
+  color: #d4d4d8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.schedule-split-field select,
+.schedule-day-field select {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background-color: #111113;
+  color: #fafafa;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.schedule-split-field select:focus-visible,
+.schedule-day-field select:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+.schedule-split-description {
+  margin: 14px 0 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.schedule-info-note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #22c55e;
+  border-radius: 7px;
+  background-color: #12281b;
+  color: #d4d4d8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.schedule-info-note a {
+  color: #86efac;
+}
+
+/* Weekly calendar */
+
+.schedule-calendar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.schedule-template-button {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background-color: #111113;
+  color: #fafafa;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.schedule-template-button:hover {
+  border-color: #22c55e;
+}
+
+.schedule-week-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.schedule-day-card {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid #303036;
+  border-radius: 10px;
+  background-color: #111113;
+}
+
+.schedule-day-card.is-workout {
+  border-color: #365c43;
+}
+
+.schedule-day-card.is-active-recovery {
+  border-color: #475569;
+}
+
+.schedule-day-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.schedule-day-heading h3 {
+  margin: 0;
+  color: #fafafa;
+  font-size: 14px;
+}
+
+.schedule-day-indicator {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: #71717a;
+}
+
+.is-workout .schedule-day-indicator {
+  background-color: #22c55e;
+}
+
+.is-active-recovery .schedule-day-indicator {
+  background-color: #93c5fd;
+}
+
+.schedule-day-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.schedule-day-field select {
+  height: 40px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+
+.schedule-day-description {
+  min-height: 40px;
+  margin: 14px 0 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Weekly summary */
+
+.schedule-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.schedule-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #303036;
+  border-radius: 10px;
+  background-color: #111113;
+}
+
+.schedule-summary-item span {
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.schedule-summary-item strong {
+  color: #86efac;
+  font-size: 26px;
+}
+
+.schedule-profile-reference {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid #303036;
+}
+
+.schedule-profile-reference span {
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.schedule-profile-reference strong {
+  color: #fafafa;
+  font-size: 12px;
+}
+
+.schedule-profile-reference a {
+  margin-left: auto;
+  color: #4ade80;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.schedule-profile-reference a:hover {
+  text-decoration: underline;
+}
+
+/* Validation warnings */
+
+.schedule-warning {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #f59e0b;
+  border-radius: 7px;
+  background-color: #302414;
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Save actions */
+
+.schedule-save-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.schedule-save-button {
+  min-height: 44px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 9px;
+  background-color: #22c55e;
+  color: #052e16;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.schedule-save-button:hover {
+  background-color: #4ade80;
+}
+
+.schedule-save-state {
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.schedule-feedback {
+  margin: 14px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.schedule-feedback.is-success {
+  color: #86efac;
+}
+
+.schedule-feedback.is-error {
+  color: #fca5a5;
+}
+
+.schedule-feedback.is-info {
+  color: #c4b5fd;
+}
+
+.schedule-storage-note {
+  margin: 16px 0 0;
+  color: #71717a;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   WORKOUTS HUB
+========================================== */
+
+.workouts-hub-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.workouts-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #303036;
+  border-radius: 14px;
+  background-color: #18181b;
+}
+
+.workouts-hub-card h2 {
+  margin: 0;
+  color: #fafafa;
+  font-size: 19px;
+}
+
+.workouts-hub-card p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.workouts-hub-card a {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 11px 16px;
+  border-radius: 8px;
+  background-color: #22c55e;
+  color: #052e16;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.workouts-hub-card a:hover {
+  background-color: #4ade80;
+}
+
+.workouts-hub-card.is-future {
+  border-style: dashed;
+}
+
+.workouts-hub-tag {
+  align-self: flex-start;
+  color: #86efac;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.workouts-hub-summary {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #303036;
+  border-radius: 12px;
+  background-color: #111113;
+}
+
+.workouts-hub-summary h2 {
+  margin: 0 0 12px;
+  color: #fafafa;
+  font-size: 16px;
+}
+
+.workouts-hub-summary p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   RESPONSIVE LAYOUT
+========================================== */
+
+@media (max-width: 940px) {
+  .schedule-week-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .schedule-week-grid,
+  .workouts-hub-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-calendar-heading {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .weekly-schedule-page,
+  .workouts-hub-page {
+    padding: 20px 12px 48px;
+  }
+
+  .schedule-panel {
+    padding: 16px;
+  }
+
+  .schedule-week-grid,
+  .workouts-hub-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .schedule-summary-grid {
+    gap: 8px;
+  }
+
+  .schedule-summary-item {
+    padding: 12px;
+  }
+
+  .schedule-summary-item strong {
+    font-size: 23px;
+  }
+
+  .schedule-template-button,
+  .schedule-save-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-template-button,
+  .schedule-save-button,
+  .workouts-hub-card a {
+    transition: none;
+  }
+}

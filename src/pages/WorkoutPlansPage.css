@@ -1,0 +1,588 @@
+
+/* ==========================================
+   RECOMMENDED WORKOUT PLANS
+========================================== */
+
+.workout-plans-page,
+.workout-plans-page * {
+  box-sizing: border-box;
+}
+
+.workout-plans-page {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+}
+
+.plans-back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.plans-back-link:hover {
+  text-decoration: underline;
+}
+
+.plans-page-heading {
+  margin-bottom: 26px;
+}
+
+.plans-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.plans-page-heading h1 {
+  margin: 8px 0 10px;
+  color: #fafafa;
+  font-size: clamp(27px, 4vw, 38px);
+  line-height: 1.2;
+}
+
+.plans-page-heading p {
+  max-width: 720px;
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Shared panels */
+
+.plans-profile-panel,
+.plans-preview-panel,
+.plans-current-plan,
+.plans-notice {
+  padding: 22px;
+  border: 1px solid #303036;
+  border-radius: 14px;
+  background-color: #18181b;
+}
+
+.plans-profile-panel,
+.plans-results-section,
+.plans-preview-panel,
+.plans-current-plan {
+  margin-top: 20px;
+}
+
+/* ==========================================
+   PROFILE SUMMARY
+========================================== */
+
+.plans-profile-header,
+.plans-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.plans-profile-header h2,
+.plans-section-heading h2 {
+  margin: 0 0 7px;
+  color: #fafafa;
+  font-size: 19px;
+}
+
+.plans-profile-header p,
+.plans-section-heading p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.plans-profile-header a,
+.plans-location-field a,
+.plans-notice a,
+.plans-current-plan a,
+.plans-success-message a {
+  color: #4ade80;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.plans-profile-header a:hover,
+.plans-location-field a:hover,
+.plans-notice a:hover,
+.plans-current-plan a:hover,
+.plans-success-message a:hover {
+  text-decoration: underline;
+}
+
+.plans-profile-details {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.plans-profile-details > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 13px;
+  border: 1px solid #303036;
+  border-radius: 9px;
+  background-color: #111113;
+}
+
+.plans-profile-details span {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.plans-profile-details strong {
+  color: #fafafa;
+  font-size: 13px;
+  text-transform: capitalize;
+  overflow-wrap: anywhere;
+}
+
+.plans-location-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid #303036;
+}
+
+.plans-location-field label {
+  color: #e4e4e7;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.plans-location-field select {
+  width: min(100%, 320px);
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background-color: #111113;
+  color: #fafafa;
+  font: inherit;
+  font-size: 13px;
+}
+
+.plans-location-field select:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+.plans-location-field p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   TEMPLATE RESULTS
+========================================== */
+
+.plans-result-count {
+  padding: 6px 10px;
+  border-radius: 20px;
+  background-color: #14532d;
+  color: #86efac;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.plans-template-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plans-template-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #303036;
+  border-radius: 12px;
+  background-color: #18181b;
+  color: #fafafa;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.plans-template-card:hover {
+  border-color: #71717a;
+}
+
+.plans-template-card.is-selected {
+  border-color: #22c55e;
+  background-color: #14251a;
+}
+
+.plans-template-card:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+.plans-template-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.plans-template-tag {
+  color: #86efac;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.plans-template-coverage {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.plans-template-card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fafafa;
+}
+
+.plans-template-card p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.plans-template-frequency {
+  color: #d4d4d8;
+  font-size: 12px;
+}
+
+.plans-template-action {
+  margin-top: auto;
+  padding-top: 4px;
+  color: #4ade80;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   PLAN PREVIEW
+========================================== */
+
+.plans-session-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plans-session-card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #303036;
+  border-radius: 10px;
+  background-color: #111113;
+}
+
+.plans-session-card h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: #fafafa;
+}
+
+.plans-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.plans-exercise-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plans-exercise-list a {
+  color: #86efac;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.plans-exercise-list a:hover {
+  text-decoration: underline;
+}
+
+.plans-exercise-list span {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+/* Missing exercise warnings */
+
+.plans-coverage-warning,
+.plans-confirm-warning {
+  padding: 13px 15px;
+  border-left: 3px solid #f59e0b;
+  border-radius: 8px;
+  background-color: #302414;
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.plans-coverage-warning {
+  margin-bottom: 18px;
+}
+
+.plans-coverage-warning strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.plans-coverage-warning p,
+.plans-confirm-warning {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.plans-missing-slots {
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid #303036;
+}
+
+.plans-missing-slots strong {
+  color: #fcd34d;
+  font-size: 12px;
+}
+
+.plans-missing-slots ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #d4d4d8;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.plans-empty-session {
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.plans-education-note {
+  margin: 18px 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   APPLY AND CONFIRMATION
+========================================== */
+
+.plans-apply-actions,
+.plans-confirm-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.plans-apply-button {
+  min-height: 44px;
+  padding: 12px 19px;
+  border: none;
+  border-radius: 8px;
+  background-color: #22c55e;
+  color: #052e16;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.plans-apply-button:hover:not(:disabled) {
+  background-color: #4ade80;
+}
+
+.plans-apply-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.plans-apply-hint {
+  color: #fcd34d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.plans-confirm-panel {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #365c43;
+  border-radius: 12px;
+  background-color: #122018;
+}
+
+.plans-confirm-panel h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  color: #fafafa;
+}
+
+.plans-confirm-panel > p {
+  color: #d4d4d8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.plans-confirm-panel .plans-confirm-warning {
+  color: #fde68a;
+  margin: 12px 0;
+}
+
+.plans-confirm-actions {
+  margin-top: 18px;
+}
+
+.plans-cancel-button {
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #fafafa;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.plans-success-message {
+  margin-top: 18px;
+  padding: 15px;
+  border: 1px solid #365c43;
+  border-radius: 9px;
+  background-color: #12281b;
+}
+
+.plans-success-message p {
+  margin: 0 0 9px;
+  color: #dcfce7;
+  font-size: 13px;
+}
+
+/* ==========================================
+   CURRENT PLAN AND EMPTY STATES
+========================================== */
+
+.plans-current-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.plans-current-plan h2 {
+  margin: 7px 0;
+  color: #fafafa;
+  font-size: 18px;
+}
+
+.plans-current-plan p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.plans-notice h2,
+.plans-notice h3 {
+  margin: 0 0 10px;
+  color: #fafafa;
+}
+
+.plans-notice p {
+  margin: 0 0 16px;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   RESPONSIVENESS
+========================================== */
+
+@media (max-width: 850px) {
+  .plans-profile-details {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .workout-plans-page {
+    padding: 20px 12px 48px;
+  }
+
+  .plans-profile-panel,
+  .plans-preview-panel,
+  .plans-current-plan,
+  .plans-notice {
+    padding: 16px;
+  }
+
+  .plans-template-grid,
+  .plans-session-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plans-template-card {
+    padding: 16px;
+  }
+
+  .plans-confirm-panel {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .plans-profile-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plans-apply-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plans-template-card {
+    transition: none;
+  }
+}

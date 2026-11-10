@@ -1,0 +1,49 @@
+{
+  "push-up": {
+    "start": "/exercise-images/push-up-start.webp",
+    "peak": "/exercise-images/push-up-peak.webp"
+  },
+  "bench-press": {
+    "start": "/exercise-images/bench-press-start.webp",
+    "peak": "/exercise-images/bench-press-peak.webp"
+  },
+  "dumbbell-chest-press": {
+    "start": "/exercise-images/dumbbell-chest-press-start.webp",
+    "peak": "/exercise-images/dumbbell-chest-press-peak.webp"
+  },
+  "bodyweight-squat": {
+    "start": "/exercise-images/bodyweight-squat-start.webp",
+    "peak": "/exercise-images/bodyweight-squat-peak.webp"
+  },
+  "goblet-squat": {
+    "start": "/exercise-images/goblet-squat-start.webp",
+    "peak": "/exercise-images/goblet-squat-peak.webp"
+  },
+  "leg-press": {
+    "start": "/exercise-images/leg-press-start.webp",
+    "peak": "/exercise-images/leg-press-peak.webp"
+  },
+  "dumbbell-row": {
+    "start": "/exercise-images/dumbbell-row-start.webp",
+    "peak": "/exercise-images/dumbbell-row-peak.webp"
+  },
+  "lat-pulldown": {
+    "start": "/exercise-images/lat-pulldown-start.webp",
+    "peak": "/exercise-images/lat-pulldown-peak.webp"
+  },
+  "dumbbell-shoulder-press": {
+    "start": "/exercise-images/dumbbell-shoulder-press-start.webp",
+    "peak": "/exercise-images/dumbbell-shoulder-press-peak.webp"
+  },
+  "biceps-curl": {
+    "start": "/exercise-images/biceps-curl-start.webp",
+    "peak": "/exercise-images/biceps-curl-peak.webp"
+  },
+  "plank": {
+    "main": "/exercise-images/plank-main.webp"
+  },
+  "glute-bridge": {
+    "start": "/exercise-images/glute-bridge-start.webp",
+    "peak": "/exercise-images/glute-bridge-peak.webp"
+  }
+}

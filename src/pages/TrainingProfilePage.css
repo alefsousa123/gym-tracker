@@ -1,0 +1,604 @@
+
+/* ==========================================
+   TRAINING PROFILE PAGE
+========================================== */
+
+.training-profile-page,
+.training-profile-page * {
+  box-sizing: border-box;
+}
+
+.training-profile-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  color: #fafafa;
+}
+
+/* ==========================================
+   PAGE HEADING
+========================================== */
+
+.tp-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+
+  color: #4ade80;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.tp-back-link:hover {
+  text-decoration: underline;
+}
+
+.tp-page-header {
+  margin-bottom: 26px;
+}
+
+.tp-eyebrow {
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.tp-page-header h1 {
+  margin: 8px 0 10px;
+
+  color: #fafafa;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.2;
+}
+
+.tp-page-header p {
+  max-width: 680px;
+  margin: 0;
+
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   FORM AND SECTIONS
+========================================== */
+
+.tp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tp-section {
+  min-width: 0;
+  padding: 23px;
+
+  border: 1px solid #303036;
+  border-radius: 14px;
+
+  background-color: #18181b;
+}
+
+.tp-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  margin-bottom: 23px;
+}
+
+.tp-section-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid #365c43;
+  border-radius: 9px;
+
+  background-color: #12281b;
+  color: #86efac;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tp-section-header > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-section-header h2 {
+  margin: 1px 0 7px;
+
+  color: #fafafa;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.tp-section-header p {
+  margin: 0;
+
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   FIELDSETS
+========================================== */
+
+.tp-fieldset {
+  display: block;
+  min-width: 0;
+
+  margin: 0 0 24px;
+  padding: 0;
+
+  border: 0;
+}
+
+.tp-fieldset legend {
+  width: 100%;
+  margin-bottom: 13px;
+  padding: 0;
+
+  color: #e4e4e7;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   SELECTABLE OPTION CARDS
+========================================== */
+
+.tp-options-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 11px;
+}
+
+.tp-option-card {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  min-width: 0;
+  min-height: 88px;
+
+  padding: 16px;
+
+  border: 1px solid #3f3f46;
+  border-radius: 10px;
+
+  background-color: #111113;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.tp-option-card:hover {
+  border-color: #52525b;
+  background-color: #1f1f23;
+}
+
+.tp-option-card.is-selected {
+  border-color: #22c55e;
+  background-color: #12281b;
+}
+
+.tp-option-card.is-selected:hover {
+  border-color: #4ade80;
+}
+
+/* Keep native radio inputs accessible */
+
+.tp-option-card input[type="radio"],
+.tp-unit-option input[type="radio"] {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.tp-option-card:focus-within,
+.tp-unit-option:focus-within {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
+}
+
+/* Custom radio indicator */
+
+.tp-radio-circle {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+
+  border: 2px solid #71717a;
+  border-radius: 50%;
+
+  background-color: #111113;
+}
+
+.is-selected > .tp-radio-circle {
+  border-color: #22c55e;
+}
+
+.is-selected > .tp-radio-circle::after {
+  content: "";
+
+  position: absolute;
+  inset: 3px;
+
+  border-radius: 50%;
+  background-color: #22c55e;
+}
+
+/* Card title and description */
+
+.tp-option-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.tp-option-content strong {
+  color: #fafafa;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.tp-option-content small {
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   SELECT FIELDS
+========================================== */
+
+.tp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  min-width: 0;
+}
+
+.tp-field > label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  color: #e4e4e7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tp-optional {
+  padding: 3px 7px;
+
+  border-radius: 5px;
+
+  background-color: #27272a;
+  color: #a1a1aa;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.tp-field select {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+
+  padding: 0 12px;
+
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+
+  background-color: #111113;
+  color: #fafafa;
+
+  font: inherit;
+  font-size: 13px;
+}
+
+.tp-field select:focus-visible {
+  border-color: #22c55e;
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+.tp-field-hint {
+  margin: 1px 0 0;
+
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   TRAINING PREFERENCES GRID
+========================================== */
+
+.tp-fields-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+}
+
+/* ==========================================
+   WEIGHT UNITS
+========================================== */
+
+.tp-unit-fieldset {
+  margin-bottom: 0;
+}
+
+.tp-unit-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 11px;
+}
+
+.tp-unit-option {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  min-height: 49px;
+  padding: 12px 14px;
+
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+
+  background-color: #111113;
+  color: #fafafa;
+
+  cursor: pointer;
+}
+
+.tp-unit-option.is-selected {
+  border-color: #22c55e;
+  background-color: #12281b;
+}
+
+.tp-unit-option strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   INFORMATION NOTE
+========================================== */
+
+.tp-info-note {
+  margin-top: 24px;
+  padding: 14px 16px;
+
+  border-left: 3px solid #22c55e;
+  border-radius: 8px;
+
+  background-color: #12281b;
+}
+
+.tp-info-note strong {
+  color: #dcfce7;
+  font-size: 12px;
+}
+
+.tp-info-note p {
+  margin: 7px 0 0;
+
+  color: #d4d4d8;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SAVE SECTION
+========================================== */
+
+.tp-save-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 20px 23px;
+
+  border: 1px solid #303036;
+  border-radius: 14px;
+
+  background-color: #18181b;
+}
+
+.tp-save-messages {
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-error {
+  margin: 0 0 10px;
+
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.tp-success {
+  margin: 0 0 10px;
+
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tp-storage-note {
+  margin: 0;
+
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.tp-save-button {
+  flex-shrink: 0;
+
+  min-height: 45px;
+  padding: 12px 20px;
+
+  border: 1px solid #22c55e;
+  border-radius: 9px;
+
+  background-color: #22c55e;
+  color: #052e16;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.tp-save-button:hover {
+  background-color: #4ade80;
+}
+
+.tp-save-button:focus-visible {
+  outline: 2px solid #86efac;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 800px) {
+  .training-profile-page {
+    padding: 24px 18px 50px;
+  }
+
+  .tp-section {
+    padding: 19px;
+  }
+
+  .tp-option-card {
+    min-height: 95px;
+    padding: 13px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  .training-profile-page {
+    padding: 20px 12px 45px;
+  }
+
+  .tp-page-header {
+    margin-bottom: 20px;
+  }
+
+  .tp-section {
+    padding: 16px;
+  }
+
+  .tp-section-header {
+    gap: 11px;
+    margin-bottom: 19px;
+  }
+
+  .tp-section-header h2 {
+    font-size: 17px;
+  }
+
+  .tp-options-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .tp-option-card {
+    min-height: 72px;
+    padding: 13px;
+  }
+
+  .tp-fieldset {
+    margin-bottom: 19px;
+  }
+
+  .tp-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-save-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 17px;
+    padding: 17px;
+  }
+
+  .tp-save-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .tp-unit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-page-header h1 {
+    font-size: 26px;
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-option-card {
+    transition: none;
+  }
+}

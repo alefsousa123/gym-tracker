@@ -1,0 +1,156 @@
+
+/* ==========================================
+   TIMED EXERCISE TIMER
+========================================== */
+
+.timed-set-timer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 20px 0;
+  padding: 18px;
+
+  border: 1px solid #365c43;
+  border-radius: 13px;
+
+  background-color: #122018;
+  color: #fafafa;
+}
+
+.timed-set-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.timed-set-heading span:first-child {
+  color: #86efac;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.timed-set-heading span:last-child {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.timed-set-clock {
+  padding: 12px 0 5px;
+
+  color: #fafafa;
+  font-size: clamp(44px, 9vw, 64px);
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.timed-set-progress {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+
+  border-radius: 999px;
+  background-color: #303036;
+}
+
+.timed-set-progress > div {
+  height: 100%;
+  border-radius: 999px;
+
+  background-color: #22c55e;
+  transition: width 0.2s linear;
+}
+
+.timed-set-message {
+  min-height: 20px;
+  margin: 0;
+
+  color: #d4d4d8;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.timed-set-primary,
+.timed-set-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 14px;
+
+  border-radius: 9px;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.timed-set-primary {
+  border: 1px solid #22c55e;
+  background-color: #22c55e;
+  color: #052e16;
+}
+
+.timed-set-primary:hover {
+  background-color: #4ade80;
+}
+
+.timed-set-secondary {
+  border: 1px solid #52525b;
+  background-color: #27272a;
+  color: #fafafa;
+}
+
+.timed-set-secondary:hover {
+  border-color: #86efac;
+}
+
+.timed-set-actions {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.timed-set-note {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.timed-set-primary:focus-visible,
+.timed-set-secondary:focus-visible {
+  outline: 2px solid #86efac;
+  outline-offset: 3px;
+}
+
+@media (max-width: 420px) {
+  .timed-set-timer {
+    padding: 14px;
+  }
+
+  .timed-set-clock {
+    font-size: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timed-set-progress > div {
+    transition: none;
+  }
+}

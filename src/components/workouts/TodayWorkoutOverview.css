@@ -1,0 +1,178 @@
+
+/* ==========================================
+   TODAY'S WORKOUT — HOME OVERVIEW
+========================================== */
+
+.today-home-overview,
+.today-home-overview * {
+  box-sizing: border-box;
+}
+
+.today-home-overview {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.today-home-card {
+  width: 100%;
+  padding: 23px;
+  border: 1px solid #365c43;
+  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    #17251b 0%,
+    #18181b 68%
+  );
+
+  color: #fafafa;
+}
+
+.today-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.today-home-header > span:first-child {
+  color: #86efac;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.today-home-date {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.today-home-card h2 {
+  margin: 0 0 10px;
+  color: #fafafa;
+  font-size: clamp(20px, 3vw, 27px);
+  line-height: 1.25;
+}
+
+.today-home-card > p {
+  margin: 0 0 18px;
+  color: #c4c4cc;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Status */
+
+.today-home-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 13px;
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.today-home-status.is-complete {
+  color: #4ade80;
+}
+
+.today-home-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4ade80;
+}
+
+/* Exercise names */
+
+.today-home-exercises {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 19px;
+}
+
+.today-home-exercises span {
+  padding: 7px 10px;
+  border: 1px solid #365c43;
+  border-radius: 7px;
+  background-color: #111c15;
+
+  color: #d4d4d8;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Actions */
+
+.today-home-action,
+.today-home-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 10px 16px;
+
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+
+  transition: background-color 0.15s;
+}
+
+.today-home-action {
+  border: 1px solid #22c55e;
+  background-color: #22c55e;
+  color: #052e16;
+}
+
+.today-home-action:hover {
+  background-color: #4ade80;
+}
+
+.today-home-secondary-action {
+  border: 1px solid #365c43;
+  background-color: #12281b;
+  color: #86efac;
+}
+
+.today-home-secondary-action:hover {
+  background-color: #173c26;
+}
+
+/* ==========================================
+   RESPONSIVENESS
+========================================== */
+
+@media (max-width: 650px) {
+  .today-home-overview {
+    padding: 15px 12px 0;
+  }
+
+  .today-home-card {
+    padding: 17px;
+  }
+
+  .today-home-exercises {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .today-home-action,
+  .today-home-secondary-action {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-home-action,
+  .today-home-secondary-action {
+    transition: none;
+  }
+}

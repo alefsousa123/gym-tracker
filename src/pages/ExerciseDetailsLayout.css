@@ -1,0 +1,301 @@
+
+ 
+/* ==========================================
+   UNIFIED EXERCISE OVERVIEW
+========================================== */
+
+/* Main container */
+
+.exercise-detail-page .exercise-overview-card {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 38fr)
+    minmax(0, 62fr);
+  align-items: start;
+
+  width: 100%;
+  margin: 24px 0;
+  padding: 20px;
+
+  border: 1px solid #27272a;
+  border-radius: 14px;
+  background-color: #18181b;
+}
+
+/* ==========================================
+   LEFT COLUMN - ANIMATION
+========================================== */
+
+.exercise-overview-card .exercise-overview-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+
+  padding: 8px 22px 8px 8px;
+}
+
+/* Remove the animation's individual card */
+
+.exercise-overview-card .exercise-animation-panel {
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Compact animation heading */
+
+.exercise-overview-card .animation-heading {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.exercise-overview-card .animation-heading h2 {
+  margin: 0;
+  font-size: 15px;
+  text-align: center;
+}
+
+.exercise-overview-card .animation-badge {
+  font-size: 10px;
+  padding: 4px 8px;
+}
+
+/* Demonstration image */
+
+.exercise-overview-card .exercise-animation-stage {
+  width: min(100%, 210px);
+  max-width: 210px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+
+  margin: 0 auto;
+
+  border-radius: 10px;
+  background-color: #d6ebf7;
+  overflow: hidden;
+}
+
+/* Video loops use the same compact dimensions */
+
+.exercise-overview-card .exercise-loop-video {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+/* Description and preview controls */
+
+.exercise-overview-card .animation-description {
+  max-width: 240px;
+  margin: 12px auto;
+
+  color: #a1a1aa;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.exercise-overview-card .animation-control {
+  display: block;
+  margin: 12px auto 0;
+  padding: 9px 16px;
+
+  font-size: 12px;
+}
+
+/* ==========================================
+   RIGHT COLUMN - ACCORDIONS
+========================================== */
+
+.exercise-overview-card .exercise-overview-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  border-left: 1px solid #34343a;
+  padding-left: 20px;
+}
+
+/* Remove the individual accordion cards */
+
+.exercise-overview-card .exercise-accordion {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+
+  border: none;
+  border-bottom: 1px solid #34343a;
+  border-radius: 0;
+
+  background: transparent;
+  overflow: visible;
+}
+
+.exercise-overview-card .exercise-accordion:last-child {
+  border-bottom: none;
+}
+
+/* Accordion headings */
+
+.exercise-overview-card .exercise-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  min-height: 58px;
+  padding: 14px 8px;
+
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.exercise-overview-card .exercise-accordion-summary:hover {
+  background-color: #222225;
+}
+
+.exercise-overview-card .exercise-accordion-summary:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: -2px;
+}
+
+.exercise-overview-card .exercise-accordion-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f4f4f5;
+}
+
+.exercise-overview-card .exercise-accordion-chevron {
+  flex-shrink: 0;
+  color: #4ade80;
+}
+
+/* Expanded accordion content */
+
+.exercise-overview-card .exercise-accordion-content {
+  min-width: 0;
+  padding: 16px 8px 22px;
+
+  border-top: 1px solid #27272a;
+  background: transparent;
+}
+
+/* Expanded text */
+
+.exercise-overview-card .how-to-content p,
+.exercise-overview-card .exercise-instructions,
+.exercise-overview-card .form-tips-list,
+.exercise-overview-card .common-mistakes-list {
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.exercise-overview-card .how-to-content h3 {
+  margin-top: 18px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Exercise information */
+
+.exercise-overview-card .exercise-information {
+  gap: 14px;
+}
+
+/* Exercise variations */
+
+.exercise-overview-card .exercise-variations {
+  gap: 12px;
+}
+
+.exercise-overview-card .variation-card {
+  padding: 14px;
+}
+
+/* ==========================================
+   VIDEO TUTORIAL
+========================================== */
+
+.exercise-detail-page .exercise-video-panel {
+  margin-top: 20px;
+  padding: 22px;
+}
+
+/* ==========================================
+   TABLET RESPONSIVENESS
+========================================== */
+
+@media (max-width: 840px) {
+  .exercise-detail-page .exercise-overview-card {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .exercise-overview-card .exercise-overview-visual {
+    padding: 8px 0 20px;
+    border-bottom: 1px solid #34343a;
+  }
+
+  .exercise-overview-card .exercise-animation-stage {
+    width: min(100%, 190px);
+    max-width: 190px;
+  }
+
+  .exercise-overview-card .exercise-overview-content {
+    border-left: none;
+    padding: 10px 0 0;
+  }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 480px) {
+  .exercise-detail-page .exercise-overview-card {
+    margin: 18px 0;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .exercise-overview-card .exercise-overview-visual {
+    padding: 8px 0 16px;
+  }
+
+  .exercise-overview-card .exercise-animation-stage {
+    width: min(100%, 175px);
+    max-width: 175px;
+  }
+
+  .exercise-overview-card .animation-heading h2 {
+    font-size: 14px;
+  }
+
+  .exercise-overview-card .exercise-accordion-summary {
+    min-height: 50px;
+    padding: 12px 6px;
+  }
+
+  .exercise-overview-card .exercise-accordion-content {
+    padding: 14px 6px 18px;
+  }
+
+  .exercise-overview-card .exercise-accordion-title {
+    font-size: 13px;
+  }
+
+  .exercise-detail-page .exercise-video-panel {
+    padding: 14px;
+  }
+}

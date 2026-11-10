@@ -1,0 +1,896 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #09090b;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+/* ==========================================
+   EXERCISE VIDEO PANEL
+========================================== */
+
+.exercise-video-panel {
+  background: #18191d;
+  border: 1px solid #303238;
+  border-radius: 18px;
+  padding: 28px;
+  margin-top: 24px;
+  color: #f9fafb;
+}
+
+.exercise-video-panel .video-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.exercise-video-panel .video-heading-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #173b28;
+  border-radius: 12px;
+  color: #4ade80;
+}
+
+.exercise-video-panel .video-heading-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.exercise-video-panel .video-panel-heading h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  line-height: 1.3;
+  color: #f9fafb;
+}
+
+.exercise-video-panel .video-panel-heading p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.exercise-video-panel .video-information {
+  margin-bottom: 20px;
+}
+
+.exercise-video-panel .video-information h3 {
+  margin: 0 0 7px;
+  color: #f3f4f6;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.exercise-video-panel .video-information p {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Video preview */
+
+.exercise-video-panel .exercise-video-placeholder {
+  background: #101114;
+  border: 1px solid #25272c;
+  border-radius: 14px;
+  padding: 38px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.exercise-video-panel .video-play-icon {
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #173b28;
+  color: #4ade80;
+  margin-bottom: 8px;
+}
+
+.exercise-video-panel .video-play-icon svg {
+  width: 27px;
+  height: 27px;
+  margin-left: 3px;
+}
+
+.exercise-video-panel .exercise-video-placeholder h4 {
+  color: #f3f4f6;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.exercise-video-panel .exercise-video-placeholder p {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  max-width: 330px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+/* Buttons */
+
+.exercise-video-panel .video-load-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 22px;
+  background: #22c55e;
+  color: #07150d;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.exercise-video-panel .video-load-button:hover {
+  background: #4ade80;
+  transform: translateY(-2px);
+}
+
+.exercise-video-panel .video-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.exercise-video-panel .video-close-button {
+  background: #27292e;
+  color: #e5e7eb;
+  border: 1px solid #3c3e44;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.exercise-video-panel .video-close-button:hover {
+  background: #35373d;
+}
+
+.exercise-video-panel .video-external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #d1d5db;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.exercise-video-panel .video-external-link:hover {
+  color: #4ade80;
+  background: #203329;
+  text-decoration: none;
+}
+
+/* Embedded player */
+
+.exercise-video-panel .exercise-video-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #000;
+}
+
+.exercise-video-panel .exercise-video-container iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .exercise-video-panel {
+    padding: 18px;
+  }
+
+  .exercise-video-panel .exercise-video-placeholder {
+    padding: 30px 14px;
+  }
+
+  .exercise-video-panel .video-load-button {
+    width: 100%;
+  }
+
+  .exercise-video-panel .video-panel-heading h2 {
+    font-size: 1.2rem;
+  }
+
+  .exercise-video-panel .video-information h3 {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================
+   COMPACT EXERCISE DETAILS LAYOUT
+========================================== */
+
+.exercise-overview-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.85fr)
+    minmax(0, 1.15fr);
+  align-items: start;
+  gap: 20px;
+  margin: 24px 0;
+}
+
+/* Animation column */
+
+.exercise-overview-animation {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.exercise-overview-animation > * {
+  margin: 0;
+}
+
+.exercise-overview-animation img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  max-height: 280px;
+  height: auto;
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Instructions column */
+
+.exercise-overview-instructions {
+  min-width: 0;
+  margin: 0;
+}
+
+.exercise-overview-instructions h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.overview-instruction-block {
+  margin-top: 16px;
+}
+
+.overview-instruction-block h3 {
+  font-size: 0.95rem;
+  color: #4ade80;
+  margin: 0 0 8px;
+}
+
+.overview-instruction-block p,
+.overview-instruction-block li {
+  line-height: 1.6;
+}
+
+.exercise-overview-instructions
+.exercise-instructions {
+  margin-top: 10px;
+}
+
+/* Responsive layout */
+
+@media (max-width: 800px) {
+  .exercise-overview-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .exercise-overview-animation img {
+    max-width: 260px;
+    max-height: 240px;
+  }
+}
+
+/* ==========================================
+   EXERCISE DETAILS - COMPACT LAYOUT
+========================================== */
+
+.exercise-detail-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.exercise-detail-page,
+.exercise-detail-page * {
+  box-sizing: border-box;
+}
+
+/* Exercise heading */
+
+.exercise-detail-heading h1 {
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.2;
+}
+
+/* Animation and instructions side by side */
+
+.exercise-overview-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.85fr)
+    minmax(0, 1.15fr);
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0;
+}
+
+.exercise-overview-grid > * {
+  min-width: 0;
+}
+
+.exercise-overview-grid .exercise-animation-panel,
+.exercise-overview-grid .exercise-detail-panel {
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+  border-radius: 12px;
+}
+
+/* Smaller animation with matching background */
+
+.exercise-animation-stage {
+  width: min(100%, 280px);
+  max-width: 280px;
+  max-height: none;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #d6ebf7;
+}
+
+.exercise-animation-stage .animation-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.animation-heading {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.animation-heading h2 {
+  font-size: 17px;
+}
+
+.animation-description {
+  max-width: 340px;
+  margin: 12px auto;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.animation-control {
+  padding: 9px 16px;
+  font-size: 12px;
+}
+
+/* Compact instruction panels */
+
+.exercise-detail-panel {
+  min-width: 0;
+  padding: 20px;
+}
+
+.exercise-detail-panel h2 {
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.guide-description,
+.exercise-instructions,
+.form-tips-list,
+.common-mistakes-list {
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.detailed-exercise-guide,
+.exercise-detail-grid {
+  gap: 16px;
+  margin-top: 18px;
+}
+
+/* Compact YouTube section */
+
+.exercise-video-panel {
+  width: 100%;
+  min-width: 0;
+  margin-top: 16px;
+  padding: 20px;
+}
+
+.exercise-video-panel h2 {
+  font-size: 18px;
+}
+
+.exercise-video-container {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+}
+
+.exercise-video-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.exercise-video-placeholder {
+  min-height: 190px;
+  padding: 20px;
+}
+
+.video-information h3 {
+  overflow-wrap: anywhere;
+}
+
+/* Prevent media overflow */
+
+.exercise-detail-page img,
+.exercise-detail-page video,
+.exercise-detail-page iframe {
+  max-width: 100%;
+}
+
+/* ==========================================
+   TABLETS AND SMALL SCREENS
+========================================== */
+
+@media (max-width: 840px) {
+  .exercise-detail-page {
+    padding: 28px 20px 60px;
+  }
+
+  .exercise-overview-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .exercise-animation-stage {
+    width: min(100%, 260px);
+  }
+
+  .detailed-exercise-guide,
+  .exercise-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exercise-video-container {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================
+   MOBILE PHONES
+========================================== */
+
+@media (max-width: 480px) {
+  .exercise-detail-page {
+    padding: 20px 12px 48px;
+  }
+
+  .exercise-detail-heading h1 {
+    font-size: clamp(25px, 7vw, 32px);
+  }
+
+  .exercise-overview-grid {
+    gap: 12px;
+  }
+
+  .exercise-overview-grid .exercise-animation-panel,
+  .exercise-overview-grid .exercise-detail-panel {
+    padding: 14px;
+  }
+
+  .exercise-animation-stage {
+    width: min(100%, 220px);
+  }
+
+  .exercise-video-panel {
+    padding: 14px;
+  }
+
+  .exercise-video-placeholder {
+    min-height: 160px;
+    padding: 16px;
+  }
+
+  .exercise-detail-panel {
+    padding: 16px;
+  }
+
+  .animation-heading h2,
+  .exercise-detail-panel h2 {
+    font-size: 16px;
+  }
+}
+
+/* ==========================================
+   EXPANDABLE EXERCISE SECTIONS
+========================================== */
+
+.exercise-accordion {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  background-color: #18181b;
+}
+
+/* Clickable accordion heading */
+
+.exercise-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  list-style: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exercise-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.exercise-accordion-summary:hover {
+  background-color: #202024;
+}
+
+.exercise-accordion-summary:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: -3px;
+}
+
+.exercise-accordion-title {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* Accordion arrow */
+
+.exercise-accordion-chevron {
+  flex-shrink: 0;
+  color: #4ade80;
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.exercise-accordion[open] .exercise-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+/* Expanded content */
+
+.exercise-accordion-content {
+  padding: 20px 22px 24px;
+  border-top: 1px solid #27272a;
+}
+
+/* Accordion collection */
+
+.exercise-accordion-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Side-by-side overview */
+
+.exercise-overview-grid .exercise-accordion {
+  margin: 0;
+  align-self: start;
+}
+
+/* How to Perform */
+
+.how-to-content h3 {
+  margin: 20px 0 10px;
+  color: #4ade80;
+  font-size: 15px;
+}
+
+.how-to-content h3:first-child {
+  margin-top: 0;
+}
+
+.how-to-content p {
+  margin: 0 0 14px;
+  color: #d4d4d8;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.how-to-content ol,
+.how-to-content ul {
+  padding-left: 22px;
+  margin-bottom: 16px;
+}
+
+/* Compact content */
+
+.exercise-accordion .exercise-information {
+  gap: 14px;
+}
+
+.exercise-accordion .exercise-variations {
+  gap: 12px;
+}
+
+.exercise-accordion .variation-card {
+  padding: 16px;
+}
+
+/* Mobile adjustments */
+
+@media (max-width: 840px) {
+  .exercise-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .exercise-accordion-summary {
+    padding: 15px 16px;
+  }
+
+  .exercise-accordion-content {
+    padding: 16px;
+  }
+
+  .exercise-accordion-title {
+    font-size: 15px;
+  }
+
+  .how-to-content h3 {
+    font-size: 14px;
+  }
+
+  .exercise-accordion-list {
+    gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exercise-accordion-chevron {
+    transition: none;
+  }
+}
+
+/* ==========================================
+   EXERCISE OVERVIEW - FINAL ORGANIZATION
+========================================== */
+
+/* Main two-column layout */
+
+.exercise-overview-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.9fr)
+    minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0;
+}
+
+/* Keep both columns within available width */
+
+.exercise-overview-grid > * {
+  min-width: 0;
+}
+
+/* Left column: animation */
+
+.exercise-overview-grid .exercise-animation-panel {
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+}
+
+/* Right column: stacked accordions */
+
+.exercise-side-accordions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Accordion adjustments */
+
+.exercise-side-accordions .exercise-accordion {
+  width: 100%;
+  margin: 0;
+  align-self: auto;
+}
+
+.exercise-side-accordions .exercise-accordion-summary {
+  min-height: 58px;
+  padding: 15px 18px;
+}
+
+.exercise-side-accordions .exercise-accordion-content {
+  padding: 18px;
+}
+
+/* When a panel is expanded */
+
+.exercise-side-accordions .exercise-accordion[open] {
+  border-color: #365c43;
+}
+
+/* Video below overview */
+
+.exercise-detail-page .exercise-video-panel {
+  margin-top: 18px;
+}
+
+/* ==========================================
+   RESPONSIVE LAYOUT
+========================================== */
+
+/* Tablets and smaller screens */
+
+@media (max-width: 840px) {
+  .exercise-overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .exercise-side-accordions {
+    gap: 10px;
+  }
+
+  .exercise-overview-grid .exercise-animation-panel {
+    padding: 16px;
+  }
+}
+
+/* Mobile phones */
+
+@media (max-width: 480px) {
+  .exercise-overview-grid {
+    gap: 12px;
+  }
+
+  .exercise-side-accordions {
+    gap: 8px;
+  }
+
+  .exercise-side-accordions .exercise-accordion-summary {
+    min-height: 50px;
+    padding: 12px 14px;
+  }
+
+  .exercise-side-accordions .exercise-accordion-content {
+    padding: 14px;
+  }
+
+  .exercise-side-accordions .exercise-accordion-title {
+    font-size: 14px;
+  }
+}
+
+/* ==========================================
+   SMALLER EXERCISE DEMONSTRATION
+========================================== */
+
+/* Give more space to the accordions */
+
+.exercise-overview-grid {
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* Make the animation panel more compact */
+
+.exercise-overview-grid .exercise-animation-panel {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px;
+  margin: 0;
+}
+
+/* Reduce the actual image size */
+
+.exercise-overview-grid .exercise-animation-stage {
+  width: min(100%, 200px);
+  max-width: 200px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+/* Compact animation title */
+
+.exercise-overview-grid .animation-heading {
+  margin-bottom: 12px;
+}
+
+.exercise-overview-grid .animation-heading h2 {
+  font-size: 15px;
+}
+
+/* Compact description */
+
+.exercise-overview-grid .animation-description {
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 12px auto;
+}
+
+/* Tablet and mobile */
+
+@media (max-width: 840px) {
+  .exercise-overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .exercise-overview-grid .exercise-animation-panel {
+    max-width: 280px;
+    justify-self: center;
+  }
+
+  .exercise-overview-grid .exercise-animation-stage {
+    width: min(100%, 180px);
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .exercise-overview-grid .exercise-animation-panel {
+    max-width: 260px;
+    padding: 12px;
+  }
+
+  .exercise-overview-grid .exercise-animation-stage {
+    width: min(100%, 170px);
+    max-width: 170px;
+  }
+}
+
