@@ -1,6 +1,8 @@
 
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
 import {
   useTrainingProfile,
@@ -263,15 +265,14 @@ function TrainingProfilePage() {
     <main className="training-profile-page">
 
       {/* ==================================
-          BACK NAVIGATION
+          CONTEXTUAL BACK NAVIGATION
       ================================== */}
 
-      <Link
-        to="/settings"
+      <BackToPreviousPage
+        fallbackTo="/settings"
+        fallbackLabel="Settings"
         className="tp-back-link"
-      >
-        ← Back to Settings
-      </Link>
+      />
 
       {/* ==================================
           PAGE HEADER

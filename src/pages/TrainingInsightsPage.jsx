@@ -6,6 +6,9 @@ import {
 
 import { Link } from "react-router";
 
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
+
 import { exercises } from "../data/exercises";
 
 import {
@@ -325,12 +328,14 @@ function TrainingInsightsPage() {
   if (!appliedPlan || sessions.length === 0) {
     return (
       <main className="ti-page">
-        <Link
-          to="/progress"
+
+        {/* CONTEXTUAL BACK NAVIGATION */}
+
+        <BackToPreviousPage
+          fallbackTo="/progress"
+          fallbackLabel="Progress"
           className="ti-back-link"
-        >
-          ← Back to Progress
-        </Link>
+        />
 
         <header className="ti-header">
           <span className="ti-eyebrow">
@@ -372,12 +377,14 @@ function TrainingInsightsPage() {
 
   return (
     <main className="ti-page">
-      <Link
-        to="/progress"
+
+      {/* CONTEXTUAL BACK NAVIGATION */}
+
+      <BackToPreviousPage
+        fallbackTo="/progress"
+        fallbackLabel="Progress"
         className="ti-back-link"
-      >
-        ← Back to Progress
-      </Link>
+      />
 
       <header className="ti-header">
         <span className="ti-eyebrow">

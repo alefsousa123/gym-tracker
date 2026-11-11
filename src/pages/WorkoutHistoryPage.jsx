@@ -13,7 +13,11 @@ import {
   loadMeasurementOptions,
 } from "../utils/workoutTargets";
 
-import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
+import ExerciseMotionPreview from
+  "../components/exercises/ExerciseMotionPreview";
+
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
 import {
   useWorkoutSession,
@@ -159,7 +163,12 @@ function WorkoutHistoryPage() {
     deleteWorkout,
   } = useWorkoutSession();
 
+  // ========================================
+  // FILTER STATES
+  // ========================================
+
   const [search, setSearch] = useState("");
+
   const [statusFilter, setStatusFilter] =
     useState("all");
 
@@ -168,6 +177,10 @@ function WorkoutHistoryPage() {
 
   const [confirmDelete, setConfirmDelete] =
     useState(false);
+
+  // ========================================
+  // SELECTED WORKOUT
+  // ========================================
 
   const selectedWorkout = workoutId
     ? workoutHistory.find(
@@ -204,7 +217,7 @@ function WorkoutHistoryPage() {
   }, [workoutHistory]);
 
   // ========================================
-  // FILTERS
+  // SEARCH AND FILTERING
   // ========================================
 
   const filteredWorkouts = useMemo(() => {
@@ -246,8 +259,7 @@ function WorkoutHistoryPage() {
         const completedAt =
           Date.parse(workout.finishedAt);
 
-        const age =
-          now - completedAt;
+        const age = now - completedAt;
 
         matchesDate =
           Number.isFinite(completedAt) &&
@@ -281,24 +293,25 @@ function WorkoutHistoryPage() {
 
     setConfirmDelete(false);
 
-    navigate("/workouts/history", {
+    // Use the main history route.
+    navigate("/progress/history", {
       replace: true,
     });
   }
 
   // ========================================
-  // DETAIL NOT FOUND
+  // WORKOUT NOT FOUND
   // ========================================
 
   if (workoutId && !selectedWorkout) {
     return (
       <main className="workout-history-page">
-        <Link
-          to="/workouts/history"
+
+        <BackToPreviousPage
+          fallbackTo="/progress/history"
+          fallbackLabel="Workout History"
           className="wh-back-link"
-        >
-          ← Back to History
-        </Link>
+        />
 
         <section className="wh-panel wh-empty-state">
           <h1>Workout Not Found</h1>
@@ -310,11 +323,12 @@ function WorkoutHistoryPage() {
 
           <Link
             className="wh-primary-link"
-            to="/workouts/history"
+            to="/progress/history"
           >
             View Workout History
           </Link>
         </section>
+
       </main>
     );
   }
@@ -332,12 +346,16 @@ function WorkoutHistoryPage() {
 
     return (
       <main className="workout-history-page">
-        <Link
-          to="/workouts/history"
+
+        {/* CONTEXTUAL BACK NAVIGATION */}
+
+        <BackToPreviousPage
+          fallbackTo="/progress/history"
+          fallbackLabel="Workout History"
           className="wh-back-link"
-        >
-          ← Back to History
-        </Link>
+        />
+
+        {/* WORKOUT HEADER */}
 
         <header className="wh-page-header">
           <span className="wh-eyebrow">
@@ -355,7 +373,10 @@ function WorkoutHistoryPage() {
           </p>
         </header>
 
-        {/* Workout summary */}
+        {/* ==================================
+            WORKOUT SUMMARY
+        ================================== */}
+
         <section className="wh-panel">
           <div className="wh-detail-heading">
             <h2>Session Summary</h2>
@@ -376,8 +397,10 @@ function WorkoutHistoryPage() {
           </div>
 
           <div className="wh-stats-grid">
+
             <div className="wh-stat">
               <span>Completed Sets</span>
+
               <strong>
                 {completedSets}/{plannedSets}
               </strong>
@@ -385,6 +408,7 @@ function WorkoutHistoryPage() {
 
             <div className="wh-stat">
               <span>Exercises Logged</span>
+
               <strong>
                 {getLoggedExercises(
                   selectedWorkout
@@ -394,10 +418,12 @@ function WorkoutHistoryPage() {
 
             <div className="wh-stat">
               <span>Session Duration</span>
+
               <strong>
                 {formatDuration(selectedWorkout)}
               </strong>
             </div>
+
           </div>
 
           <p className="wh-detail-note">
@@ -407,7 +433,10 @@ function WorkoutHistoryPage() {
           </p>
         </section>
 
-        {/* All recorded exercises */}
+        {/* ==================================
+            EXERCISES AND SETS
+        ================================== */}
+
         <section className="wh-panel">
           <div className="wh-section-heading">
             <h2>Exercises & Sets</h2>
@@ -419,6 +448,7 @@ function WorkoutHistoryPage() {
           </div>
 
           <div className="wh-exercise-list">
+
             {selectedWorkout.exercises.map(
               (exercise, index) => {
                 const exerciseInfo = getExercise(
@@ -441,7 +471,11 @@ function WorkoutHistoryPage() {
                     key={`${exercise.exerciseId}-${index}`}
                     className="wh-exercise-card"
                   >
+
+                    {/* EXERCISE HEADING */}
+
                     <div className="wh-exercise-heading">
+
                       <ExerciseMotionPreview
                         exerciseId={exercise.exerciseId}
                         exerciseName={
@@ -468,7 +502,10 @@ function WorkoutHistoryPage() {
                           </span>
                         )}
                       </div>
+
                     </div>
+
+                    {/* RECORDED SETS */}
 
                     {completed === 0 ? (
                       <p className="wh-no-sets">
@@ -477,6 +514,7 @@ function WorkoutHistoryPage() {
                     ) : (
                       <>
                         <div className="wh-sets-table">
+
                           <div className="wh-sets-header">
                             <span>Set</span>
                             <span>Result</span>
@@ -507,6 +545,7 @@ function WorkoutHistoryPage() {
                               </div>
                             )
                           )}
+
                         </div>
 
                         <p className="wh-load-note">
@@ -515,14 +554,19 @@ function WorkoutHistoryPage() {
                         </p>
                       </>
                     )}
+
                   </article>
                 );
               }
             )}
+
           </div>
         </section>
 
-        {/* Delete record */}
+        {/* ==================================
+            DELETE WORKOUT RECORD
+        ================================== */}
+
         <section className="wh-panel">
           <div className="wh-section-heading">
             <h2>Manage This Record</h2>
@@ -554,6 +598,7 @@ function WorkoutHistoryPage() {
               </p>
 
               <div className="wh-button-row">
+
                 <button
                   type="button"
                   className="wh-danger-button"
@@ -571,10 +616,12 @@ function WorkoutHistoryPage() {
                 >
                   Cancel
                 </button>
+
               </div>
             </div>
           )}
         </section>
+
       </main>
     );
   }
@@ -585,12 +632,18 @@ function WorkoutHistoryPage() {
 
   return (
     <main className="workout-history-page">
-      <Link
-        to="/workouts"
+
+      {/* CONTEXTUAL BACK NAVIGATION */}
+
+      <BackToPreviousPage
+        fallbackTo="/progress"
+        fallbackLabel="Progress"
         className="wh-back-link"
-      >
-        ← Back to Workouts
-      </Link>
+      />
+
+      {/* ==================================
+          HISTORY HEADER
+      ================================== */}
 
       <header className="wh-page-header">
         <span className="wh-eyebrow">
@@ -606,10 +659,15 @@ function WorkoutHistoryPage() {
         </p>
       </header>
 
-      {/* Overall statistics */}
+      {/* ==================================
+          OVERALL STATISTICS
+      ================================== */}
+
       <section className="wh-stats-grid wh-overview-stats">
+
         <div className="wh-stat">
           <span>Total Workouts</span>
+
           <strong>
             {statistics.workouts}
           </strong>
@@ -617,6 +675,7 @@ function WorkoutHistoryPage() {
 
         <div className="wh-stat">
           <span>Sets Logged</span>
+
           <strong>
             {statistics.sets}
           </strong>
@@ -624,13 +683,18 @@ function WorkoutHistoryPage() {
 
         <div className="wh-stat">
           <span>Exercise Entries Logged</span>
+
           <strong>
             {statistics.exercises}
           </strong>
         </div>
+
       </section>
 
-      {/* Search and filters */}
+      {/* ==================================
+          SEARCH AND FILTERS
+      ================================== */}
+
       <section className="wh-panel">
         <div className="wh-section-heading">
           <h2>Find a Workout</h2>
@@ -642,6 +706,9 @@ function WorkoutHistoryPage() {
         </div>
 
         <div className="wh-filters">
+
+          {/* SEARCH */}
+
           <div className="wh-field">
             <label htmlFor="whSearch">
               Search
@@ -657,6 +724,8 @@ function WorkoutHistoryPage() {
               }
             />
           </div>
+
+          {/* STATUS FILTER */}
 
           <div className="wh-field">
             <label htmlFor="whStatus">
@@ -686,6 +755,8 @@ function WorkoutHistoryPage() {
             </select>
           </div>
 
+          {/* DATE FILTER */}
+
           <div className="wh-field">
             <label htmlFor="whDate">
               Date Range
@@ -711,10 +782,14 @@ function WorkoutHistoryPage() {
               </option>
             </select>
           </div>
+
         </div>
       </section>
 
-      {/* Session list */}
+      {/* ==================================
+          PREVIOUS WORKOUTS
+      ================================== */}
+
       <section className="wh-panel">
         <div className="wh-list-heading">
           <h2>Previous Workouts</h2>
@@ -750,12 +825,16 @@ function WorkoutHistoryPage() {
           </div>
         ) : (
           <div className="wh-workout-list">
+
             {filteredWorkouts.map((workout) => (
               <Link
                 key={workout.id}
-                to={`/workouts/history/${encodeURIComponent(workout.id)}`}
+                to={`/progress/history/${encodeURIComponent(
+                  workout.id
+                )}`}
                 className="wh-workout-item"
               >
+
                 <div className="wh-workout-icon">
                   <span>✓</span>
                 </div>
@@ -778,6 +857,7 @@ function WorkoutHistoryPage() {
                 </div>
 
                 <div className="wh-workout-side">
+
                   <span
                     className={
                       `wh-status ${
@@ -795,18 +875,26 @@ function WorkoutHistoryPage() {
                   <span className="wh-chevron">
                     ›
                   </span>
+
                 </div>
+
               </Link>
             ))}
+
           </div>
         )}
       </section>
+
+      {/* ==================================
+          LOCAL STORAGE INFORMATION
+      ================================== */}
 
       <p className="wh-storage-note">
         Workout history is stored locally
         in this browser. Cloud synchronization
         will be added in a later stage.
       </p>
+
     </main>
   );
 }

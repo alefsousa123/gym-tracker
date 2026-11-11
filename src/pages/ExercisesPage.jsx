@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useSearchParams } from "react-router";
 
 import ExerciseCard from
   "../components/exercises/ExerciseCard";
@@ -12,34 +12,121 @@ import { exercises } from "../data/exercises";
 // Styles specific to this page
 import "./ExercisesPage.css";
 
+// ==========================================
+// FILTER CONSTANTS
+// ==========================================
+
+const DEFAULT_FILTER = "all";
+
+// ==========================================
+// AVAILABLE MUSCLE GROUPS
+// ==========================================
+
+const muscleGroups = [
+  ...new Set(
+    exercises.map(
+      (exercise) => exercise.muscleGroup
+    )
+  ),
+].sort();
+
+// ==========================================
+// EXERCISES PAGE
+// ==========================================
+
 function ExercisesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  // ========================================
+  // URL SEARCH PARAMETERS
+  // ========================================
 
   const [
-    selectedMuscle,
-    setSelectedMuscle,
-  ] = useState("all");
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
 
-  const [
-    selectedLocation,
-    setSelectedLocation,
-  ] = useState("all");
+  // ========================================
+  // READ FILTERS FROM URL
+  // ========================================
 
-  // ==========================================
-  // AVAILABLE MUSCLE GROUPS
-  // ==========================================
+  const searchTerm =
+    searchParams.get("search") ?? "";
 
-  const muscleGroups = [
-    ...new Set(
-      exercises.map(
-        (exercise) => exercise.muscleGroup
-      )
-    ),
-  ].sort();
+  const muscleParam =
+    searchParams.get("muscle") ??
+    DEFAULT_FILTER;
 
-  // ==========================================
+  const locationParam =
+    searchParams.get("location") ??
+    DEFAULT_FILTER;
+
+  // Validate URL values before using them.
+  const selectedMuscle =
+    muscleGroups.includes(muscleParam)
+      ? muscleParam
+      : DEFAULT_FILTER;
+
+  const selectedLocation =
+    ["home", "gym"].includes(locationParam)
+      ? locationParam
+      : DEFAULT_FILTER;
+
+  // ========================================
+  // UPDATE A SINGLE URL FILTER
+  // ========================================
+
+  function updateFilter(name, value) {
+    setSearchParams(
+      (previousParams) => {
+        const nextParams = new URLSearchParams(
+          previousParams
+        );
+
+        const shouldRemove =
+          value === "" ||
+          value === DEFAULT_FILTER;
+
+        if (shouldRemove) {
+          nextParams.delete(name);
+        } else {
+          nextParams.set(name, value);
+        }
+
+        return nextParams;
+      },
+      {
+        replace: true,
+        preventScrollReset: true,
+      }
+    );
+  }
+
+  // ========================================
+  // SEARCH HANDLER
+  // ========================================
+
+  function handleSearchChange(value) {
+    updateFilter("search", value);
+  }
+
+  // ========================================
+  // MUSCLE FILTER HANDLER
+  // ========================================
+
+  function handleMuscleChange(value) {
+    updateFilter("muscle", value);
+  }
+
+  // ========================================
+  // LOCATION FILTER HANDLER
+  // ========================================
+
+  function handleLocationChange(value) {
+    updateFilter("location", value);
+  }
+
+  // ========================================
   // FILTER EXERCISES
-  // ==========================================
+  // ========================================
 
   const filteredExercises = exercises.filter(
     (exercise) => {
@@ -50,11 +137,11 @@ function ExercisesPage() {
         );
 
       const matchesMuscle =
-        selectedMuscle === "all" ||
+        selectedMuscle === DEFAULT_FILTER ||
         exercise.muscleGroup === selectedMuscle;
 
       const matchesLocation =
-        selectedLocation === "all" ||
+        selectedLocation === DEFAULT_FILTER ||
         exercise.locations.includes(
           selectedLocation
         );
@@ -67,15 +154,33 @@ function ExercisesPage() {
     }
   );
 
-  // ==========================================
+  // ========================================
   // RESET FILTERS
-  // ==========================================
+  // ========================================
 
   function handleClearFilters() {
-    setSearchTerm("");
-    setSelectedMuscle("all");
-    setSelectedLocation("all");
+    setSearchParams(
+      (previousParams) => {
+        const nextParams = new URLSearchParams(
+          previousParams
+        );
+
+        nextParams.delete("search");
+        nextParams.delete("muscle");
+        nextParams.delete("location");
+
+        return nextParams;
+      },
+      {
+        replace: true,
+        preventScrollReset: true,
+      }
+    );
   }
+
+  // ========================================
+  // PAGE
+  // ========================================
 
   return (
     <div className="exercise-library-page">
@@ -103,11 +208,11 @@ function ExercisesPage() {
 
       <ExerciseFilters
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={handleSearchChange}
         selectedMuscle={selectedMuscle}
-        onMuscleChange={setSelectedMuscle}
+        onMuscleChange={handleMuscleChange}
         selectedLocation={selectedLocation}
-        onLocationChange={setSelectedLocation}
+        onLocationChange={handleLocationChange}
         muscleGroups={muscleGroups}
         onClearFilters={handleClearFilters}
       />

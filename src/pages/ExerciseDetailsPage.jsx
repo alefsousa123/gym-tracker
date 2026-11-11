@@ -1,22 +1,41 @@
 
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import { exercises } from "../data/exercises";
 import { exerciseGuides } from "../data/exerciseGuides";
 
-import ExerciseAnimation from "../components/exercises/ExerciseAnimation";
-import ExerciseVideo from "../components/exercises/ExerciseVideo";
-import ExerciseAccordion from "../components/exercises/ExerciseAccordion";
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
+
+import ExerciseAnimation from
+  "../components/exercises/ExerciseAnimation";
+
+import ExerciseVideo from
+  "../components/exercises/ExerciseVideo";
+
+import ExerciseAccordion from
+  "../components/exercises/ExerciseAccordion";
 
 import "./ExerciseDetailsLayout.css";
+
+// ==========================================
+// EXERCISE DETAILS PAGE
+// ==========================================
 
 function ExerciseDetailsPage() {
   const { exerciseId } = useParams();
 
-  // Find the selected exercise
+  // ========================================
+  // FIND EXERCISE
+  // ========================================
+
   const exercise = exercises.find(
     (item) => item.id === exerciseId
   );
+
+  // ========================================
+  // INVALID EXERCISE
+  // ========================================
 
   if (!exercise) {
     return (
@@ -24,20 +43,19 @@ function ExerciseDetailsPage() {
         <h1>Exercise Not Found</h1>
 
         <p>
-          The exercise you're looking for doesn't exist.
+          The exercise you're looking for
+          doesn't exist.
         </p>
 
-        <Link
-          to="/exercises"
-          className="detail-back-link"
-        >
-          ← Back to Exercises
-        </Link>
+        <BackToPreviousPage />
       </div>
     );
   }
 
-  // Load exercise-specific information
+  // ========================================
+  // EXERCISE INFORMATION
+  // ========================================
+
   const guide = exerciseGuides[exercise.id];
 
   const equipmentLabel =
@@ -56,17 +74,23 @@ function ExerciseDetailsPage() {
     )
     .join(" / ");
 
+  // ========================================
+  // PAGE CONTENT
+  // ========================================
+
   return (
     <div className="exercise-detail-page">
-      {/* Back navigation */}
-      <Link
-        to="/exercises"
-        className="detail-back-link"
-      >
-        ← Back to Exercises
-      </Link>
 
-      {/* Exercise heading */}
+      {/* ==================================
+          BACK TO ORIGINAL PAGE
+      ================================== */}
+
+      <BackToPreviousPage />
+
+      {/* ==================================
+          EXERCISE HEADING
+      ================================== */}
+
       <header className="exercise-detail-heading">
         <span className="section-label">
           {exercise.muscleGroup.toUpperCase()}
@@ -75,17 +99,24 @@ function ExerciseDetailsPage() {
         <h1>{exercise.name}</h1>
 
         <p>
-          {exercise.difficulty} · {locationLabel}
+          {exercise.difficulty}
+          {" · "}
+          {locationLabel}
         </p>
       </header>
 
-      {/* Unified exercise overview */}
+      {/* ==================================
+          EXERCISE OVERVIEW
+      ================================== */}
+
       <section
         className="exercise-overview-card"
         aria-label="Exercise Overview"
         key={exercise.id}
       >
-        {/* Left column: Demonstration */}
+
+        {/* Demonstration */}
+
         <div className="exercise-overview-visual">
           <ExerciseAnimation
             exerciseId={exercise.id}
@@ -93,52 +124,67 @@ function ExerciseDetailsPage() {
           />
         </div>
 
-        {/* Right column: Expandable information */}
+        {/* Expandable Information */}
+
         <div className="exercise-overview-content">
+
           <ExerciseAccordion title="How to Perform">
             {guide ? (
               <div className="how-to-content">
+
                 <h3>Starting Position</h3>
 
-                <p>{guide.startingPosition}</p>
+                <p>
+                  {guide.startingPosition}
+                </p>
 
                 <h3>Step-by-Step Execution</h3>
 
                 <ol className="exercise-instructions">
-                  {guide.execution.map((step, index) => (
-                    <li key={index}>
-                      {step}
-                    </li>
-                  ))}
+                  {guide.execution.map(
+                    (step, index) => (
+                      <li key={index}>
+                        {step}
+                      </li>
+                    )
+                  )}
                 </ol>
 
                 <h3>Breathing</h3>
 
-                <p>{guide.breathing}</p>
+                <p>
+                  {guide.breathing}
+                </p>
 
                 <h3>Form Tips</h3>
 
                 <ul className="form-tips-list">
-                  {guide.formTips.map((tip, index) => (
-                    <li key={index}>
-                      {tip}
-                    </li>
-                  ))}
+                  {guide.formTips.map(
+                    (tip, index) => (
+                      <li key={index}>
+                        {tip}
+                      </li>
+                    )
+                  )}
                 </ul>
+
               </div>
             ) : (
               <ol className="exercise-instructions">
-                {exercise.instructions.map((step, index) => (
-                  <li key={index}>
-                    {step}
-                  </li>
-                ))}
+                {exercise.instructions.map(
+                  (step, index) => (
+                    <li key={index}>
+                      {step}
+                    </li>
+                  )
+                )}
               </ol>
             )}
           </ExerciseAccordion>
 
           <ExerciseAccordion title="Exercise Information">
             <dl className="exercise-information">
+
               <div>
                 <dt>Primary Muscle</dt>
                 <dd>{exercise.muscleGroup}</dd>
@@ -163,6 +209,7 @@ function ExerciseDetailsPage() {
                 <dt>Training Location</dt>
                 <dd>{locationLabel}</dd>
               </div>
+
             </dl>
           </ExerciseAccordion>
 
@@ -182,29 +229,44 @@ function ExerciseDetailsPage() {
 
               <ExerciseAccordion title="Exercise Variations">
                 <div className="exercise-variations">
+
                   <div className="variation-card">
                     <h3>Easier Variation</h3>
-                    <p>{guide.easierVariation}</p>
+
+                    <p>
+                      {guide.easierVariation}
+                    </p>
                   </div>
 
                   <div className="variation-card">
                     <h3>Harder Variation</h3>
-                    <p>{guide.harderVariation}</p>
+
+                    <p>
+                      {guide.harderVariation}
+                    </p>
                   </div>
+
                 </div>
               </ExerciseAccordion>
             </>
           )}
+
         </div>
       </section>
 
-      {/* Embedded video tutorial */}
+      {/* ==================================
+          VIDEO TUTORIAL
+      ================================== */}
+
       <ExerciseVideo
         exerciseId={exercise.id}
         exerciseName={exercise.name}
       />
 
-      {/* General safety information */}
+      {/* ==================================
+          TRAINING SAFETY
+      ================================== */}
+
       <div className="exercise-safety-note">
         <h2>Training Tips</h2>
 
@@ -216,6 +278,7 @@ function ExerciseDetailsPage() {
           or unusual discomfort.
         </p>
       </div>
+
     </div>
   );
 }

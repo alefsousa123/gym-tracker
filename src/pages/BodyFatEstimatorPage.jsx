@@ -1,6 +1,8 @@
 
 import { useState } from "react";
-import { Link } from "react-router";
+
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
 import {
   estimateBodyFat,
@@ -84,6 +86,10 @@ function BodyFatEstimatorPage() {
   const femaleModelSelected =
     measurements.model === "female";
 
+  // ========================================
+  // HANDLE MEASUREMENT CHANGE
+  // ========================================
+
   function handleChange(name, value) {
     setMeasurements((previous) => ({
       ...previous,
@@ -93,6 +99,10 @@ function BodyFatEstimatorPage() {
     // Prevent showing a stale result.
     setResult(null);
   }
+
+  // ========================================
+  // CALCULATE BODY FAT ESTIMATE
+  // ========================================
 
   function handleCalculate(event) {
     event.preventDefault();
@@ -104,6 +114,10 @@ function BodyFatEstimatorPage() {
     setResult(calculation);
   }
 
+  // ========================================
+  // CLEAR MEASUREMENTS
+  // ========================================
+
   function handleClear() {
     setMeasurements({
       ...initialMeasurements,
@@ -112,18 +126,26 @@ function BodyFatEstimatorPage() {
     setResult(null);
   }
 
+  // ========================================
+  // PAGE CONTENT
+  // ========================================
+
   return (
     <main className="bf-page">
+
+      {/* ==================================
+          CONTEXTUAL BACK NAVIGATION
+      ================================== */}
+
+      <BackToPreviousPage
+        fallbackTo="/progress"
+        fallbackLabel="Progress"
+        className="bf-back-link"
+      />
+
       {/* ==================================
           HEADER
       ================================== */}
-
-      <Link
-        to="/progress"
-        className="bf-back-link"
-      >
-        ← Back to Progress
-      </Link>
 
       <header className="bf-header">
         <span className="bf-eyebrow">
@@ -422,6 +444,7 @@ function BodyFatEstimatorPage() {
           in a later stage.
         </p>
       </section>
+
     </main>
   );
 }

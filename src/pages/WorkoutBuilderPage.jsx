@@ -1,11 +1,22 @@
 
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { Link } from "react-router";
+
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
 import { exercises } from "../data/exercises";
 
-import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
-import ExerciseTargetsEditor from "../components/workouts/ExerciseTargetsEditor";
+import ExerciseMotionPreview from
+  "../components/exercises/ExerciseMotionPreview";
+
+import ExerciseTargetsEditor from
+  "../components/workouts/ExerciseTargetsEditor";
 
 import {
   isExerciseAvailable,
@@ -42,7 +53,156 @@ import {
 
 import "./WorkoutBuilderPage.css";
 
-// Create empty sessions from a workout split
+// ==========================================
+// DRAFT STORAGE CONFIGURATION
+// ==========================================
+
+const DRAFT_STORAGE_KEY =
+  "gym-tracker:workout-builder-draft:v1";
+
+// ==========================================
+// VALIDATE A STORED BUILDER STATE
+// ==========================================
+
+function isValidStoredBuilderState(value) {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value)
+  ) {
+    return false;
+  }
+
+  const { draft } = value;
+
+  if (
+    value.mode !== "new" &&
+    value.mode !== "current"
+  ) {
+    return false;
+  }
+
+  if (
+    !draft ||
+    typeof draft !== "object" ||
+    Array.isArray(draft) ||
+    typeof draft.name !== "string" ||
+    typeof draft.splitId !== "string" ||
+    !["home", "gym"].includes(draft.location) ||
+    !["kg", "lb"].includes(draft.weightUnit) ||
+    !Array.isArray(draft.sessions)
+  ) {
+    return false;
+  }
+
+  const split = workoutSplits.find(
+    (item) => item.id === draft.splitId
+  );
+
+  if (
+    !split ||
+    draft.sessions.length !==
+      split.sessions.length
+  ) {
+    return false;
+  }
+
+  const sessionsAreValid =
+    draft.sessions.every((session, index) => {
+      return (
+        session &&
+        typeof session === "object" &&
+        session.id ===
+          split.sessions[index].id &&
+        typeof session.name === "string" &&
+        Array.isArray(session.exerciseIds) &&
+        session.exerciseIds.every(
+          (id) => typeof id === "string"
+        ) &&
+        session.exerciseTargets &&
+        typeof session.exerciseTargets ===
+          "object" &&
+        !Array.isArray(session.exerciseTargets) &&
+        Array.isArray(session.missingSlots)
+      );
+    });
+
+  if (!sessionsAreValid) {
+    return false;
+  }
+
+  return (
+    typeof value.search === "string" &&
+    typeof value.muscleFilter === "string" &&
+    (
+      value.activeSessionId === null ||
+      typeof value.activeSessionId === "string"
+    )
+  );
+}
+
+// ==========================================
+// READ SAVED DRAFT FROM SESSION STORAGE
+// ==========================================
+
+function readSavedBuilderState() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const savedValue =
+      window.sessionStorage.getItem(
+        DRAFT_STORAGE_KEY
+      );
+
+    if (!savedValue) {
+      return null;
+    }
+
+    const parsedValue =
+      JSON.parse(savedValue);
+
+    if (!isValidStoredBuilderState(parsedValue)) {
+      return null;
+    }
+
+    return parsedValue;
+  } catch (error) {
+    console.warn(
+      "Could not restore workout builder draft:",
+      error
+    );
+
+    return null;
+  }
+}
+
+// ==========================================
+// CLEAR SAVED DRAFT
+// ==========================================
+
+function clearSavedBuilderState() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.removeItem(
+      DRAFT_STORAGE_KEY
+    );
+  } catch (error) {
+    console.warn(
+      "Could not clear workout builder draft:",
+      error
+    );
+  }
+}
+
+// ==========================================
+// CREATE EMPTY SESSIONS
+// ==========================================
+
 function createEmptySessions(splitId) {
   return getSplitById(splitId).sessions.map(
     (session) => ({
@@ -55,8 +215,14 @@ function createEmptySessions(splitId) {
   );
 }
 
-// Start a new custom plan
-function createNewDraft(profile, weeklySchedule) {
+// ==========================================
+// CREATE NEW CUSTOM WORKOUT DRAFT
+// ==========================================
+
+function createNewDraft(
+  profile,
+  weeklySchedule
+) {
   const preferredDays = Number(
     profile?.trainingDaysPerWeek ?? 3
   );
@@ -68,32 +234,45 @@ function createNewDraft(profile, weeklySchedule) {
   return {
     name: "My Custom Workout Plan",
     splitId,
+
     location:
       profile?.trainingLocation === "gym"
         ? "gym"
         : "home",
-    weightUnit: profile?.weightUnit ?? "kg",
-    sessions: createEmptySessions(splitId),
+
+    weightUnit:
+      profile?.weightUnit ?? "kg",
+
+    sessions:
+      createEmptySessions(splitId),
   };
 }
 
-// Create an editable copy of an applied plan
+// ==========================================
+// CREATE EDITABLE COPY OF AN APPLIED PLAN
+// ==========================================
+
 function createDraftFromPlan(plan, profile) {
-  const split = getSplitById(plan.splitId);
+  const split = getSplitById(
+    plan.splitId
+  );
 
   return {
     name: plan.name,
     splitId: split.id,
     location: plan.location ?? "home",
+
     weightUnit:
       plan.weightUnit ??
       profile?.weightUnit ??
       "kg",
 
     sessions: split.sessions.map((session) => {
-      const existingSession = plan.sessions.find(
-        (item) => item.id === session.id
-      );
+      const existingSession =
+        plan.sessions.find(
+          (item) =>
+            item.id === session.id
+        );
 
       const exerciseIds = [
         ...new Set(
@@ -101,25 +280,30 @@ function createDraftFromPlan(plan, profile) {
         ),
       ];
 
-      const exerciseTargets = Object.fromEntries(
-        exerciseIds.map((exerciseId) => [
-          exerciseId,
-          normalizeExerciseTarget(
+      const exerciseTargets =
+        Object.fromEntries(
+          exerciseIds.map((exerciseId) => [
             exerciseId,
-            existingSession?.exerciseTargets?.[
-              exerciseId
-            ]
-          ),
-        ])
-      );
+
+            normalizeExerciseTarget(
+              exerciseId,
+              existingSession?.exerciseTargets?.[
+                exerciseId
+              ]
+            ),
+          ])
+        );
 
       return {
         id: session.id,
+
         name:
           existingSession?.name ??
           session.label,
+
         exerciseIds,
         exerciseTargets,
+
         missingSlots: [
           ...(existingSession?.missingSlots ?? []),
         ],
@@ -128,9 +312,20 @@ function createDraftFromPlan(plan, profile) {
   };
 }
 
+// ==========================================
+// WORKOUT BUILDER PAGE
+// ==========================================
+
 function WorkoutBuilderPage() {
-  const { profile } = useTrainingProfile();
-  const { homeEquipment } = useEquipment();
+  // ========================================
+  // SHARED CONTEXT DATA
+  // ========================================
+
+  const { profile } =
+    useTrainingProfile();
+
+  const { homeEquipment } =
+    useEquipment();
 
   const {
     weeklySchedule,
@@ -142,44 +337,160 @@ function WorkoutBuilderPage() {
     applyWorkoutPlan,
   } = useWorkoutPlan();
 
-  // Editable plan state
+  // ========================================
+  // LOAD INITIAL SAVED STATE
+  // ========================================
+
+  const [savedBuilderState] = useState(
+    readSavedBuilderState
+  );
+
+  // ========================================
+  // EDITABLE PLAN MODE
+  // ========================================
+
   const [mode, setMode] = useState(
-    appliedPlan ? "current" : "new"
+    () =>
+      savedBuilderState?.mode ??
+      (appliedPlan ? "current" : "new")
   );
 
-  const [draft, setDraft] = useState(() =>
-    appliedPlan
-      ? createDraftFromPlan(appliedPlan, profile)
-      : createNewDraft(profile, weeklySchedule)
+  // ========================================
+  // EDITABLE PLAN DRAFT
+  // ========================================
+
+  const [draft, setDraft] = useState(
+    () => {
+      if (savedBuilderState?.draft) {
+        return savedBuilderState.draft;
+      }
+
+      return appliedPlan
+        ? createDraftFromPlan(
+            appliedPlan,
+            profile
+          )
+        : createNewDraft(
+            profile,
+            weeklySchedule
+          );
+    }
   );
 
-  const [activeSessionId, setActiveSessionId] =
-    useState(() => draft.sessions[0]?.id ?? null);
+  // ========================================
+  // ACTIVE WORKOUT SESSION
+  // ========================================
 
-  const [search, setSearch] = useState("");
-  const [muscleFilter, setMuscleFilter] =
-    useState("all");
+  const [
+    activeSessionId,
+    setActiveSessionId,
+  ] = useState(() => {
+    const savedSessionId =
+      savedBuilderState?.activeSessionId;
 
-  const [pendingMode, setPendingMode] =
-    useState(null);
+    const savedSessionExists =
+      draft.sessions.some(
+        (session) =>
+          session.id === savedSessionId
+      );
 
-  const [pendingSplit, setPendingSplit] =
-    useState(null);
+    return savedSessionExists
+      ? savedSessionId
+      : draft.sessions[0]?.id ?? null;
+  });
+
+  // ========================================
+  // EXERCISE LIBRARY FILTERS
+  // ========================================
+
+  const [search, setSearch] = useState(
+    () => savedBuilderState?.search ?? ""
+  );
+
+  const [
+    muscleFilter,
+    setMuscleFilter,
+  ] = useState(
+    () =>
+      savedBuilderState?.muscleFilter ??
+      "all"
+  );
+
+  // ========================================
+  // TEMPORARY CONFIRMATION STATE
+  // ========================================
+
+  const [
+    pendingMode,
+    setPendingMode,
+  ] = useState(null);
+
+  const [
+    pendingSplit,
+    setPendingSplit,
+  ] = useState(null);
 
   const [
     showSaveConfirmation,
     setShowSaveConfirmation,
   ] = useState(false);
 
-  const [error, setError] = useState("");
-  const [feedback, setFeedback] = useState("");
+  const [error, setError] =
+    useState("");
 
-  // Currently selected workout session
-  const selectedSession = draft.sessions.find(
-    (session) => session.id === activeSessionId
-  );
+  const [feedback, setFeedback] =
+    useState("");
 
-  // Filter exercises by location and equipment
+  // ========================================
+  // AUTOMATIC DRAFT PERSISTENCE
+  // ========================================
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const builderState = {
+      mode,
+      draft,
+      activeSessionId,
+      search,
+      muscleFilter,
+    };
+
+    try {
+      window.sessionStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify(builderState)
+      );
+    } catch (storageError) {
+      console.warn(
+        "Could not save workout builder draft:",
+        storageError
+      );
+    }
+  }, [
+    mode,
+    draft,
+    activeSessionId,
+    search,
+    muscleFilter,
+  ]);
+
+  // ========================================
+  // CURRENTLY SELECTED SESSION
+  // ========================================
+
+  const selectedSession =
+    draft.sessions.find(
+      (session) =>
+        session.id === activeSessionId
+    );
+
+  // ========================================
+  // AVAILABLE EXERCISES
+  // ========================================
+
   const availableExercises = useMemo(
     () =>
       exercises.filter((exercise) =>
@@ -198,6 +509,10 @@ function WorkoutBuilderPage() {
     )
   );
 
+  // ========================================
+  // MUSCLE GROUP OPTIONS
+  // ========================================
+
   const muscleGroups = [
     ...new Set(
       availableExercises.map(
@@ -206,49 +521,82 @@ function WorkoutBuilderPage() {
     ),
   ].sort();
 
-  const filteredExercises = availableExercises
-    .filter((exercise) => {
-      const matchesSearch = exercise.name
-        .toLowerCase()
-        .includes(
-          search.trim().toLowerCase()
+  const effectiveMuscleFilter =
+    muscleFilter === "all" ||
+    muscleGroups.includes(muscleFilter)
+      ? muscleFilter
+      : "all";
+
+  // ========================================
+  // FILTER EXERCISE LIBRARY
+  // ========================================
+
+  const filteredExercises =
+    availableExercises
+      .filter((exercise) => {
+        const matchesSearch =
+          exercise.name
+            .toLowerCase()
+            .includes(
+              search
+                .trim()
+                .toLowerCase()
+            );
+
+        const matchesMuscle =
+          effectiveMuscleFilter === "all" ||
+          exercise.muscleGroup ===
+            effectiveMuscleFilter;
+
+        return (
+          matchesSearch &&
+          matchesMuscle
         );
+      })
+      .sort((first, second) =>
+        first.name.localeCompare(
+          second.name
+        )
+      );
 
-      const matchesMuscle =
-        muscleFilter === "all" ||
-        exercise.muscleGroup === muscleFilter;
+  // ========================================
+  // PLAN SUMMARY
+  // ========================================
 
-      return matchesSearch && matchesMuscle;
-    })
-    .sort((first, second) =>
-      first.name.localeCompare(second.name)
+  const totalExercises =
+    draft.sessions.reduce(
+      (total, session) =>
+        total +
+        session.exerciseIds.length,
+      0
     );
-
-  const totalExercises = draft.sessions.reduce(
-    (total, session) =>
-      total + session.exerciseIds.length,
-    0
-  );
 
   const requiresScheduleUpdate =
     !weeklySchedule ||
-    weeklySchedule.splitId !== draft.splitId;
+    weeklySchedule.splitId !==
+      draft.splitId;
 
   const hadMissingTemplateSlots =
     mode === "current" &&
     appliedPlan?.sessions.some(
       (session) =>
-        session.missingSlots.length > 0
+        (session.missingSlots?.length ?? 0) > 0
     );
 
-  // Reset form messages after editing
+  // ========================================
+  // CLEAR INTERFACE MESSAGES
+  // ========================================
+
   function clearMessages() {
     setError("");
     setFeedback("");
     setShowSaveConfirmation(false);
   }
 
-  // Ask before changing the starting point
+  // ========================================
+  // REQUEST STARTING MODE CHANGE
+  // ========================================
+
   function requestModeChange(nextMode) {
     if (nextMode === mode) {
       return;
@@ -256,12 +604,18 @@ function WorkoutBuilderPage() {
 
     setPendingMode(nextMode);
     setPendingSplit(null);
+
     setShowSaveConfirmation(false);
   }
 
+  // ========================================
+  // CONFIRM STARTING MODE CHANGE
+  // ========================================
+
   function confirmModeChange() {
     const newDraft =
-      pendingMode === "current" && appliedPlan
+      pendingMode === "current" &&
+      appliedPlan
         ? createDraftFromPlan(
             appliedPlan,
             profile
@@ -273,6 +627,7 @@ function WorkoutBuilderPage() {
 
     setDraft(newDraft);
     setMode(pendingMode);
+
     setActiveSessionId(
       newDraft.sessions[0]?.id ?? null
     );
@@ -280,17 +635,23 @@ function WorkoutBuilderPage() {
     setPendingMode(null);
     setSearch("");
     setMuscleFilter("all");
+
     clearMessages();
   }
 
-  // Changing the split creates new empty sessions
+  // ========================================
+  // CONFIRM WORKOUT SPLIT CHANGE
+  // ========================================
+
   function confirmSplitChange() {
     if (!pendingSplit) {
       return;
     }
 
     const sessions =
-      createEmptySessions(pendingSplit);
+      createEmptySessions(
+        pendingSplit
+      );
 
     setDraft((previousDraft) => ({
       ...previousDraft,
@@ -303,10 +664,14 @@ function WorkoutBuilderPage() {
     );
 
     setPendingSplit(null);
+
     clearMessages();
   }
 
-  // Change basic plan fields
+  // ========================================
+  // UPDATE A BASIC DRAFT FIELD
+  // ========================================
+
   function updateDraftField(field, value) {
     setDraft((previousDraft) => ({
       ...previousDraft,
@@ -316,7 +681,10 @@ function WorkoutBuilderPage() {
     clearMessages();
   }
 
-  // Add an exercise with its own starting targets
+  // ========================================
+  // ADD AN EXERCISE
+  // ========================================
+
   function addExercise(exerciseId) {
     if (
       !selectedSession ||
@@ -331,37 +699,43 @@ function WorkoutBuilderPage() {
     setDraft((previousDraft) => ({
       ...previousDraft,
 
-      sessions: previousDraft.sessions.map(
-        (session) => {
-          if (session.id !== activeSessionId) {
-            return session;
+      sessions:
+        previousDraft.sessions.map(
+          (session) => {
+            if (
+              session.id !== activeSessionId
+            ) {
+              return session;
+            }
+
+            return {
+              ...session,
+
+              exerciseIds: [
+                ...session.exerciseIds,
+                exerciseId,
+              ],
+
+              exerciseTargets: {
+                ...session.exerciseTargets,
+
+                [exerciseId]:
+                  createDefaultExerciseTarget(
+                    exerciseId
+                  ),
+              },
+            };
           }
-
-          return {
-            ...session,
-
-            exerciseIds: [
-              ...session.exerciseIds,
-              exerciseId,
-            ],
-
-            exerciseTargets: {
-              ...session.exerciseTargets,
-
-              [exerciseId]:
-                createDefaultExerciseTarget(
-                  exerciseId
-                ),
-            },
-          };
-        }
-      ),
+        ),
     }));
 
     clearMessages();
   }
 
-  // Remove an exercise and its settings
+  // ========================================
+  // REMOVE AN EXERCISE
+  // ========================================
+
   function removeExercise(
     sessionId,
     exerciseId
@@ -369,36 +743,46 @@ function WorkoutBuilderPage() {
     setDraft((previousDraft) => ({
       ...previousDraft,
 
-      sessions: previousDraft.sessions.map(
-        (session) => {
-          if (session.id !== sessionId) {
-            return session;
+      sessions:
+        previousDraft.sessions.map(
+          (session) => {
+            if (
+              session.id !== sessionId
+            ) {
+              return session;
+            }
+
+            const nextTargets = {
+              ...session.exerciseTargets,
+            };
+
+            delete nextTargets[
+              exerciseId
+            ];
+
+            return {
+              ...session,
+
+              exerciseIds:
+                session.exerciseIds.filter(
+                  (id) =>
+                    id !== exerciseId
+                ),
+
+              exerciseTargets:
+                nextTargets,
+            };
           }
-
-          const nextTargets = {
-            ...session.exerciseTargets,
-          };
-
-          delete nextTargets[exerciseId];
-
-          return {
-            ...session,
-
-            exerciseIds:
-              session.exerciseIds.filter(
-                (id) => id !== exerciseId
-              ),
-
-            exerciseTargets: nextTargets,
-          };
-        }
-      ),
+        ),
     }));
 
     clearMessages();
   }
 
-  // Move exercises without changing their targets
+  // ========================================
+  // MOVE EXERCISE POSITION
+  // ========================================
+
   function moveExercise(
     sessionId,
     exerciseId,
@@ -407,50 +791,60 @@ function WorkoutBuilderPage() {
     setDraft((previousDraft) => ({
       ...previousDraft,
 
-      sessions: previousDraft.sessions.map(
-        (session) => {
-          if (session.id !== sessionId) {
-            return session;
+      sessions:
+        previousDraft.sessions.map(
+          (session) => {
+            if (
+              session.id !== sessionId
+            ) {
+              return session;
+            }
+
+            const exerciseIds = [
+              ...session.exerciseIds,
+            ];
+
+            const currentIndex =
+              exerciseIds.indexOf(
+                exerciseId
+              );
+
+            const nextIndex =
+              currentIndex +
+              direction;
+
+            if (
+              currentIndex < 0 ||
+              nextIndex < 0 ||
+              nextIndex >=
+                exerciseIds.length
+            ) {
+              return session;
+            }
+
+            [
+              exerciseIds[currentIndex],
+              exerciseIds[nextIndex],
+            ] = [
+              exerciseIds[nextIndex],
+              exerciseIds[currentIndex],
+            ];
+
+            return {
+              ...session,
+              exerciseIds,
+            };
           }
-
-          const exerciseIds = [
-            ...session.exerciseIds,
-          ];
-
-          const currentIndex =
-            exerciseIds.indexOf(exerciseId);
-
-          const nextIndex =
-            currentIndex + direction;
-
-          if (
-            currentIndex < 0 ||
-            nextIndex < 0 ||
-            nextIndex >= exerciseIds.length
-          ) {
-            return session;
-          }
-
-          [
-            exerciseIds[currentIndex],
-            exerciseIds[nextIndex],
-          ] = [
-            exerciseIds[nextIndex],
-            exerciseIds[currentIndex],
-          ];
-
-          return {
-            ...session,
-            exerciseIds,
-          };
-        }
-      ),
+        ),
     }));
 
     clearMessages();
   }
 
-  // Edit the targets of a specific exercise
+  // ========================================
+  // UPDATE EXERCISE TARGET
+  // ========================================
+
   function updateExerciseTarget(
     sessionId,
     exerciseId,
@@ -459,40 +853,46 @@ function WorkoutBuilderPage() {
     setDraft((previousDraft) => ({
       ...previousDraft,
 
-      sessions: previousDraft.sessions.map(
-        (session) => {
-          if (session.id !== sessionId) {
-            return session;
-          }
+      sessions:
+        previousDraft.sessions.map(
+          (session) => {
+            if (
+              session.id !== sessionId
+            ) {
+              return session;
+            }
 
-          const previousTarget =
-            normalizeExerciseTarget(
-              exerciseId,
-              session.exerciseTargets?.[
-                exerciseId
-              ]
-            );
+            const previousTarget =
+              normalizeExerciseTarget(
+                exerciseId,
+                session.exerciseTargets?.[
+                  exerciseId
+                ]
+              );
 
-          return {
-            ...session,
+            return {
+              ...session,
 
-            exerciseTargets: {
-              ...session.exerciseTargets,
+              exerciseTargets: {
+                ...session.exerciseTargets,
 
-              [exerciseId]: {
-                ...previousTarget,
-                ...changes,
+                [exerciseId]: {
+                  ...previousTarget,
+                  ...changes,
+                },
               },
-            },
-          };
-        }
-      ),
+            };
+          }
+        ),
     }));
 
     clearMessages();
   }
 
-  // Validate the entire draft
+  // ========================================
+  // VALIDATE COMPLETE DRAFT
+  // ========================================
+
   function getValidationError() {
     if (!draft.name.trim()) {
       return {
@@ -503,7 +903,9 @@ function WorkoutBuilderPage() {
     }
 
     for (const session of draft.sessions) {
-      if (session.exerciseIds.length === 0) {
+      if (
+        session.exerciseIds.length === 0
+      ) {
         return {
           message:
             `Add at least one exercise to ${session.name}.`,
@@ -511,13 +913,19 @@ function WorkoutBuilderPage() {
         };
       }
 
-      for (const exerciseId of session.exerciseIds) {
+      for (
+        const exerciseId of
+        session.exerciseIds
+      ) {
         const exercise = exercises.find(
-          (item) => item.id === exerciseId
+          (item) =>
+            item.id === exerciseId
         );
 
         if (
-          !availableExerciseIds.has(exerciseId)
+          !availableExerciseIds.has(
+            exerciseId
+          )
         ) {
           return {
             message:
@@ -526,12 +934,13 @@ function WorkoutBuilderPage() {
           };
         }
 
-        const result = validateExerciseTarget(
-          exerciseId,
-          session.exerciseTargets?.[
-            exerciseId
-          ]
-        );
+        const result =
+          validateExerciseTarget(
+            exerciseId,
+            session.exerciseTargets?.[
+              exerciseId
+            ]
+          );
 
         if (result.error) {
           return {
@@ -546,16 +955,24 @@ function WorkoutBuilderPage() {
     return null;
   }
 
-  // Show errors or request saving confirmation
+  // ========================================
+  // REVIEW BEFORE SAVING
+  // ========================================
+
   function handleReviewSave() {
     const validationError =
       getValidationError();
 
     if (validationError) {
-      setError(validationError.message);
+      setError(
+        validationError.message
+      );
+
       setFeedback("");
 
-      if (validationError.sessionId) {
+      if (
+        validationError.sessionId
+      ) {
         setActiveSessionId(
           validationError.sessionId
         );
@@ -566,19 +983,32 @@ function WorkoutBuilderPage() {
 
     setError("");
     setFeedback("");
-    setShowSaveConfirmation(true);
+
+    setShowSaveConfirmation(
+      true
+    );
   }
 
-  // Save the complete plan after confirmation
+  // ========================================
+  // CONFIRM AND SAVE WORKOUT PLAN
+  // ========================================
+
   function handleConfirmSave() {
     const validationError =
       getValidationError();
 
     if (validationError) {
-      setError(validationError.message);
-      setShowSaveConfirmation(false);
+      setError(
+        validationError.message
+      );
 
-      if (validationError.sessionId) {
+      setShowSaveConfirmation(
+        false
+      );
+
+      if (
+        validationError.sessionId
+      ) {
         setActiveSessionId(
           validationError.sessionId
         );
@@ -587,8 +1017,10 @@ function WorkoutBuilderPage() {
       return;
     }
 
-    const savedSessions = draft.sessions.map(
-      (session) => {
+    // Normalize the targets before saving.
+
+    const savedSessions =
+      draft.sessions.map((session) => {
         const exerciseTargets =
           Object.fromEntries(
             session.exerciseIds.map(
@@ -623,8 +1055,9 @@ function WorkoutBuilderPage() {
             ...session.missingSlots,
           ],
         };
-      }
-    );
+      });
+
+    // Build the final saved plan.
 
     const updatedPlan = {
       templateId:
@@ -647,35 +1080,62 @@ function WorkoutBuilderPage() {
       sessions: savedSessions,
     };
 
-    applyWorkoutPlan(updatedPlan);
+    // Save the applied plan.
+
+    applyWorkoutPlan(
+      updatedPlan
+    );
+
+    // Update the weekly schedule if needed.
 
     if (requiresScheduleUpdate) {
       saveWeeklySchedule(
         createWeeklyTemplate(
           Number(
-            profile?.trainingDaysPerWeek ?? 3
+            profile?.trainingDaysPerWeek ??
+              3
           ),
           draft.splitId
         )
       );
     }
 
-    setShowSaveConfirmation(false);
+    // The draft is no longer needed
+    // because the plan was saved.
+
+    clearSavedBuilderState();
+
+    setShowSaveConfirmation(
+      false
+    );
+
     setError("");
 
     setFeedback(
-      "Your workout plan and exercise targets have been saved for this session."
+      "Your workout plan and exercise targets have been saved successfully."
     );
   }
 
+  // ========================================
+  // PAGE CONTENT
+  // ========================================
+
   return (
     <div className="workout-builder-page">
-      <Link
-        to="/workouts"
+
+      {/* ==================================
+          BACK NAVIGATION
+      ================================== */}
+
+      <BackToPreviousPage
+        fallbackTo="/workouts"
+        fallbackLabel="Workouts"
         className="builder-back-link"
-      >
-        ← Back to Workouts
-      </Link>
+      />
+
+      {/* ==================================
+          PAGE HEADING
+      ================================== */}
 
       <header className="builder-page-heading">
         <span className="builder-eyebrow">
@@ -691,10 +1151,15 @@ function WorkoutBuilderPage() {
         </p>
       </header>
 
-      {/* Starting point */}
+      {/* ==================================
+          STARTING POINT
+      ================================== */}
+
       <section className="builder-panel">
         <div className="builder-section-heading">
-          <h2>Choose Your Starting Point</h2>
+          <h2>
+            Choose Your Starting Point
+          </h2>
 
           <p>
             Start from scratch or customize
@@ -712,9 +1177,13 @@ function WorkoutBuilderPage() {
                   : ""
               }`
             }
-            aria-pressed={mode === "new"}
+            aria-pressed={
+              mode === "new"
+            }
             onClick={() =>
-              requestModeChange("new")
+              requestModeChange(
+                "new"
+              )
             }
           >
             <strong>
@@ -736,10 +1205,14 @@ function WorkoutBuilderPage() {
                   : ""
               }`
             }
-            aria-pressed={mode === "current"}
+            aria-pressed={
+              mode === "current"
+            }
             disabled={!appliedPlan}
             onClick={() =>
-              requestModeChange("current")
+              requestModeChange(
+                "current"
+              )
             }
           >
             <strong>
@@ -753,6 +1226,8 @@ function WorkoutBuilderPage() {
             </span>
           </button>
         </div>
+
+        {/* STARTING POINT CONFIRMATION */}
 
         {pendingMode && (
           <div className="builder-confirm-box">
@@ -769,7 +1244,9 @@ function WorkoutBuilderPage() {
               <button
                 type="button"
                 className="builder-primary-button"
-                onClick={confirmModeChange}
+                onClick={
+                  confirmModeChange
+                }
               >
                 Confirm Change
               </button>
@@ -788,10 +1265,15 @@ function WorkoutBuilderPage() {
         )}
       </section>
 
-      {/* Basic plan settings */}
+      {/* ==================================
+          PLAN SETTINGS
+      ================================== */}
+
       <section className="builder-panel">
         <div className="builder-section-heading">
-          <h2>Plan Settings</h2>
+          <h2>
+            Plan Settings
+          </h2>
 
           <p>
             Name your plan, select a workout split,
@@ -800,6 +1282,9 @@ function WorkoutBuilderPage() {
         </div>
 
         <div className="builder-settings-grid">
+
+          {/* PLAN NAME */}
+
           <div className="builder-field">
             <label htmlFor="builderPlanName">
               Plan Name
@@ -818,6 +1303,8 @@ function WorkoutBuilderPage() {
               }
             />
           </div>
+
+          {/* WORKOUT SPLIT */}
 
           <div className="builder-field">
             <label htmlFor="builderSplit">
@@ -838,16 +1325,20 @@ function WorkoutBuilderPage() {
                 }
               }}
             >
-              {workoutSplits.map((split) => (
-                <option
-                  key={split.id}
-                  value={split.id}
-                >
-                  {split.name}
-                </option>
-              ))}
+              {workoutSplits.map(
+                (split) => (
+                  <option
+                    key={split.id}
+                    value={split.id}
+                  >
+                    {split.name}
+                  </option>
+                )
+              )}
             </select>
           </div>
+
+          {/* TRAINING LOCATION */}
 
           <div className="builder-field">
             <label htmlFor="builderLocation">
@@ -863,7 +1354,9 @@ function WorkoutBuilderPage() {
                   event.target.value
                 );
 
-                setMuscleFilter("all");
+                setMuscleFilter(
+                  "all"
+                );
               }}
             >
               <option value="home">
@@ -875,6 +1368,8 @@ function WorkoutBuilderPage() {
               </option>
             </select>
           </div>
+
+          {/* WEIGHT UNIT */}
 
           <div className="builder-field">
             <label>
@@ -900,6 +1395,8 @@ function WorkoutBuilderPage() {
           when profile preferences change.
         </p>
 
+        {/* SPLIT CHANGE CONFIRMATION */}
+
         {pendingSplit && (
           <div className="builder-confirm-box">
             <strong>
@@ -917,7 +1414,9 @@ function WorkoutBuilderPage() {
               <button
                 type="button"
                 className="builder-primary-button"
-                onClick={confirmSplitChange}
+                onClick={
+                  confirmSplitChange
+                }
               >
                 Change Split
               </button>
@@ -935,6 +1434,8 @@ function WorkoutBuilderPage() {
           </div>
         )}
 
+        {/* HOME EQUIPMENT INFORMATION */}
+
         {draft.location === "home" && (
           <p className="builder-information">
             Home exercises are filtered
@@ -945,6 +1446,8 @@ function WorkoutBuilderPage() {
             </Link>
           </p>
         )}
+
+        {/* MISSING TEMPLATE SLOTS */}
 
         {hadMissingTemplateSlots && (
           <p className="builder-information">
@@ -957,11 +1460,21 @@ function WorkoutBuilderPage() {
         )}
       </section>
 
-      {/* Workout editor and exercise library */}
+      {/* ==================================
+          WORKOUT EDITOR AND LIBRARY
+      ================================== */}
+
       <div className="builder-main-grid">
+
+        {/* ==================================
+            WORKOUT SESSIONS
+        ================================== */}
+
         <section className="builder-panel">
           <div className="builder-section-heading">
-            <h2>Workout Sessions</h2>
+            <h2>
+              Workout Sessions
+            </h2>
 
             <p>
               Add exercises, organize their order,
@@ -969,44 +1482,59 @@ function WorkoutBuilderPage() {
             </p>
           </div>
 
-          <div className="builder-session-tabs">
-            {draft.sessions.map((session) => (
-              <button
-                key={session.id}
-                type="button"
-                className={
-                  `builder-session-tab ${
-                    activeSessionId === session.id
-                      ? "is-selected"
-                      : ""
-                  }`
-                }
-                aria-pressed={
-                  activeSessionId === session.id
-                }
-                onClick={() =>
-                  setActiveSessionId(session.id)
-                }
-              >
-                {session.name}
+          {/* SESSION TABS */}
 
-                <span>
-                  {session.exerciseIds.length}
-                </span>
-              </button>
-            ))}
+          <div className="builder-session-tabs">
+            {draft.sessions.map(
+              (session) => (
+                <button
+                  key={session.id}
+                  type="button"
+                  className={
+                    `builder-session-tab ${
+                      activeSessionId ===
+                      session.id
+                        ? "is-selected"
+                        : ""
+                    }`
+                  }
+                  aria-pressed={
+                    activeSessionId ===
+                    session.id
+                  }
+                  onClick={() =>
+                    setActiveSessionId(
+                      session.id
+                    )
+                  }
+                >
+                  {session.name}
+
+                  <span>
+                    {session.exerciseIds.length}
+                  </span>
+                </button>
+              )
+            )}
           </div>
+
+          {/* ACTIVE SESSION CONTENT */}
 
           {selectedSession && (
             <div className="builder-session-content">
+
               <div className="builder-session-heading">
-                <h3>{selectedSession.name}</h3>
+                <h3>
+                  {selectedSession.name}
+                </h3>
 
                 <span>
                   {selectedSession.exerciseIds.length}
                   {" "}exercises
                 </span>
               </div>
+
+              {/* EMPTY SESSION */}
 
               {selectedSession.exerciseIds.length === 0 ? (
                 <div className="builder-empty-state">
@@ -1021,12 +1549,17 @@ function WorkoutBuilderPage() {
                 </div>
               ) : (
                 <div className="builder-selected-list">
+
+                  {/* SELECTED EXERCISES */}
+
                   {selectedSession.exerciseIds.map(
                     (exerciseId, index) => {
-                      const exercise = exercises.find(
-                        (item) =>
-                          item.id === exerciseId
-                      );
+                      const exercise =
+                        exercises.find(
+                          (item) =>
+                            item.id ===
+                            exerciseId
+                        );
 
                       const isAvailable =
                         availableExerciseIds.has(
@@ -1047,14 +1580,18 @@ function WorkoutBuilderPage() {
                           className="builder-selected-item"
                           key={exerciseId}
                         >
-                          {/* Existing exercise card */}
+
+                          {/* EXERCISE CARD */}
+
                           <div className="builder-selected-exercise">
                             <span className="builder-exercise-number">
                               {index + 1}
                             </span>
 
                             <ExerciseMotionPreview
-                              exerciseId={exerciseId}
+                              exerciseId={
+                                exerciseId
+                              }
                               exerciseName={
                                 exercise?.name ??
                                 "Exercise"
@@ -1081,7 +1618,8 @@ function WorkoutBuilderPage() {
                               )}
                             </div>
 
-                            {/* Reorder and remove */}
+                            {/* REORDER BUTTONS */}
+
                             <div className="builder-reorder-buttons">
                               <button
                                 type="button"
@@ -1091,7 +1629,9 @@ function WorkoutBuilderPage() {
                                     "exercise"
                                   } up`
                                 }
-                                disabled={index === 0}
+                                disabled={
+                                  index === 0
+                                }
                                 onClick={() =>
                                   moveExercise(
                                     selectedSession.id,
@@ -1148,14 +1688,17 @@ function WorkoutBuilderPage() {
                             </div>
                           </div>
 
-                          {/* New exercise target controls */}
+                          {/* EXERCISE TARGET EDITOR */}
+
                           <ExerciseTargetsEditor
                             exerciseName={
                               exercise?.name ??
                               "Exercise"
                             }
                             target={target}
-                            weightUnit={draft.weightUnit}
+                            weightUnit={
+                              draft.weightUnit
+                            }
                             onChange={(changes) =>
                               updateExerciseTarget(
                                 selectedSession.id,
@@ -1174,10 +1717,15 @@ function WorkoutBuilderPage() {
           )}
         </section>
 
-        {/* Exercise library */}
+        {/* ==================================
+            EXERCISE LIBRARY
+        ================================== */}
+
         <section className="builder-panel">
           <div className="builder-section-heading">
-            <h2>Exercise Library</h2>
+            <h2>
+              Exercise Library
+            </h2>
 
             <p>
               Add exercises compatible with
@@ -1185,7 +1733,12 @@ function WorkoutBuilderPage() {
             </p>
           </div>
 
+          {/* LIBRARY FILTERS */}
+
           <div className="builder-library-filters">
+
+            {/* SEARCH */}
+
             <div className="builder-field">
               <label htmlFor="builderSearch">
                 Search Exercises
@@ -1204,6 +1757,8 @@ function WorkoutBuilderPage() {
               />
             </div>
 
+            {/* MUSCLE FILTER */}
+
             <div className="builder-field">
               <label htmlFor="builderMuscle">
                 Muscle Group
@@ -1211,7 +1766,9 @@ function WorkoutBuilderPage() {
 
               <select
                 id="builderMuscle"
-                value={muscleFilter}
+                value={
+                  effectiveMuscleFilter
+                }
                 onChange={(event) =>
                   setMuscleFilter(
                     event.target.value
@@ -1222,17 +1779,21 @@ function WorkoutBuilderPage() {
                   All Muscle Groups
                 </option>
 
-                {muscleGroups.map((group) => (
-                  <option
-                    key={group}
-                    value={group}
-                  >
-                    {group}
-                  </option>
-                ))}
+                {muscleGroups.map(
+                  (group) => (
+                    <option
+                      key={group}
+                      value={group}
+                    >
+                      {group}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           </div>
+
+          {/* LIBRARY RESULTS */}
 
           <div className="builder-library-list">
             {filteredExercises.length === 0 ? (
@@ -1247,66 +1808,90 @@ function WorkoutBuilderPage() {
                 </span>
               </div>
             ) : (
-              filteredExercises.map((exercise) => {
-                const isAdded =
-                  selectedSession?.exerciseIds.includes(
-                    exercise.id
-                  ) ?? false;
+              filteredExercises.map(
+                (exercise) => {
+                  const isAdded =
+                    selectedSession?.exerciseIds.includes(
+                      exercise.id
+                    ) ?? false;
 
-                return (
-                  <div
-                    className="builder-library-exercise"
-                    key={exercise.id}
-                  >
-                    <ExerciseMotionPreview
-                      exerciseId={exercise.id}
-                      exerciseName={exercise.name}
-                      variant="thumbnail"
-                    />
-
-                    <div className="builder-library-exercise-info">
-                      <strong>
-                        {exercise.name}
-                      </strong>
-
-                      <span>
-                        {exercise.muscleGroup}
-                        {" · "}
-                        {exercise.equipment.length > 0
-                          ? exercise.equipment.join(", ")
-                          : "Bodyweight"}
-                      </span>
-
-                      <Link
-                        to={`/exercises/${exercise.id}`}
-                      >
-                        View Guide
-                      </Link>
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={isAdded}
-                      onClick={() =>
-                        addExercise(exercise.id)
-                      }
+                  return (
+                    <div
+                      className="builder-library-exercise"
+                      key={exercise.id}
                     >
-                      {isAdded
-                        ? "Added"
-                        : "+ Add"}
-                    </button>
-                  </div>
-                );
-              })
+
+                      {/* EXERCISE PREVIEW */}
+
+                      <ExerciseMotionPreview
+                        exerciseId={
+                          exercise.id
+                        }
+                        exerciseName={
+                          exercise.name
+                        }
+                        variant="thumbnail"
+                      />
+
+                      {/* EXERCISE INFORMATION */}
+
+                      <div className="builder-library-exercise-info">
+                        <strong>
+                          {exercise.name}
+                        </strong>
+
+                        <span>
+                          {exercise.muscleGroup}
+                          {" · "}
+                          {exercise.equipment.length > 0
+                            ? exercise.equipment.join(", ")
+                            : "Bodyweight"}
+                        </span>
+
+                        <Link
+                          to={`/exercises/${exercise.id}`}
+                          state={{
+                            from: "/workouts/builder",
+                            fromLabel: "Workout Builder",
+                          }}
+                        >
+                          View Guide
+                        </Link>
+                      </div>
+
+                      {/* ADD EXERCISE */}
+
+                      <button
+                        type="button"
+                        disabled={isAdded}
+                        onClick={() =>
+                          addExercise(
+                            exercise.id
+                          )
+                        }
+                      >
+                        {isAdded
+                          ? "Added"
+                          : "+ Add"}
+                      </button>
+                    </div>
+                  );
+                }
+              )
             )}
           </div>
         </section>
       </div>
 
-      {/* Plan review and save */}
+      {/* ==================================
+          REVIEW AND SAVE PLAN
+      ================================== */}
+
       <section className="builder-panel">
         <div className="builder-section-heading">
-          <h2>Review Your Plan</h2>
+          <h2>
+            Review Your Plan
+          </h2>
 
           <p>
             Review your exercises and planned
@@ -1314,17 +1899,26 @@ function WorkoutBuilderPage() {
           </p>
         </div>
 
+        {/* PLAN SUMMARY */}
+
         <div className="builder-review-grid">
+
           <div>
-            <span>Workout Split</span>
+            <span>
+              Workout Split
+            </span>
 
             <strong>
-              {getSplitById(draft.splitId).name}
+              {getSplitById(
+                draft.splitId
+              ).name}
             </strong>
           </div>
 
           <div>
-            <span>Sessions</span>
+            <span>
+              Sessions
+            </span>
 
             <strong>
               {draft.sessions.length}
@@ -1332,7 +1926,9 @@ function WorkoutBuilderPage() {
           </div>
 
           <div>
-            <span>Exercise Entries</span>
+            <span>
+              Exercise Entries
+            </span>
 
             <strong>
               {totalExercises}
@@ -1348,6 +1944,8 @@ function WorkoutBuilderPage() {
           in a future stage.
         </p>
 
+        {/* VALIDATION ERROR */}
+
         {error && (
           <p
             className="builder-error"
@@ -1357,16 +1955,23 @@ function WorkoutBuilderPage() {
           </p>
         )}
 
+        {/* SAVE REVIEW BUTTON */}
+
         {!showSaveConfirmation ? (
           <button
             type="button"
             className="builder-primary-button"
-            onClick={handleReviewSave}
+            onClick={
+              handleReviewSave
+            }
           >
             Review & Save Plan
           </button>
         ) : (
           <div className="builder-confirm-box">
+
+            {/* SAVE CONFIRMATION */}
+
             <strong>
               Save This Workout Plan?
             </strong>
@@ -1391,11 +1996,15 @@ function WorkoutBuilderPage() {
               </p>
             )}
 
+            {/* CONFIRMATION ACTIONS */}
+
             <div className="builder-button-row">
               <button
                 type="button"
                 className="builder-primary-button"
-                onClick={handleConfirmSave}
+                onClick={
+                  handleConfirmSave
+                }
               >
                 Confirm & Save
               </button>
@@ -1404,7 +2013,9 @@ function WorkoutBuilderPage() {
                 type="button"
                 className="builder-secondary-button"
                 onClick={() =>
-                  setShowSaveConfirmation(false)
+                  setShowSaveConfirmation(
+                    false
+                  )
                 }
               >
                 Cancel
@@ -1413,12 +2024,16 @@ function WorkoutBuilderPage() {
           </div>
         )}
 
+        {/* SUCCESS FEEDBACK */}
+
         {feedback && (
           <div
             className="builder-success"
             role="status"
           >
-            <p>{feedback}</p>
+            <p>
+              {feedback}
+            </p>
 
             <Link to="/workouts">
               View My Workouts →
@@ -1426,10 +2041,13 @@ function WorkoutBuilderPage() {
           </div>
         )}
 
+        {/* DRAFT STORAGE INFORMATION */}
+
         <p className="builder-storage-note">
-          Your plan is currently saved
-          in React memory. Permanent storage
-          will be implemented in Stage 14.
+          Unsaved changes are automatically
+          preserved in this browser tab.
+          Confirmed workout plans are saved
+          separately on this device.
         </p>
       </section>
     </div>

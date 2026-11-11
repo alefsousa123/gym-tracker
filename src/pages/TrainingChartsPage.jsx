@@ -2,6 +2,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
+
 import {
   useWorkoutSession,
 } from "../context/WorkoutSessionContext";
@@ -429,12 +432,14 @@ function TrainingChartsPage() {
   if (catalog.exerciseOptions.length === 0) {
     return (
       <main className="tc-page">
-        <Link
-          to="/progress"
+
+        {/* CONTEXTUAL BACK NAVIGATION */}
+
+        <BackToPreviousPage
+          fallbackTo="/progress"
+          fallbackLabel="Progress"
           className="tc-back-link"
-        >
-          ← Back to Progress
-        </Link>
+        />
 
         <header className="tc-header">
           <span className="tc-eyebrow">
@@ -482,12 +487,14 @@ function TrainingChartsPage() {
 
   return (
     <main className="tc-page">
-      <Link
-        to="/progress"
+
+      {/* CONTEXTUAL BACK NAVIGATION */}
+
+      <BackToPreviousPage
+        fallbackTo="/progress"
+        fallbackLabel="Progress"
         className="tc-back-link"
-      >
-        ← Back to Progress
-      </Link>
+      />
 
       <header className="tc-header">
         <span className="tc-eyebrow">

@@ -1,6 +1,16 @@
 
 /* ==========================================
-   TRAINING PROGRESS OVERVIEW
+   GYM - TRAINING PROGRESS OVERVIEW
+
+   Original layout preserved.
+   Dark theme visual corrections.
+
+   Light theme continues to use
+   the rules in theme-pages.css.
+========================================== */
+
+/* ==========================================
+   1. PAGE STRUCTURE
 ========================================== */
 
 .gp-page,
@@ -12,13 +22,15 @@
   width: 100%;
   max-width: 1120px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 28px 24px 64px;
+
   color: #fafafa;
 }
 
 /* ==========================================
-   PAGE HEADER
+   2. PAGE HEADER
 ========================================== */
 
 .gp-heading {
@@ -27,6 +39,7 @@
 
 .gp-eyebrow {
   color: #4ade80;
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -34,6 +47,7 @@
 
 .gp-heading h1 {
   margin: 8px 0 10px;
+
   font-size: clamp(27px, 4vw, 36px);
   line-height: 1.25;
 }
@@ -41,19 +55,23 @@
 .gp-heading p {
   max-width: 700px;
   margin: 0;
+
   color: #a1a1aa;
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   STATISTIC CARDS
+   3. STATISTIC CARDS
 ========================================== */
 
 .gp-stats-grid {
   display: grid;
+
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
+
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -61,43 +79,54 @@
 .gp-stat-card {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   min-width: 0;
+
   padding: 18px;
+
   border: 1px solid #303036;
   border-radius: 12px;
+
   background-color: #18181b;
 }
 
 .gp-stat-card > span {
   color: #a1a1aa;
+
   font-size: 11px;
   line-height: 1.5;
 }
 
 .gp-stat-card > strong {
   color: #fafafa;
+
   font-size: clamp(23px, 4vw, 30px);
   font-weight: 800;
+
   font-variant-numeric: tabular-nums;
 }
 
 .gp-stat-card > small {
   color: #a1a1aa;
+
   font-size: 10px;
   line-height: 1.5;
 }
 
 /* ==========================================
-   PANELS
+   4. CONTENT PANELS
 ========================================== */
 
 .gp-panel {
   min-width: 0;
+
   margin-bottom: 18px;
   padding: 21px;
+
   border: 1px solid #303036;
   border-radius: 13px;
+
   background-color: #18181b;
 }
 
@@ -106,25 +135,30 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 12px;
   margin-bottom: 18px;
 }
 
 .gp-section-heading h2 {
   margin: 0 0 7px;
+
   color: #fafafa;
   font-size: 18px;
 }
 
 .gp-section-heading p {
   margin: 0;
+
   color: #a1a1aa;
+
   font-size: 12px;
   line-height: 1.6;
 }
 
 .gp-section-heading > a {
   color: #86efac;
+
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -135,21 +169,26 @@
 }
 
 /* ==========================================
-   WEEKLY CHART
+   5. WEEKLY CHART
 ========================================== */
 
 .gp-chart-scroll {
   width: 100%;
   min-width: 0;
+
   overflow-x: auto;
+
   padding-bottom: 6px;
 }
 
 .gp-weekly-chart {
   display: grid;
+
   grid-template-columns:
     repeat(8, minmax(55px, 1fr));
+
   gap: 12px;
+
   min-width: 500px;
   height: 215px;
 }
@@ -159,12 +198,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+
   gap: 7px;
   min-width: 0;
 }
 
 .gp-week-column > strong {
   color: #e4e4e7;
+
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
@@ -172,18 +213,25 @@
 .gp-week-track {
   display: flex;
   align-items: flex-end;
+
   width: 100%;
   max-width: 62px;
   height: 140px;
+
   overflow: hidden;
+
   border-radius: 8px 8px 5px 5px;
+
   background-color: #27272a;
 }
 
 .gp-week-fill {
   width: 100%;
+
   border-radius: 7px 7px 0 0;
+
   background-color: #52665a;
+
   transition: height 0.2s ease;
 }
 
@@ -193,32 +241,39 @@
 
 .gp-week-column > span {
   color: #a1a1aa;
+
   font-size: 10px;
   font-weight: 600;
+
   white-space: nowrap;
 }
 
 .gp-week-column > small {
   color: #86efac;
+
   font-size: 10px;
   font-weight: 700;
 }
 
 .gp-chart-note {
   margin: 17px 0 0;
+
   color: #a1a1aa;
+
   font-size: 11px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   ANALYSIS CARDS
+   6. ANALYSIS CARDS
 ========================================== */
 
 .gp-analysis-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 13px;
   margin-bottom: 18px;
 }
@@ -227,12 +282,17 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   gap: 11px;
   min-width: 0;
+
   padding: 20px;
+
   border: 1px solid #303036;
   border-radius: 12px;
+
   background-color: #18181b;
+
   color: inherit;
   text-decoration: none;
 }
@@ -246,11 +306,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 34px;
   height: 34px;
+
   border-radius: 8px;
+
   background-color: #14532d;
+
   color: #86efac;
+
   font-size: 20px;
   font-weight: 700;
 }
@@ -263,36 +328,45 @@
 .gp-analysis-card p {
   flex: 1;
   margin: 0;
+
   color: #a1a1aa;
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 .gp-analysis-action {
   color: #86efac;
+
   font-size: 12px;
   font-weight: 700;
 }
 
 /* ==========================================
-   RECENT WORKOUTS
+   7. RECENT WORKOUTS
 ========================================== */
 
 .gp-history-list {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
 }
 
 .gp-history-row {
   display: flex;
   align-items: center;
+
   gap: 12px;
   min-width: 0;
+
   padding: 14px;
+
   border: 1px solid #303036;
   border-radius: 9px;
+
   background-color: #111113;
+
   color: inherit;
   text-decoration: none;
 }
@@ -305,13 +379,16 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+
   gap: 6px;
   min-width: 0;
 }
 
 .gp-history-info strong {
   color: #fafafa;
+
   font-size: 13px;
+
   overflow-wrap: anywhere;
 }
 
@@ -322,10 +399,14 @@
 
 .gp-history-status {
   flex-shrink: 0;
+
   padding: 6px 9px;
+
   border-radius: 6px;
+
   background-color: #302414;
   color: #fde68a;
+
   font-size: 10px;
   font-weight: 700;
 }
@@ -342,6 +423,7 @@
 
 .gp-empty {
   padding: 20px;
+
   border: 1px dashed #3f3f46;
   border-radius: 9px;
 }
@@ -353,24 +435,28 @@
 
 .gp-empty p {
   color: #a1a1aa;
+
   font-size: 12px;
   line-height: 1.6;
 }
 
 .gp-empty a {
   color: #86efac;
+
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
 }
 
 /* ==========================================
-   FOOTER NOTE
+   8. STORAGE NOTE AND FOCUS
 ========================================== */
 
 .gp-storage-note {
   margin: 8px 0;
+
   color: #a1a1aa;
+
   font-size: 11px;
   line-height: 1.7;
 }
@@ -381,7 +467,7 @@
 }
 
 /* ==========================================
-   RESPONSIVE
+   9. RESPONSIVE - TABLET
 ========================================== */
 
 @media (max-width: 800px) {
@@ -390,6 +476,10 @@
       repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ==========================================
+   10. RESPONSIVE - MOBILE
+========================================== */
 
 @media (max-width: 600px) {
   .gp-page {
@@ -413,6 +503,10 @@
   }
 }
 
+/* ==========================================
+   11. RESPONSIVE - SMALL MOBILE
+========================================== */
+
 @media (max-width: 420px) {
   .gp-stats-grid {
     gap: 9px;
@@ -431,8 +525,334 @@
   }
 }
 
+/* ==========================================
+   12. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .gp-week-fill {
     transition: none;
   }
+}
+
+/* ==========================================
+   13. DARK THEME - PAGE BACKGROUND
+
+   Replaces the legacy black page
+   background only for Progress.
+========================================== */
+
+html[data-theme="dark"]
+.app > main:has(> .gp-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .gp-page {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   14. DARK THEME - PAGE HEADING
+========================================== */
+
+html[data-theme="dark"] .gp-eyebrow {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"] .gp-heading h1 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .gp-heading p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   15. DARK THEME - STATISTIC CARDS
+========================================== */
+
+html[data-theme="dark"] .gp-stat-card {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+/*
+  Four muted colors provide visual
+  separation without neon accents.
+*/
+
+html[data-theme="dark"]
+.gp-stat-card:nth-child(4n + 1) {
+  background-color: var(--color-lavender);
+}
+
+html[data-theme="dark"]
+.gp-stat-card:nth-child(4n + 2) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme="dark"]
+.gp-stat-card:nth-child(4n + 3) {
+  background-color: var(--color-sky);
+}
+
+html[data-theme="dark"]
+.gp-stat-card:nth-child(4n) {
+  background-color: var(--color-butter);
+}
+
+html[data-theme="dark"]
+.gp-stat-card > :is(span, strong, small) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   16. DARK THEME - PANELS
+========================================== */
+
+html[data-theme="dark"] .gp-panel {
+  background-color: var(--color-surface);
+
+  border-color: var(--color-border);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="dark"]
+.gp-section-heading h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-section-heading p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gp-section-heading > a {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-section-heading > a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ==========================================
+   17. DARK THEME - WEEKLY CHART
+========================================== */
+
+html[data-theme="dark"]
+.gp-week-column > strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-week-track {
+  background-color: var(--color-inset);
+}
+
+/*
+  Muted lavender for ordinary weeks.
+  Coral indicates weeks with goals met.
+*/
+
+html[data-theme="dark"]
+.gp-week-fill {
+  background-color: #8e7fa4;
+}
+
+html[data-theme="dark"]
+.gp-week-fill.is-goal-met {
+  background-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-week-column > span {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gp-week-column > small {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-chart-note {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   18. DARK THEME - ANALYSIS CARDS
+========================================== */
+
+html[data-theme="dark"]
+.gp-analysis-card {
+  background-color: var(--color-surface);
+
+  border-color: var(--color-border);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="dark"]
+.gp-analysis-card:hover {
+  background-color: var(--color-card-hover);
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   19. DARK THEME - ANALYSIS ICONS
+========================================== */
+
+html[data-theme="dark"]
+.gp-analysis-icon {
+  background-color: var(--color-lavender);
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-analysis-card:nth-child(3n + 2)
+.gp-analysis-icon {
+  background-color: var(--color-sky);
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-analysis-card:nth-child(3n)
+.gp-analysis-icon {
+  background-color: var(--color-peach);
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   20. DARK THEME - ANALYSIS TEXT
+========================================== */
+
+html[data-theme="dark"]
+.gp-analysis-card strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-analysis-card p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gp-analysis-action {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-analysis-card:hover :is(strong, p) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   21. DARK THEME - HISTORY ROWS
+========================================== */
+
+html[data-theme="dark"]
+.gp-history-row {
+  background-color: var(--color-surface-soft);
+
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-history-row:hover {
+  background-color: var(--color-card-hover);
+  border-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-history-info strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-history-info span {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   22. DARK THEME - HISTORY STATUS
+========================================== */
+
+/*
+  Partial workouts use warm amber.
+  Completed workouts use coral.
+
+  These colors replace the old green
+  completion indicator on this page.
+*/
+
+html[data-theme="dark"]
+.gp-history-status {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+html[data-theme="dark"]
+.gp-history-status.is-complete {
+  background-color: var(--color-lavender);
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-chevron {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   23. DARK THEME - EMPTY HISTORY
+========================================== */
+
+html[data-theme="dark"] .gp-empty {
+  background-color: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+}
+
+html[data-theme="dark"]
+.gp-empty strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gp-empty p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gp-empty a {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gp-empty a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ==========================================
+   24. DARK THEME - STORAGE NOTE
+========================================== */
+
+html[data-theme="dark"]
+.gp-storage-note {
+  color: var(--color-text-muted);
+}
+
+/* ==========================================
+   25. DARK THEME - KEYBOARD FOCUS
+========================================== */
+
+html[data-theme="dark"]
+.gp-page a:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
 }

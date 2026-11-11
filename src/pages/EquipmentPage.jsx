@@ -1,6 +1,9 @@
 
 import { Link } from "react-router";
 
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
+
 import { exercises } from "../data/exercises";
 
 import ExerciseMotionPreview from
@@ -143,6 +146,16 @@ function EquipmentPage() {
 
   return (
     <div className="equipment-page">
+
+      {/* ==================================
+          CONTEXTUAL BACK NAVIGATION
+      ================================== */}
+
+      <BackToPreviousPage
+        fallbackTo="/settings"
+        fallbackLabel="Settings"
+        className="equipment-return-link"
+      />
 
       {/* ==================================
           PAGE HEADING

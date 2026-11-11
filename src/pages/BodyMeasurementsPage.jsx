@@ -4,7 +4,8 @@ import {
   useState,
 } from "react";
 
-import { Link } from "react-router";
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
 import {
   usePersistentState,
@@ -126,8 +127,7 @@ function MeasurementChart({
     highestValue - lowestValue;
 
   // Zoom to the recorded value range.
-  // The chart explicitly tells the user
-  // that the vertical axis may not start at 0.
+  // The vertical axis may not start at 0.
   const padding = Math.max(
     0.5,
     difference * 0.3
@@ -557,12 +557,14 @@ function BodyMeasurementsPage() {
 
   return (
     <main className="bm-page">
-      <Link
-        to="/progress"
+
+      {/* CONTEXTUAL BACK NAVIGATION */}
+
+      <BackToPreviousPage
+        fallbackTo="/progress"
+        fallbackLabel="Progress"
         className="bm-back-link"
-      >
-        ← Back to Progress
-      </Link>
+      />
 
       <header className="bm-header">
         <span className="bm-eyebrow">

@@ -2,12 +2,25 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
-import { exercises } from "../data/exercises";
-import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
 
-import { useTrainingProfile } from "../context/TrainingProfileContext";
-import { useWeeklySchedule } from "../context/WeeklyScheduleContext";
-import { useWorkoutPlan } from "../context/WorkoutPlanContext";
+import { exercises } from "../data/exercises";
+
+import ExerciseMotionPreview from
+  "../components/exercises/ExerciseMotionPreview";
+
+import {
+  useTrainingProfile,
+} from "../context/TrainingProfileContext";
+
+import {
+  useWeeklySchedule,
+} from "../context/WeeklyScheduleContext";
+
+import {
+  useWorkoutPlan,
+} from "../context/WorkoutPlanContext";
 
 import {
   daysOfWeek,
@@ -153,7 +166,7 @@ function WeeklySchedulePage() {
     useState("info");
 
   // ========================================
-  // NEW: QUICK MOVE STATE
+  // QUICK MOVE STATE
   // ========================================
 
   const [selectedSourceId, setSelectedSourceId] =
@@ -228,10 +241,6 @@ function WeeklySchedulePage() {
   // ========================================
   // QUICK MOVE SELECTIONS
   // ========================================
-
-  // Use the selected day when it is valid.
-  // Otherwise, fall back to the first
-  // available day of the correct type.
 
   const sourceDayId = workoutDays.some(
     (day) => day.dayId === selectedSourceId
@@ -342,7 +351,7 @@ function WeeklySchedulePage() {
   }
 
   // ========================================
-  // NEW: MOVE A WORKOUT TO ANOTHER DAY
+  // MOVE A WORKOUT TO ANOTHER DAY
   // ========================================
 
   function handleMoveWorkout() {
@@ -359,7 +368,6 @@ function WeeklySchedulePage() {
         (day) => day.dayId === destinationDayId
       );
 
-      // Validate again before changing state.
       if (
         !source ||
         !destination ||
@@ -374,8 +382,6 @@ function WeeklySchedulePage() {
           if (day.dayId === sourceDayId) {
             return {
               ...day,
-
-              // Source gets the destination activity.
               activity: destination.activity,
               sessionId: null,
             };
@@ -384,9 +390,6 @@ function WeeklySchedulePage() {
           if (day.dayId === destinationDayId) {
             return {
               ...day,
-
-              // Destination receives the workout
-              // and its original session.
               activity: "workout",
               sessionId: source.sessionId,
             };
@@ -411,7 +414,7 @@ function WeeklySchedulePage() {
   }
 
   // ========================================
-  // NEW: RESTORE SAVED SCHEDULE
+  // RESTORE SAVED SCHEDULE
   // ========================================
 
   function handleRestoreSchedule() {
@@ -495,12 +498,15 @@ function WeeklySchedulePage() {
   return (
     <div className="weekly-schedule-page">
 
-      <Link
-        to="/workouts"
+      {/* ==================================
+          CONTEXTUAL BACK NAVIGATION
+      ================================== */}
+
+      <BackToPreviousPage
+        fallbackTo="/workouts"
+        fallbackLabel="Workouts"
         className="schedule-back-link"
-      >
-        ← Back to Workouts
-      </Link>
+      />
 
       <header className="schedule-page-heading">
         <span className="schedule-eyebrow">

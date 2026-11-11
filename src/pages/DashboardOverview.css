@@ -1,6 +1,13 @@
 
 /* ==========================================
    GYM DASHBOARD
+
+   Original layout preserved.
+   Dark theme visual corrections.
+========================================== */
+
+/* ==========================================
+   1. PAGE STRUCTURE
 ========================================== */
 
 .gd-page,
@@ -18,7 +25,7 @@
 }
 
 /* ==========================================
-   HEADING
+   2. PAGE HEADING
 ========================================== */
 
 .gd-heading {
@@ -47,11 +54,8 @@
 }
 
 /* ==========================================
-   TODAY'S WORKOUT COMPONENT
+   3. TODAY'S WORKOUT COMPONENT
 ========================================== */
-
-/* Reuse the existing component without
-   adding its original page-level padding. */
 
 .gd-page .today-home-overview {
   width: 100%;
@@ -61,7 +65,7 @@
 }
 
 /* ==========================================
-   SUMMARY CARDS
+   4. SUMMARY CARDS
 ========================================== */
 
 .gd-stats-grid {
@@ -101,6 +105,10 @@
   line-height: 1.5;
 }
 
+/* ==========================================
+   5. PROGRESS BAR
+========================================== */
+
 .gd-progress-track {
   width: 100%;
   height: 7px;
@@ -117,7 +125,7 @@
 }
 
 /* ==========================================
-   SECTIONS
+   6. CONTENT PANELS
 ========================================== */
 
 .gd-panel {
@@ -163,7 +171,7 @@
 }
 
 /* ==========================================
-   RECENT WORKOUTS
+   7. RECENT WORKOUTS
 ========================================== */
 
 .gd-recent-list {
@@ -263,7 +271,7 @@
 }
 
 /* ==========================================
-   QUICK LINKS
+   8. QUICK ACCESS LINKS
 ========================================== */
 
 .gd-shortcuts {
@@ -302,7 +310,7 @@
 }
 
 /* ==========================================
-   RESPONSIVE
+   9. RESPONSIVE - TABLET
 ========================================== */
 
 @media (max-width: 700px) {
@@ -315,6 +323,10 @@
     grid-column: 1 / -1;
   }
 }
+
+/* ==========================================
+   10. RESPONSIVE - MOBILE
+========================================== */
 
 @media (max-width: 600px) {
   .gd-page {
@@ -333,6 +345,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   11. RESPONSIVE - SMALL MOBILE
+========================================== */
 
 @media (max-width: 420px) {
   .gd-stats-grid {
@@ -356,8 +372,315 @@
   }
 }
 
+/* ==========================================
+   12. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .gd-progress-track > div {
     transition: none;
   }
+}
+
+/* ==========================================
+   13. DARK THEME - PAGE BACKGROUND
+
+   Overrides the legacy black background
+   defined in theme.css.
+========================================== */
+
+html[data-theme="dark"]
+.app > main:has(> .gd-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .gd-page {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   14. DARK THEME - PAGE HEADING
+========================================== */
+
+html[data-theme="dark"] .gd-eyebrow {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"] .gd-heading h1 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .gd-heading p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   15. DARK THEME - TODAY'S WORKOUT
+========================================== */
+
+/*
+  A warmer dark surface distinguishes
+  Today's Workout from the other cards.
+*/
+
+html[data-theme="dark"]
+.gd-page .today-home-card {
+  background-color: var(--color-hero);
+
+  border-color: var(--color-border);
+  color: var(--color-hero-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-card h2 {
+  color: var(--color-hero-text);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-card > p {
+  color: var(--color-hero-muted);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-header > span:first-child {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-date {
+  color: var(--color-hero-muted);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-status {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-pulse {
+  background-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-exercise-link {
+  background-color: var(--color-inset);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-exercise-link:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-exercise-info strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gd-page .today-home-exercise-info small {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   16. DARK THEME - SUMMARY CARDS
+========================================== */
+
+html[data-theme="dark"] .gd-stat-card {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+/*
+  Instead of three identical black cards,
+  use three soft dark variations.
+*/
+
+html[data-theme="dark"]
+.gd-stat-card:nth-child(3n + 1) {
+  background-color: var(--color-lavender);
+}
+
+html[data-theme="dark"]
+.gd-stat-card:nth-child(3n + 2) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme="dark"]
+.gd-stat-card:nth-child(3n) {
+  background-color: var(--color-sky);
+}
+
+html[data-theme="dark"]
+.gd-stat-card > :is(span, strong, small) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   17. DARK THEME - PROGRESS BAR
+========================================== */
+
+html[data-theme="dark"]
+.gd-progress-track {
+  background-color: var(--color-inset);
+}
+
+html[data-theme="dark"]
+.gd-progress-track > div {
+  background-color: var(--color-accent);
+}
+
+/* ==========================================
+   18. DARK THEME - CONTENT PANELS
+========================================== */
+
+html[data-theme="dark"] .gd-panel {
+  background-color: var(--color-surface);
+
+  border-color: var(--color-border);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="dark"]
+.gd-section-heading h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gd-section-heading p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gd-section-heading > a {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-section-heading > a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ==========================================
+   19. DARK THEME - RECENT WORKOUTS
+========================================== */
+
+html[data-theme="dark"]
+.gd-recent-item {
+  background-color: var(--color-surface-soft);
+
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gd-recent-item:hover {
+  background-color: var(--color-card-hover);
+  border-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-recent-icon {
+  background-color: var(--color-lavender);
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-recent-details strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gd-recent-details span,
+html[data-theme="dark"]
+.gd-recent-status {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"]
+.gd-chevron {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   20. DARK THEME - EMPTY HISTORY
+========================================== */
+
+html[data-theme="dark"] .gd-empty {
+  background-color: var(--color-surface-soft);
+
+  border-color: var(--color-border-strong);
+}
+
+html[data-theme="dark"] .gd-empty p {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .gd-empty span {
+  color: var(--color-text-secondary);
+}
+
+/*
+  Start Training is an action button.
+  Preserve its button contrast.
+*/
+
+html[data-theme="dark"] .gd-empty a {
+  background-color: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+}
+
+html[data-theme="dark"]
+.gd-empty a:hover {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+  color: var(--color-action-text);
+}
+
+/* ==========================================
+   21. DARK THEME - QUICK ACCESS
+========================================== */
+
+html[data-theme="dark"]
+.gd-shortcut {
+  background-color: var(--color-surface-soft);
+
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"]
+.gd-shortcut:hover {
+  background-color: var(--color-card-hover);
+  border-color: var(--color-accent);
+}
+
+html[data-theme="dark"]
+.gd-shortcut strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"]
+.gd-shortcut span {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   22. DARK THEME - KEYBOARD FOCUS
+========================================== */
+
+html[data-theme="dark"]
+.gd-page :is(
+  .gd-recent-item,
+  .gd-shortcut,
+  .gd-section-heading > a
+):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
 }

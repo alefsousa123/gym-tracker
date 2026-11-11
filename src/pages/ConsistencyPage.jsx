@@ -2,6 +2,9 @@
 import { useMemo } from "react";
 import { Link } from "react-router";
 
+import BackToPreviousPage from
+  "../components/navigation/BackToPreviousPage";
+
 import {
   useTrainingProfile,
 } from "../context/TrainingProfileContext";
@@ -20,6 +23,10 @@ import {
 } from "../utils/consistencyMetrics";
 
 import "./ConsistencyPage.css";
+
+// ==========================================
+// DATE FORMATTING
+// ==========================================
 
 // Display dates in the same language as the app.
 function formatShortDate(date) {
@@ -45,6 +52,10 @@ function formatWeekRange(startDate) {
   );
 }
 
+// ==========================================
+// WEEK STATUS
+// ==========================================
+
 function getWeekStatus(week, goal) {
   if (week.beforeHistory) {
     return "Not Tracked";
@@ -64,6 +75,10 @@ function getWeekStatus(week, goal) {
 
   return "Below Target";
 }
+
+// ==========================================
+// MAIN PAGE
+// ==========================================
 
 function ConsistencyPage() {
   const { profile } =
@@ -107,12 +122,20 @@ function ConsistencyPage() {
 
   return (
     <main className="consistency-page">
-      <Link
-        to="/workouts"
+
+      {/* ==================================
+          CONTEXTUAL BACK NAVIGATION
+      ================================== */}
+
+      <BackToPreviousPage
+        fallbackTo="/workouts"
+        fallbackLabel="Workouts"
         className="cs-back-link"
-      >
-        ← Back to Workouts
-      </Link>
+      />
+
+      {/* ==================================
+          PAGE HEADER
+      ================================== */}
 
       <header className="cs-page-header">
         <span className="cs-eyebrow">
