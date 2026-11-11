@@ -1,27 +1,36 @@
 
 import { NavLink } from "react-router";
 
+import BrandMark from "./BrandMark";
+
+import {
+  APP_NAME,
+} from "../config/brand";
+
 function Header() {
   return (
     <header className="header">
       <div className="header-content">
-        {/* Logo links to the Home page */}
+
+        {/* Application brand */}
+
         <NavLink
-          to="/"
+          to="/dashboard"
           className="logo"
+          aria-label={`${APP_NAME} home`}
         >
-          Gym Tracker
+          <BrandMark />
+
+          <span className="brand-name">
+            {APP_NAME}
+          </span>
         </NavLink>
 
-        {/* Main application navigation */}
+        {/* Main navigation */}
+
         <nav
           className="navigation"
           aria-label="Main navigation"
-          style={{
-            flexWrap: "wrap",
-            justifyContent: "center",
-            rowGap: "12px",
-          }}
         >
           <NavLink to="/dashboard">
             Dashboard
@@ -43,6 +52,7 @@ function Header() {
             Settings
           </NavLink>
         </nav>
+
       </div>
     </header>
   );

@@ -1,0 +1,920 @@
+
+/* ==========================================
+   ELECTRIC BLOOM DESIGN SYSTEM
+
+   Energetic colors with a comfortable
+   low-glare background.
+
+   This file only affects Light Theme.
+========================================== */
+
+/* ==========================================
+   1. COLOR PALETTE
+========================================== */
+
+html[data-theme="light"] {
+  /* Comfortable backgrounds */
+
+  --color-page: #dcdfea;
+  --color-surface: #eeebf5;
+  --color-surface-soft: #ded9f1;
+  --color-surface-hover: #d4cced;
+  --color-inset: #e4e1ee;
+  --color-card-hover: #d4cced;
+
+  /* Typography */
+
+  --color-text: #292642;
+  --color-text-secondary: #4a4862;
+  --color-text-muted: #5f5c75;
+
+  /* Borders */
+
+  --color-border: #c7c4dc;
+  --color-border-strong: #aaa2cf;
+
+  /* Primary: electric blue */
+
+  --color-accent: #5145d5;
+  --color-accent-hover: #4035b7;
+  --color-accent-contrast: #ffffff;
+
+  /* Accent colors */
+
+  --color-lavender: #c8beff;
+  --color-mint: #bdeddc;
+  --color-peach: #ffd7c6;
+  --color-rose: #f3c5dd;
+
+  --color-sky: #bfdef7;
+  --color-mango: #ffc57b;
+  --color-butter: #ffe3a8;
+
+  /* Important actions */
+
+  --color-action: #ffc57b;
+  --color-action-hover: #ffb45c;
+  --color-action-text: #292642;
+
+  /* Dark ink surfaces */
+
+  --color-ink: #222039;
+
+  /* Positive states */
+
+  --color-success-text: #176849;
+  --color-success-bg: #bdeddc;
+
+  /* Secondary actions */
+
+  --color-secondary-action-bg: #ded9f5;
+  --color-secondary-action-hover: #cfc5f4;
+  --color-secondary-action-border: #aaa2cf;
+  --color-secondary-action-text: #4035a1;
+
+  /* Keyboard focus */
+
+  --color-focus: #5145d5;
+
+  /* Shadows */
+
+  --shadow-card:
+    0 4px 16px rgba(37, 32, 84, 0.07);
+
+  --shadow-card-hover:
+    0 10px 26px rgba(37, 32, 84, 0.16);
+}
+
+/* ==========================================
+   2. PAGE BACKGROUNDS
+========================================== */
+
+html[data-theme="light"] body {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+/*
+  The outer main is part of AppLayout.
+  These pages have already been migrated.
+*/
+
+html[data-theme="light"]
+.app > main:has(
+  > :is(
+    .gd-page,
+    .gp-page,
+    .workouts-hub-page,
+    .settings-page,
+    .welcome-section
+  )
+) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+html[data-theme="light"] :is(
+  .gd-page,
+  .gp-page,
+  .workouts-hub-page,
+  .settings-page
+) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   3. HEADER
+========================================== */
+
+html[data-theme="light"] .header {
+  background-color: var(--color-ink);
+  border-color: #403b60;
+}
+
+html[data-theme="light"] .brand-name {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .brand-mark {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+html[data-theme="light"] .navigation a {
+  color: #dedaf3;
+}
+
+html[data-theme="light"] .navigation a:hover {
+  background-color: #393354;
+  border-color: #625a89;
+  color: #ffffff;
+}
+
+html[data-theme="light"] .navigation a.active {
+  background-color: var(--color-accent);
+  border-color: #7368ed;
+  color: #ffffff;
+}
+
+/* ==========================================
+   4. FOOTER
+========================================== */
+
+html[data-theme="light"] .footer {
+  background-color: var(--color-ink);
+  border-color: #403b60;
+}
+
+html[data-theme="light"] .footer p {
+  color: #d3cee7;
+}
+
+html[data-theme="light"] .footer a {
+  color: #ffc57b;
+}
+
+/* ==========================================
+   5. PAGE HEADINGS
+========================================== */
+
+html[data-theme="light"] :is(
+  .gd-heading h1,
+  .gp-heading h1,
+  .schedule-page-heading h1,
+  .settings-page-heading h1
+) {
+  color: var(--color-text);
+}
+
+html[data-theme="light"] :is(
+  .gd-heading p,
+  .gp-heading p,
+  .schedule-page-heading p,
+  .settings-page-heading p
+) {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"] :is(
+  .gd-eyebrow,
+  .gp-eyebrow,
+  .schedule-eyebrow,
+  .settings-eyebrow
+) {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   6. SHARED PANELS
+========================================== */
+
+html[data-theme="light"] :is(
+  .gd-panel,
+  .gp-panel,
+  .workouts-hub-summary
+) {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"] :is(
+  .gd-section-heading h2,
+  .gp-section-heading h2,
+  .workouts-hub-summary h2
+) {
+  color: var(--color-text);
+}
+
+html[data-theme="light"] :is(
+  .gd-section-heading p,
+  .gp-section-heading p,
+  .workouts-hub-summary p
+) {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   7. DASHBOARD - TODAY'S WORKOUT
+========================================== */
+
+html[data-theme="light"]
+.gd-page .today-home-card {
+  background: linear-gradient(
+    125deg,
+    #5145d5 0%,
+    #5b4ed6 54%,
+    #7667e0 100%
+  );
+
+  border-color: #7568ec;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 24px rgba(57, 44, 157, 0.16);
+}
+
+html[data-theme="light"]
+.gd-page .today-home-card h2 {
+  color: #ffffff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-card > p {
+  color: #eeebff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-header > span:first-child {
+  color: #ffe2ab;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-date {
+  color: #ede8ff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-status {
+  color: #ffffff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-status.is-complete {
+  color: #ffffff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-pulse {
+  background-color: #ffc57b;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-exercises span {
+  background-color: rgba(255, 255, 255, 0.16);
+
+  border-color: rgba(255, 255, 255, 0.32);
+
+  color: #ffffff;
+}
+
+/* Important action: mango */
+
+html[data-theme="light"]
+.gd-page .today-home-action {
+  background-color: var(--color-action);
+
+  border-color: var(--color-action);
+
+  color: var(--color-action-text);
+}
+
+html[data-theme="light"]
+.gd-page .today-home-action:hover:not(:disabled) {
+  background-color: var(--color-action-hover);
+
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
+}
+
+/* Secondary action */
+
+html[data-theme="light"]
+.gd-page .today-home-secondary-action {
+  background-color: rgba(255, 255, 255, 0.16);
+
+  border-color: rgba(255, 255, 255, 0.5);
+
+  color: #ffffff;
+}
+
+html[data-theme="light"]
+.gd-page .today-home-secondary-action:hover {
+  background-color: rgba(255, 255, 255, 0.27);
+
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+/* ==========================================
+   8. DASHBOARD - COLORFUL STATS
+========================================== */
+
+html[data-theme="light"]
+.gd-stat-card {
+  border-color: rgba(55, 46, 110, 0.15);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"]
+.gd-stat-card:nth-child(3n + 1) {
+  background-color: var(--color-lavender);
+}
+
+html[data-theme="light"]
+.gd-stat-card:nth-child(3n + 2) {
+  background-color: var(--color-mint);
+}
+
+html[data-theme="light"]
+.gd-stat-card:nth-child(3n) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme="light"]
+.gd-stat-card > :is(span, strong, small) {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gd-progress-track {
+  background-color: rgba(41, 38, 66, 0.15);
+}
+
+html[data-theme="light"]
+.gd-progress-track > div {
+  background-color: #5145d5;
+}
+
+/* ==========================================
+   9. DASHBOARD - RECENT ACTIVITY
+========================================== */
+
+html[data-theme="light"]
+.gd-recent-item {
+  background-color: #e2ddf3;
+
+  border-color: var(--color-border);
+
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gd-recent-icon {
+  background-color: #c8beff;
+  color: #4035a1;
+}
+
+html[data-theme="light"]
+.gd-recent-details strong {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gd-recent-details span,
+html[data-theme="light"]
+.gd-recent-status {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.gd-chevron {
+  color: var(--color-accent);
+}
+
+html[data-theme="light"]
+.gd-empty {
+  background-color: #e2ddf3;
+  border-color: var(--color-border);
+}
+
+html[data-theme="light"]
+.gd-empty p {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gd-empty span {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   10. DASHBOARD - QUICK ACCESS
+========================================== */
+
+html[data-theme="light"]
+.gd-shortcut:nth-child(odd) {
+  --card-bg: var(--color-sky);
+}
+
+html[data-theme="light"]
+.gd-shortcut:nth-child(even) {
+  --card-bg: var(--color-mint);
+}
+
+html[data-theme="light"]
+.gd-shortcut {
+  background-color: var(--card-bg);
+
+  border-color: rgba(55, 46, 110, 0.15);
+}
+
+html[data-theme="light"]
+.gd-shortcut :is(strong, span) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   11. WORKOUTS - COLORFUL CARDS
+========================================== */
+
+html[data-theme="light"]
+.workouts-hub-card:nth-child(4n + 1) {
+  --card-bg: var(--color-lavender);
+}
+
+html[data-theme="light"]
+.workouts-hub-card:nth-child(4n + 2) {
+  --card-bg: var(--color-mint);
+}
+
+html[data-theme="light"]
+.workouts-hub-card:nth-child(4n + 3) {
+  --card-bg: var(--color-peach);
+}
+
+html[data-theme="light"]
+.workouts-hub-card:nth-child(4n) {
+  --card-bg: var(--color-sky);
+}
+
+html[data-theme="light"]
+.workouts-hub-card {
+  background-color: var(--card-bg);
+
+  border-color: rgba(55, 46, 110, 0.15);
+
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"]
+.workouts-hub-card :is(h2, p) {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.workouts-hub-tag {
+  color: #4035a1;
+}
+
+/* Mango action inside each card */
+
+html[data-theme="light"]
+.workouts-hub-card .workouts-hub-action {
+  background-color: var(--color-action);
+
+  border-color: #e8a654;
+
+  color: var(--color-action-text);
+}
+
+html[data-theme="light"]
+.workouts-hub-card:hover .workouts-hub-action {
+  background-color: var(--color-action-hover);
+
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
+}
+
+/* ==========================================
+   12. PROGRESS - COLORFUL STATS
+========================================== */
+
+html[data-theme="light"]
+.gp-stat-card {
+  border-color: rgba(55, 46, 110, 0.15);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"]
+.gp-stat-card:nth-child(4n + 1) {
+  background-color: var(--color-mint);
+}
+
+html[data-theme="light"]
+.gp-stat-card:nth-child(4n + 2) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme="light"]
+.gp-stat-card:nth-child(4n + 3) {
+  background-color: var(--color-sky);
+}
+
+html[data-theme="light"]
+.gp-stat-card:nth-child(4n) {
+  background-color: var(--color-butter);
+}
+
+html[data-theme="light"]
+.gp-stat-card > :is(span, strong, small) {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   13. PROGRESS - WEEKLY CHART
+========================================== */
+
+html[data-theme="light"]
+.gp-week-track {
+  background-color: #d9d4ec;
+}
+
+html[data-theme="light"]
+.gp-week-fill {
+  background-color: #9890e2;
+}
+
+html[data-theme="light"]
+.gp-week-fill.is-goal-met {
+  background-color: #36a781;
+}
+
+html[data-theme="light"]
+.gp-week-column > strong {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gp-week-column > span,
+html[data-theme="light"]
+.gp-chart-note {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.gp-week-column > small {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   14. PROGRESS - ANALYSIS CARDS
+========================================== */
+
+html[data-theme="light"]
+.gp-analysis-grid
+.gp-analysis-card:nth-child(5n + 1) {
+  --card-bg: var(--color-lavender);
+}
+
+html[data-theme="light"]
+.gp-analysis-grid
+.gp-analysis-card:nth-child(5n + 2) {
+  --card-bg: var(--color-mint);
+}
+
+html[data-theme="light"]
+.gp-analysis-grid
+.gp-analysis-card:nth-child(5n + 3) {
+  --card-bg: var(--color-peach);
+}
+
+html[data-theme="light"]
+.gp-analysis-grid
+.gp-analysis-card:nth-child(5n + 4) {
+  --card-bg: var(--color-sky);
+}
+
+html[data-theme="light"]
+.gp-analysis-grid
+.gp-analysis-card:nth-child(5n) {
+  --card-bg: var(--color-rose);
+}
+
+html[data-theme="light"]
+.gp-analysis-grid .gp-analysis-card {
+  background-color: var(--card-bg);
+
+  border-color: rgba(55, 46, 110, 0.15);
+
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"]
+.gp-analysis-card :is(strong, p) {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gp-analysis-icon {
+  background-color: rgba(255, 255, 255, 0.3);
+
+  color: #4035a1;
+}
+
+html[data-theme="light"]
+.gp-analysis-action {
+  color: #4035a1;
+}
+
+/* ==========================================
+   15. FIX HOVER CONTRAST
+========================================== */
+
+/*
+  Hover mixes 90% of the card color
+  with 10% electric blue.
+
+  The result stays colorful without
+  becoming too dark to read.
+*/
+
+html[data-theme="light"]
+.app > main
+.gp-analysis-grid
+.gp-analysis-card:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--card-bg) 90%,
+    #5145d5 10%
+  );
+
+  border-color: #9184dc;
+
+  box-shadow: var(--shadow-card-hover);
+}
+
+html[data-theme="light"]
+.app > main
+.workouts-hub-card:hover,
+html[data-theme="light"]
+.app > main
+.gd-shortcut:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--card-bg) 90%,
+    #5145d5 10%
+  );
+
+  border-color: #9184dc;
+
+  box-shadow: var(--shadow-card-hover);
+}
+
+html[data-theme="light"]
+.app > main
+.gp-analysis-grid
+.gp-analysis-card:hover :is(strong, p, span) {
+  color: var(--color-text);
+}
+
+/* History cards have no individual colors */
+
+html[data-theme="light"]
+.app > main
+.gp-history-row:hover,
+html[data-theme="light"]
+.app > main
+.gd-recent-item:hover {
+  background-color: #d4ccf0;
+
+  border-color: #9184dc;
+}
+
+/* ==========================================
+   16. PROGRESS - HISTORY
+========================================== */
+
+html[data-theme="light"]
+.gp-history-row {
+  background-color: #e2ddf3;
+
+  border-color: var(--color-border);
+
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gp-history-info strong {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.gp-history-info span {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.gp-history-status {
+  background-color: var(--color-butter);
+
+  color: #69470c;
+}
+
+html[data-theme="light"]
+.gp-history-status.is-complete {
+  background-color: var(--color-mint);
+
+  color: var(--color-success-text);
+}
+
+/* ==========================================
+   17. SETTINGS
+========================================== */
+
+html[data-theme="light"]
+.settings-card {
+  background-color: var(--color-surface);
+
+  border-color: var(--color-border);
+}
+
+html[data-theme="light"]
+a.settings-card:first-child {
+  background-color: #dfd9f8;
+}
+
+html[data-theme="light"]
+a.settings-card:nth-child(2) {
+  background-color: #d0ecdf;
+}
+
+html[data-theme="light"]
+a.settings-card:hover {
+  background-color: #cec4f4;
+
+  border-color: #998ce3;
+}
+
+html[data-theme="light"]
+.settings-storage-note {
+  background-color: var(--color-surface);
+
+  border-color: var(--color-border);
+}
+
+/* ==========================================
+   18. WELCOME PAGE
+========================================== */
+
+html[data-theme="light"]
+.welcome-section {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.welcome-section .section-label,
+html[data-theme="light"]
+.features-section .section-label {
+  color: var(--color-accent);
+}
+
+html[data-theme="light"]
+.welcome-section h2,
+html[data-theme="light"]
+.features-section h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.welcome-section p,
+html[data-theme="light"]
+.features-section .section-heading p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.feature-card:nth-child(4n + 1) {
+  background-color: var(--color-lavender);
+}
+
+html[data-theme="light"]
+.feature-card:nth-child(4n + 2) {
+  background-color: var(--color-mint);
+}
+
+html[data-theme="light"]
+.feature-card:nth-child(4n + 3) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme="light"]
+.feature-card:nth-child(4n) {
+  background-color: var(--color-sky);
+}
+
+html[data-theme="light"]
+.feature-card {
+  border-color: rgba(55, 46, 110, 0.15);
+
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.feature-card h3 {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.feature-card p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.welcome-section .primary-button,
+html[data-theme="light"]
+.features-action .primary-button {
+  background-color: var(--color-action);
+
+  border-color: var(--color-action);
+
+  color: var(--color-action-text);
+}
+
+html[data-theme="light"]
+.welcome-section .primary-button:hover,
+html[data-theme="light"]
+.features-action .primary-button:hover {
+  background-color: var(--color-action-hover);
+
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
+}
+
+/* ==========================================
+   19. ACCESSIBILITY
+========================================== */
+
+html[data-theme="light"] :is(
+  .gp-analysis-card,
+  .workouts-hub-card,
+  .gd-shortcut,
+  .primary-button
+):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   20. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="light"] :is(
+    .gp-analysis-card,
+    .workouts-hub-card,
+    .gd-shortcut
+  ) {
+    transition: none;
+  }
+
+  html[data-theme="light"] :is(
+    .gp-analysis-card,
+    .workouts-hub-card,
+    .gd-shortcut
+  ):hover {
+    transform: none;
+  }
+}

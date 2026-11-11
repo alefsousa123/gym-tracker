@@ -26,8 +26,6 @@ import TrainingChartsPage from "./pages/TrainingChartsPage";
 import BodyFatEstimatorPage from "./pages/BodyFatEstimatorPage";
 import BodyMeasurementsPage from "./pages/BodyMeasurementsPage";
 
-import TodayWorkoutOverview from "./components/workouts/TodayWorkoutOverview";
-
 import ExercisesPage from "./pages/ExercisesPage";
 import ExerciseDetailsPage from "./pages/ExerciseDetailsPage";
 
@@ -89,26 +87,42 @@ function App() {
             <WorkoutSessionProvider>
               <Routes>
                 <Route element={<AppLayout />}>
-                  {/* HOME */}
+
+                  {/* ==================================
+                      ROOT ROUTE
+                  ================================== */}
 
                   <Route
                     path="/"
                     element={
-                      <>
-                        <TodayWorkoutOverview />
-                        <HomePage />
-                      </>
+                      <Navigate
+                        to="/dashboard"
+                        replace
+                      />
                     }
                   />
 
-                  {/* DASHBOARD */}
+                  {/* ==================================
+                      PUBLIC WELCOME PAGE
+                  ================================== */}
+
+                  <Route
+                    path="/welcome"
+                    element={<HomePage />}
+                  />
+
+                  {/* ==================================
+                      DASHBOARD
+                  ================================== */}
 
                   <Route
                     path="/dashboard"
                     element={<DashboardPage />}
                   />
 
-                  {/* WORKOUTS */}
+                  {/* ==================================
+                      WORKOUTS
+                  ================================== */}
 
                   <Route
                     path="/workouts"
@@ -135,7 +149,9 @@ function App() {
                     element={<WorkoutBuilderPage />}
                   />
 
-                  {/* PROGRESS */}
+                  {/* ==================================
+                      PROGRESS
+                  ================================== */}
 
                   <Route
                     path="/progress"
@@ -177,7 +193,9 @@ function App() {
                     element={<BodyMeasurementsPage />}
                   />
 
-                  {/* LEGACY ROUTE REDIRECTS */}
+                  {/* ==================================
+                      OLD WORKOUT ROUTES
+                  ================================== */}
 
                   <Route
                     path="/workouts/history"
@@ -191,9 +209,7 @@ function App() {
 
                   <Route
                     path="/workouts/history/:workoutId"
-                    element={
-                      <LegacyHistoryRedirect />
-                    }
+                    element={<LegacyHistoryRedirect />}
                   />
 
                   <Route
@@ -206,7 +222,9 @@ function App() {
                     }
                   />
 
-                  {/* EXERCISES */}
+                  {/* ==================================
+                      EXERCISES
+                  ================================== */}
 
                   <Route
                     path="/exercises"
@@ -218,7 +236,9 @@ function App() {
                     element={<ExerciseDetailsPage />}
                   />
 
-                  {/* SETTINGS */}
+                  {/* ==================================
+                      SETTINGS
+                  ================================== */}
 
                   <Route
                     path="/settings"
@@ -235,7 +255,9 @@ function App() {
                     element={<EquipmentPage />}
                   />
 
-                  {/* LEGACY SETTINGS REDIRECTS */}
+                  {/* ==================================
+                      OLD SETTINGS ROUTES
+                  ================================== */}
 
                   <Route
                     path="/profile"
@@ -257,7 +279,9 @@ function App() {
                     }
                   />
 
-                  {/* NOT FOUND */}
+                  {/* ==================================
+                      PAGE NOT FOUND
+                  ================================== */}
 
                   <Route
                     path="*"

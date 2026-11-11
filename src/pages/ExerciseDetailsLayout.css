@@ -1,301 +1,1125 @@
 
- 
 /* ==========================================
-   UNIFIED EXERCISE OVERVIEW
+   EXERCISE DETAILS - TERRA ACTIVE
+   R1.4 - PART 3
+
+   This file controls:
+   - Exercise details layout
+   - Exercise demonstration
+   - Expandable information sections
+   - Video tutorial
+   - Training tips
+
+   Existing React logic is preserved.
 ========================================== */
 
-/* Main container */
+/* ==========================================
+   1. PAGE AND THEME
+========================================== */
 
-.exercise-detail-page .exercise-overview-card {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 38fr)
-    minmax(0, 62fr);
-  align-items: start;
+html[data-theme] .exercise-detail-page {
+  --ed-demo-bg: #dce5e9;
+  --ed-video-bg: var(--color-inset);
 
   width: 100%;
-  margin: 24px 0;
-  padding: 20px;
+  max-width: 1100px;
+  min-width: 0;
 
-  border: 1px solid #27272a;
-  border-radius: 14px;
-  background-color: #18181b;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .exercise-detail-page {
+  --ed-demo-bg: #d6ebf7;
+  --ed-video-bg: #19191e;
+}
+
+html[data-theme]
+.app > main:has(> .exercise-detail-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+.exercise-detail-page,
+.exercise-detail-page * {
+  box-sizing: border-box;
+}
+
+/* Prevent media from overflowing the page */
+
+.exercise-detail-page img,
+.exercise-detail-page video,
+.exercise-detail-page iframe {
+  max-width: 100%;
 }
 
 /* ==========================================
-   LEFT COLUMN - ANIMATION
+   2. BACK LINK
 ========================================== */
 
-.exercise-overview-card .exercise-overview-visual {
+html[data-theme]
+.exercise-detail-page .detail-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
+  margin-bottom: 20px;
+
+  color: var(--color-accent);
+
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+html[data-theme]
+.exercise-detail-page .detail-back-link:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+/* ==========================================
+   3. PAGE HEADING
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-detail-heading {
+  margin-bottom: 22px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-detail-heading .section-label {
+  color: var(--color-accent);
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-detail-heading h1 {
+  margin: 10px 0;
+
+  color: var(--color-text);
+
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.2;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-detail-heading p {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   4. MAIN OVERVIEW CARD
+========================================== */
+
+html[data-theme]
+.exercise-detail-page .exercise-overview-card {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 38fr)
+    minmax(0, 62fr);
+
+  align-items: start;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 24px 0;
+  padding: 20px;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  box-shadow: var(--shadow-card);
+}
+
+/* ==========================================
+   5. DEMONSTRATION COLUMN
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-visual {
   display: flex;
   align-items: center;
   justify-content: center;
+
   min-width: 0;
 
   padding: 8px 22px 8px 8px;
 }
 
-/* Remove the animation's individual card */
+/*
+  The overview card already has a
+  surface and border, so we remove
+  the animation's nested card design.
+*/
 
-.exercise-overview-card .exercise-animation-panel {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-animation-panel {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
 
   margin: 0;
   padding: 0;
 
-  border: none;
+  border: 0;
   border-radius: 0;
   background: transparent;
 }
 
-/* Compact animation heading */
+/* ==========================================
+   6. DEMONSTRATION HEADING
+========================================== */
 
-.exercise-overview-card .animation-heading {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-heading {
+  display: flex;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+
   gap: 8px;
   margin-bottom: 14px;
 }
 
-.exercise-overview-card .animation-heading h2 {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-heading h2 {
   margin: 0;
+
+  color: var(--color-text);
+
   font-size: 15px;
+  line-height: 1.4;
   text-align: center;
 }
 
-.exercise-overview-card .animation-badge {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-badge {
+  padding: 5px 9px;
+
+  background-color: var(--color-mint);
+  color: var(--color-success-text);
+
+  border-radius: 999px;
+
   font-size: 10px;
-  padding: 4px 8px;
+  font-weight: 700;
 }
 
-/* Demonstration image */
+/* ==========================================
+   7. COMPACT EXERCISE DEMONSTRATION
+========================================== */
 
-.exercise-overview-card .exercise-animation-stage {
+/*
+  Keep the demonstration small.
+
+  The image animation and its timing
+  remain defined in the existing
+  global styles.
+*/
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-animation-stage {
+  position: relative;
+
   width: min(100%, 210px);
   max-width: 210px;
   height: auto;
+
   aspect-ratio: 1 / 1;
 
   margin: 0 auto;
 
-  border-radius: 10px;
-  background-color: #d6ebf7;
   overflow: hidden;
+
+  background-color: var(--ed-demo-bg);
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
 }
 
-/* Video loops use the same compact dimensions */
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-animation-stage .animation-image {
+  width: 100%;
+  height: 100%;
 
-.exercise-overview-card .exercise-loop-video {
+  object-fit: contain;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-loop-video {
+  display: block;
+
   width: 100%;
   max-width: 240px;
   height: auto;
+
   margin: 0 auto;
+
+  background-color: var(--ed-demo-bg);
+
   border-radius: 10px;
 }
 
-/* Description and preview controls */
+/* ==========================================
+   8. DEMONSTRATION DESCRIPTION
+========================================== */
 
-.exercise-overview-card .animation-description {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-description {
   max-width: 240px;
+
   margin: 12px auto;
 
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.6;
   text-align: center;
 }
 
-.exercise-overview-card .animation-control {
-  display: block;
-  margin: 12px auto 0;
-  padding: 9px 16px;
+/* ==========================================
+   9. PLAY / PAUSE BUTTON
+========================================== */
 
+/*
+  This is a secondary action, not
+  the main training action.
+*/
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-control {
+  display: block;
+
+  min-height: 42px;
+
+  margin: 12px auto 0;
+  padding: 10px 15px;
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  color:
+    var(--color-secondary-action-text);
+
+  font-family: inherit;
   font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.animation-control:hover {
+  background-color:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
 }
 
 /* ==========================================
-   RIGHT COLUMN - ACCORDIONS
+   10. INFORMATION COLUMN
 ========================================== */
 
-.exercise-overview-card .exercise-overview-content {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-content {
   display: flex;
   flex-direction: column;
+
   min-width: 0;
 
-  border-left: 1px solid #34343a;
   padding-left: 20px;
+
+  border-left:
+    1px solid var(--color-border);
 }
 
-/* Remove the individual accordion cards */
+/* ==========================================
+   11. EXPANDABLE SECTIONS
+========================================== */
 
-.exercise-overview-card .exercise-accordion {
+/*
+  Native <details> and <summary>
+  continue handling expand/collapse.
+*/
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion {
   width: 100%;
   min-width: 0;
+
   margin: 0;
 
-  border: none;
-  border-bottom: 1px solid #34343a;
-  border-radius: 0;
+  overflow: visible;
 
   background: transparent;
-  overflow: visible;
+
+  border: 0;
+  border-bottom:
+    1px solid var(--color-border);
+
+  border-radius: 0;
 }
 
-.exercise-overview-card .exercise-accordion:last-child {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion:last-child {
   border-bottom: none;
 }
 
-/* Accordion headings */
+/* Accordion header */
 
-.exercise-overview-card .exercise-accordion-summary {
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
 
   min-height: 58px;
-  padding: 14px 8px;
+  padding: 14px 10px;
 
-  border-radius: 6px;
+  border-radius: 8px;
+
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease;
 }
 
-.exercise-overview-card .exercise-accordion-summary:hover {
-  background-color: #222225;
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-summary:hover {
+  background-color: var(--color-surface-hover);
 }
 
-.exercise-overview-card .exercise-accordion-summary:focus-visible {
-  outline: 2px solid #22c55e;
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-summary:focus-visible {
+  outline: 3px solid var(--color-focus);
   outline-offset: -2px;
 }
 
-.exercise-overview-card .exercise-accordion-title {
+/* Remove the browser's default arrow */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Accordion title */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-title {
+  color: var(--color-text);
+
   font-size: 14px;
-  font-weight: 600;
-  color: #f4f4f5;
+  font-weight: 700;
 }
 
-.exercise-overview-card .exercise-accordion-chevron {
+/* Accordion chevron */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-chevron {
   flex-shrink: 0;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
+  font-size: 24px;
+  line-height: 1;
+
+  transition:
+    transform 180ms ease;
 }
 
-/* Expanded accordion content */
+html[data-theme]
+.exercise-detail-page
+.exercise-accordion[open]
+.exercise-accordion-chevron {
+  transform: rotate(180deg);
+}
 
-.exercise-overview-card .exercise-accordion-content {
+/* Expanded accordion header */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-accordion[open]
+> .exercise-accordion-summary {
+  background-color: var(--color-surface-soft);
+}
+
+/* ==========================================
+   12. EXPANDED CONTENT
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-overview-card
+.exercise-accordion-content {
   min-width: 0;
-  padding: 16px 8px 22px;
 
-  border-top: 1px solid #27272a;
+  padding: 16px 10px 22px;
+
   background: transparent;
+
+  border-top:
+    1px solid var(--color-border);
+
+  color: var(--color-text);
 }
 
-/* Expanded text */
+/* ==========================================
+   13. HOW TO PERFORM
+========================================== */
 
-.exercise-overview-card .how-to-content p,
-.exercise-overview-card .exercise-instructions,
-.exercise-overview-card .form-tips-list,
-.exercise-overview-card .common-mistakes-list {
+html[data-theme]
+.exercise-detail-page
+.how-to-content h3 {
+  margin: 18px 0 8px;
+
+  color: var(--color-accent);
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+html[data-theme]
+.exercise-detail-page
+.how-to-content h3:first-child {
+  margin-top: 0;
+}
+
+html[data-theme]
+.exercise-detail-page
+.how-to-content p {
+  margin: 0 0 14px;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.75;
 }
 
-.exercise-overview-card .how-to-content h3 {
-  margin-top: 18px;
-  margin-bottom: 8px;
-  font-size: 14px;
+/* Instruction lists */
+
+html[data-theme]
+.exercise-detail-page :is(
+  .exercise-instructions,
+  .form-tips-list,
+  .common-mistakes-list
+) {
+  margin-top: 0;
+  margin-bottom: 16px;
+
+  padding-left: 22px;
+
+  color: var(--color-text-secondary);
+
+  font-size: 13px;
+  line-height: 1.75;
 }
 
-/* Exercise information */
+html[data-theme]
+.exercise-detail-page :is(
+  .exercise-instructions,
+  .form-tips-list,
+  .common-mistakes-list
+) li {
+  margin-bottom: 9px;
+  padding-left: 4px;
+}
 
-.exercise-overview-card .exercise-information {
+html[data-theme]
+.exercise-detail-page :is(
+  .exercise-instructions,
+  .form-tips-list
+) li::marker {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+html[data-theme]
+.exercise-detail-page
+.common-mistakes-list li::marker {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   14. EXERCISE INFORMATION
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-information {
+  display: flex;
+  flex-direction: column;
+
   gap: 14px;
+
+  margin: 0;
 }
 
-/* Exercise variations */
+html[data-theme]
+.exercise-detail-page
+.exercise-information div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 
-.exercise-overview-card .exercise-variations {
+html[data-theme]
+.exercise-detail-page
+.exercise-information dt {
+  color: var(--color-text-muted);
+
+  font-size: 12px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-information dd {
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   15. EXERCISE VARIATIONS
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-variations {
+  display: flex;
+  flex-direction: column;
+
   gap: 12px;
 }
 
-.exercise-overview-card .variation-card {
-  padding: 14px;
+html[data-theme]
+.exercise-detail-page
+.variation-card {
+  padding: 15px;
+
+  background-color: var(--color-surface-soft);
+
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.variation-card h3 {
+  margin: 0 0 9px;
+
+  color: var(--color-accent);
+
+  font-size: 13px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.variation-card p {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 /* ==========================================
-   VIDEO TUTORIAL
+   16. VIDEO TUTORIAL PANEL
 ========================================== */
 
-.exercise-detail-page .exercise-video-panel {
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel {
+  width: 100%;
+  min-width: 0;
+
   margin-top: 20px;
   padding: 22px;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+}
+
+/* Video panel heading */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-panel-heading h2 {
+  color: var(--color-text);
+
+  font-size: 19px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-panel-heading p {
+  color: var(--color-text-secondary);
+}
+
+/* Video icon */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-heading-icon {
+  background-color: var(--color-peach);
+  color: var(--color-accent);
+}
+
+/* Video metadata */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-information h3 {
+  color: var(--color-text);
+
+  font-size: 15px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-information p {
+  color: var(--color-text-secondary);
 }
 
 /* ==========================================
-   TABLET RESPONSIVENESS
+   17. VIDEO PLACEHOLDER
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.exercise-video-placeholder {
+  min-height: 190px;
+
+  padding: 22px;
+
+  background: var(--ed-video-bg);
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-play-icon {
+  background-color: var(--color-peach);
+  color: var(--color-accent);
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.exercise-video-placeholder h4 {
+  color: var(--color-text);
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.exercise-video-placeholder p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   18. LOAD VIDEO BUTTON
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-load-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  min-height: 44px;
+  padding: 11px 18px;
+
+  background: var(--color-action);
+
+  border: 1px solid var(--color-action);
+  border-radius: var(--radius-button);
+
+  color: var(--color-action-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-load-button:hover {
+  background: var(--color-action-hover);
+
+  border-color: var(--color-action-hover);
+  color: var(--color-action-text);
+
+  transform: none;
+}
+
+/* ==========================================
+   19. VIDEO SECONDARY ACTIONS
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-close-button {
+  min-height: 42px;
+
+  padding: 10px 15px;
+
+  background:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  color:
+    var(--color-secondary-action-text);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-close-button:hover {
+  background:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-external-link {
+  color: var(--color-accent);
+
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-panel
+.video-external-link:hover {
+  background-color: var(--color-surface-hover);
+
+  color: var(--color-accent-hover);
+
+  text-decoration: underline;
+}
+
+/* ==========================================
+   20. VIDEO PLAYER
+========================================== */
+
+/*
+  The player keeps a dark background,
+  which is suitable for video playback.
+*/
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-container {
+  width: 100%;
+  max-width: 720px;
+
+  aspect-ratio: 16 / 9;
+
+  margin: 0 auto;
+
+  overflow: hidden;
+
+  background-color: #111113;
+  border-radius: 12px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-video-container iframe {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+}
+
+/* ==========================================
+   21. TRAINING TIPS
+========================================== */
+
+html[data-theme]
+.exercise-detail-page
+.exercise-safety-note {
+  margin-top: 22px;
+  padding: 20px 22px;
+
+  background-color: var(--color-mint);
+
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-success-text);
+
+  border-radius: 11px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-safety-note h2 {
+  margin: 0 0 9px;
+
+  color: var(--color-text);
+
+  font-size: 16px;
+}
+
+html[data-theme]
+.exercise-detail-page
+.exercise-safety-note p {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* ==========================================
+   22. TABLET
 ========================================== */
 
 @media (max-width: 840px) {
-  .exercise-detail-page .exercise-overview-card {
+  html[data-theme]
+  .exercise-detail-page {
+    padding: 28px 18px 56px;
+  }
+
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-overview-card {
     grid-template-columns: minmax(0, 1fr);
     padding: 16px;
   }
 
-  .exercise-overview-card .exercise-overview-visual {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-overview-visual {
     padding: 8px 0 20px;
-    border-bottom: 1px solid #34343a;
+
+    border-bottom:
+      1px solid var(--color-border);
   }
 
-  .exercise-overview-card .exercise-animation-stage {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-animation-stage {
     width: min(100%, 190px);
     max-width: 190px;
   }
 
-  .exercise-overview-card .exercise-overview-content {
-    border-left: none;
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-overview-content {
     padding: 10px 0 0;
+
+    border-left: 0;
   }
 }
 
 /* ==========================================
-   MOBILE RESPONSIVENESS
+   23. MOBILE
 ========================================== */
 
 @media (max-width: 480px) {
-  .exercise-detail-page .exercise-overview-card {
+  html[data-theme]
+  .exercise-detail-page {
+    padding: 20px 12px 48px;
+  }
+
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-detail-heading h1 {
+    font-size: clamp(25px, 7vw, 32px);
+  }
+
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-overview-card {
     margin: 18px 0;
     padding: 12px;
+
     border-radius: 12px;
   }
 
-  .exercise-overview-card .exercise-overview-visual {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-overview-visual {
     padding: 8px 0 16px;
   }
 
-  .exercise-overview-card .exercise-animation-stage {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-animation-stage {
     width: min(100%, 175px);
     max-width: 175px;
   }
 
-  .exercise-overview-card .animation-heading h2 {
+  html[data-theme]
+  .exercise-detail-page
+  .animation-heading h2 {
     font-size: 14px;
   }
 
-  .exercise-overview-card .exercise-accordion-summary {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-accordion-summary {
     min-height: 50px;
     padding: 12px 6px;
   }
 
-  .exercise-overview-card .exercise-accordion-content {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-accordion-content {
     padding: 14px 6px 18px;
   }
 
-  .exercise-overview-card .exercise-accordion-title {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-accordion-title {
     font-size: 13px;
   }
 
-  .exercise-detail-page .exercise-video-panel {
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-video-panel {
     padding: 14px;
+  }
+
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-video-placeholder {
+    padding: 16px;
+  }
+
+  html[data-theme]
+  .exercise-detail-page
+  .exercise-safety-note {
+    padding: 16px;
+  }
+}
+
+/* ==========================================
+   24. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme]
+  .exercise-detail-page :is(
+    .animation-control,
+    .exercise-accordion-summary,
+    .exercise-accordion-chevron,
+    .video-load-button
+  ) {
+    transition: none;
   }
 }

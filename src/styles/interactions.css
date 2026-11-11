@@ -1,0 +1,356 @@
+
+/* ==========================================
+   TERRA ACTIVE - INTERACTIONS
+========================================== */
+
+html[data-theme] {
+  --interaction-speed: 180ms;
+}
+
+/* ==========================================
+   BRAND
+========================================== */
+
+html[data-theme] .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 11px;
+  min-width: 0;
+  padding: 4px;
+}
+
+html[data-theme] .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  box-shadow: var(--shadow-card);
+
+  transition:
+    transform var(--interaction-speed) ease,
+    box-shadow var(--interaction-speed) ease;
+}
+
+html[data-theme] .brand-mark-icon {
+  width: 32px;
+  height: 32px;
+}
+
+html[data-theme] .brand-name {
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+html[data-theme] .logo:hover .brand-mark {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ==========================================
+   NAVIGATION
+========================================== */
+
+html[data-theme] .navigation {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+html[data-theme] .navigation a {
+  cursor: pointer;
+
+  transition:
+    background-color var(--interaction-speed) ease,
+    border-color var(--interaction-speed) ease,
+    color var(--interaction-speed) ease;
+}
+
+/* ==========================================
+   PRIMARY ACTIONS
+========================================== */
+
+/*
+  Solid terracotta means an important action.
+
+  Informational cards will not use
+  this filled-button appearance.
+*/
+
+html[data-theme] :where(
+  .primary-button,
+  .today-home-action,
+  .schedule-save-button,
+  .gd-empty a
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+  min-height: 44px;
+
+  padding: 11px 18px;
+
+  border:
+    1px solid var(--color-action);
+
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    background-color var(--interaction-speed) ease,
+    border-color var(--interaction-speed) ease,
+    transform var(--interaction-speed) ease,
+    box-shadow var(--interaction-speed) ease;
+}
+
+html[data-theme] :where(
+  .primary-button,
+  .today-home-action,
+  .schedule-save-button,
+  .gd-empty a
+):hover:not(:disabled) {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
+
+  box-shadow: var(--shadow-card-hover);
+}
+
+html[data-theme] :where(
+  .primary-button,
+  .today-home-action,
+  .schedule-save-button,
+  .gd-empty a
+):active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ==========================================
+   SECONDARY ACTIONS
+========================================== */
+
+html[data-theme] :where(
+  .gd-page .today-home-secondary-action,
+  .workouts-hub-summary .schedule-back-link
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 10px 15px;
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  color:
+    var(--color-secondary-action-text);
+
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition:
+    background-color var(--interaction-speed) ease,
+    border-color var(--interaction-speed) ease;
+}
+
+html[data-theme] :where(
+  .gd-page .today-home-secondary-action,
+  .workouts-hub-summary .schedule-back-link
+):hover {
+  background-color:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   CLICKABLE CARDS
+========================================== */
+
+/*
+  Only real navigation links receive
+  the interactive-card behavior.
+
+  No background color is defined here.
+*/
+
+html[data-theme] :where(
+  .gd-shortcut,
+  .gd-recent-item,
+  .gp-analysis-card,
+  .gp-history-row,
+  a.workouts-hub-card
+) {
+  cursor: pointer;
+  text-decoration: none;
+
+  transition:
+    background-color var(--interaction-speed) ease,
+    border-color var(--interaction-speed) ease,
+    box-shadow var(--interaction-speed) ease,
+    transform var(--interaction-speed) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme] :where(
+    .gd-shortcut,
+    .gd-recent-item,
+    .gp-analysis-card,
+    .gp-history-row,
+    a.workouts-hub-card
+  ):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+html[data-theme] :where(
+  .gd-shortcut,
+  .gd-recent-item,
+  .gp-analysis-card,
+  .gp-history-row,
+  a.workouts-hub-card
+):active {
+  transform: scale(0.99);
+}
+
+/* ==========================================
+   WORKOUT HUB LINK LABEL
+========================================== */
+
+/*
+  The whole workout card is a link.
+  Its action text must not look like
+  a separate button.
+*/
+
+html[data-theme]
+a.workouts-hub-card {
+  text-decoration: none;
+}
+
+html[data-theme]
+.workouts-hub-card
+.workouts-hub-action {
+  align-self: flex-start;
+  margin-top: auto;
+
+  padding: 4px 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--color-accent);
+
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+html[data-theme]
+.workouts-hub-card:hover
+.workouts-hub-action {
+  background: transparent;
+  border: 0;
+
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+/* ==========================================
+   KEYBOARD ACCESSIBILITY
+========================================== */
+
+html[data-theme] :where(
+  a,
+  button,
+  input,
+  select,
+  textarea
+):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+html[data-theme] button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 650px) {
+  html[data-theme] .logo {
+    gap: 8px;
+  }
+
+  html[data-theme] .brand-mark {
+    width: 39px;
+    height: 39px;
+  }
+
+  html[data-theme] .brand-mark-icon {
+    width: 29px;
+    height: 29px;
+  }
+
+  html[data-theme] .brand-name {
+    font-size: 20px;
+  }
+
+  html[data-theme] .navigation a {
+    min-height: 42px;
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] :where(
+    .logo .brand-mark,
+    .navigation a,
+    .primary-button,
+    .today-home-action,
+    .schedule-save-button,
+    .gd-shortcut,
+    .gd-recent-item,
+    .gp-analysis-card,
+    .gp-history-row,
+    a.workouts-hub-card
+  ) {
+    transition: none;
+    transform: none;
+  }
+}

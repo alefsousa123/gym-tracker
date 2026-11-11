@@ -6,7 +6,14 @@ import {
   useTrainingProfile,
 } from "../context/TrainingProfileContext";
 
+import TrainingWeekPreview from
+  "../components/workouts/TrainingWeekPreview";
+
 import "./TrainingProfilePage.css";
+
+// ==========================================
+// TRAINING GOALS
+// ==========================================
 
 const trainingGoals = [
   {
@@ -36,6 +43,10 @@ const trainingGoals = [
   },
 ];
 
+// ==========================================
+// EXPERIENCE LEVELS
+// ==========================================
+
 const experienceLevels = [
   {
     value: "beginner",
@@ -53,6 +64,10 @@ const experienceLevels = [
     description: "Extensive training experience.",
   },
 ];
+
+// ==========================================
+// TRAINING LOCATIONS
+// ==========================================
 
 const trainingLocations = [
   {
@@ -73,6 +88,10 @@ const trainingLocations = [
 ];
 
 const sessionDurations = [30, 45, 60, 75, 90];
+
+// ==========================================
+// FORM INITIAL VALUES
+// ==========================================
 
 function createFormState(profile) {
   return {
@@ -103,9 +122,15 @@ function createFormState(profile) {
   };
 }
 
+// ==========================================
+// TRAINING PROFILE PAGE
+// ==========================================
+
 function TrainingProfilePage() {
-  const { profile, saveProfile } =
-    useTrainingProfile();
+  const {
+    profile,
+    saveProfile,
+  } = useTrainingProfile();
 
   const [form, setForm] = useState(() =>
     createFormState(profile)
@@ -114,9 +139,17 @@ function TrainingProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // ========================================
+  // SYNC SAVED PROFILE
+  // ========================================
+
   useEffect(() => {
     setForm(createFormState(profile));
   }, [profile]);
+
+  // ========================================
+  // UPDATE FORM FIELDS
+  // ========================================
 
   function updateField(field, value) {
     setForm((previous) => {
@@ -125,6 +158,7 @@ function TrainingProfilePage() {
         [field]: value,
       };
 
+      // The same goal cannot be selected twice.
       if (
         field === "primaryGoal" &&
         updated.secondaryGoal === value
@@ -139,11 +173,17 @@ function TrainingProfilePage() {
     setSuccess("");
   }
 
+  // ========================================
+  // SAVE TRAINING PROFILE
+  // ========================================
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (!form.primaryGoal) {
-      setError("Please select your primary training goal.");
+      setError(
+        "Please select your primary training goal."
+      );
       return;
     }
 
@@ -157,7 +197,10 @@ function TrainingProfilePage() {
       return;
     }
 
-    const days = Number(form.trainingDaysPerWeek);
+    const days = Number(
+      form.trainingDaysPerWeek
+    );
+
     const duration = Number(
       form.sessionDurationMinutes
     );
@@ -185,15 +228,19 @@ function TrainingProfilePage() {
 
       primaryGoal: form.primaryGoal,
 
-      // Keep compatibility with older profile fields.
+      // Compatibility with older profile fields.
       trainingGoal: form.primaryGoal,
 
       secondaryGoal: form.secondaryGoal,
 
-      experienceLevel: form.experienceLevel,
-      trainingLocation: form.trainingLocation,
+      experienceLevel:
+        form.experienceLevel,
+
+      trainingLocation:
+        form.trainingLocation,
 
       trainingDaysPerWeek: days,
+
       sessionDurationMinutes: duration,
 
       weightUnit: form.weightUnit,
@@ -202,19 +249,33 @@ function TrainingProfilePage() {
     saveProfile(updatedProfile);
 
     setError("");
+
     setSuccess(
       "Training profile saved successfully."
     );
   }
 
+  // ========================================
+  // PAGE
+  // ========================================
+
   return (
     <main className="training-profile-page">
+
+      {/* ==================================
+          BACK NAVIGATION
+      ================================== */}
+
       <Link
         to="/settings"
         className="tp-back-link"
       >
         ← Back to Settings
       </Link>
+
+      {/* ==================================
+          PAGE HEADER
+      ================================== */}
 
       <header className="tp-page-header">
         <span className="tp-eyebrow">
@@ -230,12 +291,17 @@ function TrainingProfilePage() {
         </p>
       </header>
 
+      {/* ==================================
+          PROFILE FORM
+      ================================== */}
+
       <form
         className="tp-form"
         onSubmit={handleSubmit}
       >
+
         {/* ==================================
-            TRAINING GOALS
+            01 - TRAINING GOALS
         ================================== */}
 
         <section className="tp-section">
@@ -254,6 +320,8 @@ function TrainingProfilePage() {
               </p>
             </div>
           </div>
+
+          {/* Primary Goal */}
 
           <fieldset className="tp-fieldset">
             <legend>Primary Goal</legend>
@@ -291,7 +359,9 @@ function TrainingProfilePage() {
                   />
 
                   <span className="tp-option-content">
-                    <strong>{goal.label}</strong>
+                    <strong>
+                      {goal.label}
+                    </strong>
 
                     <small>
                       {goal.description}
@@ -302,9 +372,12 @@ function TrainingProfilePage() {
             </div>
           </fieldset>
 
+          {/* Secondary Goal */}
+
           <div className="tp-field">
             <label htmlFor="secondaryGoal">
               Secondary Goal
+
               <span className="tp-optional">
                 Optional
               </span>
@@ -349,7 +422,7 @@ function TrainingProfilePage() {
         </section>
 
         {/* ==================================
-            TRAINING BACKGROUND
+            02 - TRAINING BACKGROUND
         ================================== */}
 
         <section className="tp-section">
@@ -367,6 +440,8 @@ function TrainingProfilePage() {
               </p>
             </div>
           </div>
+
+          {/* Experience Level */}
 
           <fieldset className="tp-fieldset">
             <legend>Experience Level</legend>
@@ -404,7 +479,9 @@ function TrainingProfilePage() {
                   />
 
                   <span className="tp-option-content">
-                    <strong>{level.label}</strong>
+                    <strong>
+                      {level.label}
+                    </strong>
 
                     <small>
                       {level.description}
@@ -415,60 +492,64 @@ function TrainingProfilePage() {
             </div>
           </fieldset>
 
+          {/* Training Location */}
+
           <fieldset className="tp-fieldset">
             <legend>Training Location</legend>
 
             <div className="tp-options-grid">
-              {trainingLocations.map((location) => (
-                <label
-                  key={location.value}
-                  className={
-                    `tp-option-card ${
-                      form.trainingLocation ===
-                      location.value
-                        ? "is-selected"
-                        : ""
-                    }`
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="trainingLocation"
-                    value={location.value}
-                    checked={
-                      form.trainingLocation ===
-                      location.value
-                    }
-                    onChange={() =>
-                      updateField(
-                        "trainingLocation",
+              {trainingLocations.map(
+                (location) => (
+                  <label
+                    key={location.value}
+                    className={
+                      `tp-option-card ${
+                        form.trainingLocation ===
                         location.value
-                      )
+                          ? "is-selected"
+                          : ""
+                      }`
                     }
-                  />
+                  >
+                    <input
+                      type="radio"
+                      name="trainingLocation"
+                      value={location.value}
+                      checked={
+                        form.trainingLocation ===
+                        location.value
+                      }
+                      onChange={() =>
+                        updateField(
+                          "trainingLocation",
+                          location.value
+                        )
+                      }
+                    />
 
-                  <span
-                    className="tp-radio-circle"
-                    aria-hidden="true"
-                  />
+                    <span
+                      className="tp-radio-circle"
+                      aria-hidden="true"
+                    />
 
-                  <span className="tp-option-content">
-                    <strong>
-                      {location.label}
-                    </strong>
+                    <span className="tp-option-content">
+                      <strong>
+                        {location.label}
+                      </strong>
 
-                    <small>
-                      {location.description}
-                    </small>
-                  </span>
-                </label>
-              ))}
+                      <small>
+                        {location.description}
+                      </small>
+                    </span>
+                  </label>
+                )
+              )}
             </div>
           </fieldset>
         </section>
 
         {/* ==================================
-            TRAINING PREFERENCES
+            03 - TRAINING PREFERENCES
         ================================== */}
 
         <section className="tp-section">
@@ -487,6 +568,8 @@ function TrainingProfilePage() {
             </div>
           </div>
 
+          {/* Days and Session Duration */}
+
           <div className="tp-fields-grid">
             <div className="tp-field">
               <label htmlFor="trainingDays">
@@ -495,9 +578,7 @@ function TrainingProfilePage() {
 
               <select
                 id="trainingDays"
-                value={
-                  form.trainingDaysPerWeek
-                }
+                value={form.trainingDaysPerWeek}
                 onChange={(event) =>
                   updateField(
                     "trainingDaysPerWeek",
@@ -529,9 +610,7 @@ function TrainingProfilePage() {
 
               <select
                 id="sessionDuration"
-                value={
-                  form.sessionDurationMinutes
-                }
+                value={form.sessionDurationMinutes}
                 onChange={(event) =>
                   updateField(
                     "sessionDurationMinutes",
@@ -552,6 +631,8 @@ function TrainingProfilePage() {
               </select>
             </div>
           </div>
+
+          {/* Weight Unit */}
 
           <fieldset className="tp-fieldset tp-unit-fieldset">
             <legend>Weight Unit</legend>
@@ -613,11 +694,13 @@ function TrainingProfilePage() {
             </div>
           </fieldset>
 
+          {/* Training Preference Information */}
+
           <div className="tp-info-note">
             <strong>About your preferences</strong>
 
             <p>
-              These settings help the Gym Tracker
+              These settings help Gym Tracker
               recommend workout plans that fit your
               goals, training experience, and schedule.
             </p>
@@ -649,10 +732,8 @@ function TrainingProfilePage() {
             )}
 
             <p className="tp-storage-note">
-              Your profile is currently saved
-              for this application session.
-              Permanent storage will be added
-              in a later stage.
+              Your profile is saved locally
+              on this device.
             </p>
           </div>
 
@@ -664,6 +745,17 @@ function TrainingProfilePage() {
           </button>
         </div>
       </form>
+
+      {/* ==================================
+          04 - WEEKLY SCHEDULE PREVIEW
+
+          Outside the profile form:
+          this section does not submit
+          or modify the training profile.
+      ================================== */}
+
+      <TrainingWeekPreview />
+
     </main>
   );
 }

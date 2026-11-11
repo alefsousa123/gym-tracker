@@ -19,6 +19,10 @@ import {
 
 import "./WeeklySchedulePage.css";
 
+// ==========================================
+// WORKOUTS HUB PAGE
+// ==========================================
+
 function WorkoutsPage() {
   const { weeklySchedule } =
     useWeeklySchedule();
@@ -48,7 +52,8 @@ function WorkoutsPage() {
   const planExerciseCount = appliedPlan
     ? appliedPlan.sessions.reduce(
         (total, session) =>
-          total + session.exerciseIds.length,
+          total +
+          session.exerciseIds.length,
         0
       )
     : 0;
@@ -71,6 +76,11 @@ function WorkoutsPage() {
 
   return (
     <main className="workouts-hub-page">
+
+      {/* ==================================
+          PAGE HEADER
+      ================================== */}
+
       <header className="schedule-page-heading">
         <span className="schedule-eyebrow">
           TRAINING MANAGEMENT
@@ -85,12 +95,18 @@ function WorkoutsPage() {
         </p>
       </header>
 
-      <div className="workouts-hub-grid">
-        {/* ==================================
-            TODAY'S WORKOUT
-        ================================== */}
+      {/* ==================================
+          MAIN NAVIGATION CARDS
+      ================================== */}
 
-        <section className="workouts-hub-card">
+      <div className="workouts-hub-grid">
+
+        {/* TODAY'S WORKOUT */}
+
+        <Link
+          to="/workouts/today"
+          className="workouts-hub-card"
+        >
           <span className="workouts-hub-tag">
             {activeWorkout
               ? "IN PROGRESS"
@@ -105,18 +121,20 @@ function WorkoutsPage() {
               : "Follow your scheduled session, confirm sets, record actual weights, and use the exercise and rest timers."}
           </p>
 
-          <Link to="/workouts/today">
+          <span className="workouts-hub-action">
             {activeWorkout
-              ? "Continue Workout →"
-              : "Open Today's Workout →"}
-          </Link>
-        </section>
+              ? "Continue Workout"
+              : "Open Today's Workout"}
+            {" →"}
+          </span>
+        </Link>
 
-        {/* ==================================
-            WORKOUT BUILDER
-        ================================== */}
+        {/* WORKOUT BUILDER */}
 
-        <section className="workouts-hub-card">
+        <Link
+          to="/workouts/builder"
+          className="workouts-hub-card"
+        >
           <span className="workouts-hub-tag">
             CUSTOMIZATION
           </span>
@@ -124,22 +142,24 @@ function WorkoutsPage() {
           <h2>Workout Builder</h2>
 
           <p>
-            Create your own workout program.
-            Choose exercises and configure
-            sets, repetitions, rest periods,
+            Create your own workout
+            program. Choose exercises
+            and configure sets,
+            repetitions, rest periods,
             and manual weights.
           </p>
 
-          <Link to="/workouts/builder">
+          <span className="workouts-hub-action">
             Open Workout Builder →
-          </Link>
-        </section>
+          </span>
+        </Link>
 
-        {/* ==================================
-            RECOMMENDED PLANS
-        ================================== */}
+        {/* RECOMMENDED PLANS */}
 
-        <section className="workouts-hub-card">
+        <Link
+          to="/workouts/plans"
+          className="workouts-hub-card"
+        >
           <span className="workouts-hub-tag">
             PLANNING
           </span>
@@ -147,21 +167,24 @@ function WorkoutsPage() {
           <h2>Recommended Plans</h2>
 
           <p>
-            Explore workout programs based on
-            your goals, experience level,
-            available equipment, and schedule.
+            Explore workout programs
+            based on your goals,
+            experience level,
+            available equipment,
+            and schedule.
           </p>
 
-          <Link to="/workouts/plans">
+          <span className="workouts-hub-action">
             Explore Recommended Plans →
-          </Link>
-        </section>
+          </span>
+        </Link>
 
-        {/* ==================================
-            WEEKLY SCHEDULE
-        ================================== */}
+        {/* WEEKLY SCHEDULE */}
 
-        <section className="workouts-hub-card">
+        <Link
+          to="/workouts/schedule"
+          className="workouts-hub-card"
+        >
           <span className="workouts-hub-tag">
             SCHEDULE
           </span>
@@ -169,21 +192,24 @@ function WorkoutsPage() {
           <h2>Weekly Schedule</h2>
 
           <p>
-            Organize workout days, training
-            sessions, rest days, and active
-            recovery throughout the week.
+            Organize workout days,
+            training sessions, rest
+            days, and active recovery
+            throughout the week.
           </p>
 
-          <Link to="/workouts/schedule">
+          <span className="workouts-hub-action">
             {hasSchedule
-              ? "Edit Weekly Schedule →"
-              : "Create Weekly Schedule →"}
-          </Link>
-        </section>
+              ? "Edit Weekly Schedule"
+              : "Create Weekly Schedule"}
+            {" →"}
+          </span>
+        </Link>
+
       </div>
 
       {/* ==================================
-          SELECTED WORKOUT PROGRAM
+          CURRENT TRAINING PROGRAM
       ================================== */}
 
       {appliedPlan && (
@@ -252,6 +278,7 @@ function WorkoutsPage() {
           View Weekly Schedule →
         </Link>
       </section>
+
     </main>
   );
 }

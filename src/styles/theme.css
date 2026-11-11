@@ -1,0 +1,314 @@
+
+/* ==========================================
+   TERRA ACTIVE - DESIGN TOKENS
+========================================== */
+
+/* ==========================================
+   LIGHT THEME
+========================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Backgrounds */
+
+  --color-page: #ede7dd;
+  --color-surface: #f2ece2;
+  --color-surface-soft: #e6dfd5;
+  --color-surface-hover: #e9ded4;
+  --color-inset: #e8e1d8;
+  --color-card-hover: #e9ded4;
+
+  /* Typography */
+
+  --color-text: #36343b;
+  --color-text-secondary: #59545a;
+  --color-text-muted: #686168;
+
+  /* Borders */
+
+  --color-border: #d1c7b9;
+  --color-border-strong: #b6a89d;
+
+  /* Main brand accent */
+
+  --color-accent: #a34234;
+  --color-accent-hover: #87362c;
+  --color-accent-contrast: #ffffff;
+
+  /* Primary actions */
+
+  --color-action: #b14f3f;
+  --color-action-hover: #963e32;
+  --color-action-text: #ffffff;
+
+  /* Informational colors */
+
+  --color-mint: #d5e2d1;
+  --color-peach: #eac2aa;
+  --color-rose: #ebcccf;
+  --color-lavender: #ddd8e9;
+  --color-sky: #d5e2eb;
+  --color-butter: #f0dcae;
+
+  /* Highlighted training area */
+
+  --color-hero: #eac2aa;
+  --color-hero-text: #3b3031;
+  --color-hero-muted: #684f49;
+
+  /* Header and footer */
+
+  --color-ink: #363641;
+  --color-ink-text: #ffffff;
+  --color-ink-muted: #d7d2d8;
+
+  /* Status */
+
+  --color-success-text: #276047;
+  --color-success-bg: #d5e2d1;
+
+  --color-warning-text: #79501f;
+  --color-warning-bg: #f0dcae;
+
+  /* Secondary actions */
+
+  --color-secondary-action-bg: #e9dfd7;
+  --color-secondary-action-hover: #ddcec3;
+  --color-secondary-action-border: #b6a89d;
+  --color-secondary-action-text: #7d3b30;
+
+  /* Interactive focus */
+
+  --color-focus: #a34234;
+
+  /* Shadows */
+
+  --shadow-card:
+    0 3px 12px rgba(61, 49, 43, 0.05);
+
+  --shadow-card-hover:
+    0 9px 24px rgba(61, 49, 43, 0.14);
+
+  /* Shapes */
+
+  --radius-card: 14px;
+  --radius-button: 9px;
+
+  /* Pages not migrated yet */
+
+  --color-legacy-content: #09090b;
+}
+
+/* ==========================================
+   DARK THEME
+========================================== */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-page: #121216;
+  --color-surface: #232329;
+  --color-surface-soft: #302e32;
+  --color-surface-hover: #373238;
+  --color-inset: #19191e;
+  --color-card-hover: #373238;
+
+  --color-text: #f4f0ec;
+  --color-text-secondary: #c6bec0;
+  --color-text-muted: #b0a6a9;
+
+  --color-border: #484046;
+  --color-border-strong: #716069;
+
+  --color-accent: #e68b75;
+  --color-accent-hover: #f0a48e;
+  --color-accent-contrast: #281c1c;
+
+  --color-action: #e68b75;
+  --color-action-hover: #f0a48e;
+  --color-action-text: #281c1c;
+
+  --color-mint: #293d33;
+  --color-peach: #48332b;
+  --color-rose: #493039;
+  --color-lavender: #393340;
+  --color-sky: #293a44;
+  --color-butter: #483b27;
+
+  --color-hero: #382b29;
+  --color-hero-text: #f4f0ec;
+  --color-hero-muted: #d8bcb2;
+
+  --color-ink: #19191e;
+  --color-ink-text: #f4f0ec;
+  --color-ink-muted: #bcb3b7;
+
+  --color-success-text: #b5e4c0;
+  --color-success-bg: #293d33;
+
+  --color-warning-text: #f1d49a;
+  --color-warning-bg: #483b27;
+
+  --color-secondary-action-bg: #393038;
+  --color-secondary-action-hover: #4a3941;
+  --color-secondary-action-border: #75636a;
+  --color-secondary-action-text: #f3d4c9;
+
+  --color-focus: #f0a48e;
+
+  --shadow-card:
+    0 4px 16px rgba(0, 0, 0, 0.16);
+
+  --shadow-card-hover:
+    0 10px 26px rgba(0, 0, 0, 0.27);
+
+  --color-legacy-content: #09090b;
+}
+
+/* ==========================================
+   BASE DOCUMENT
+========================================== */
+
+html[data-theme] body {
+  margin: 0;
+
+  background-color: var(--color-page);
+  color: var(--color-text);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+html[data-theme] .app {
+  min-height: 100vh;
+
+  background-color: var(--color-page);
+}
+
+/*
+  Older pages still use hardcoded
+  dark colors. They remain dark until
+  we migrate their individual CSS.
+*/
+
+html[data-theme] .app > main {
+  background-color: var(--color-legacy-content);
+  color: #fafafa;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+html[data-theme] .header {
+  background-color: var(--color-ink);
+
+  border-bottom:
+    1px solid var(--color-border);
+}
+
+html[data-theme] .header-content {
+  gap: 18px;
+}
+
+html[data-theme] .logo {
+  color: var(--color-ink-text);
+  text-decoration: none;
+}
+
+html[data-theme] .brand-name {
+  color: var(--color-ink-text);
+}
+
+html[data-theme] .brand-mark {
+  background-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+html[data-theme] .navigation {
+  align-items: center;
+  gap: 7px;
+}
+
+html[data-theme] .navigation a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 9px 13px;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+
+  color: var(--color-ink-muted);
+  background-color: transparent;
+
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+html[data-theme] .navigation a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.16);
+
+  color: var(--color-ink-text);
+}
+
+html[data-theme] .navigation a.active {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+
+  color: var(--color-accent-contrast);
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+html[data-theme] .footer {
+  background-color: var(--color-ink);
+
+  border-top:
+    1px solid var(--color-border);
+}
+
+html[data-theme] .footer p {
+  color: var(--color-ink-muted);
+}
+
+html[data-theme] .footer a {
+  color: #f0ad98;
+  font-weight: 700;
+}
+
+html[data-theme] .footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  html[data-theme] .header-content {
+    padding: 15px 12px;
+  }
+
+  html[data-theme] .navigation {
+    gap: 5px;
+  }
+
+  html[data-theme] .navigation a {
+    min-height: 40px;
+    padding: 8px 10px;
+
+    font-size: 12px;
+  }
+}

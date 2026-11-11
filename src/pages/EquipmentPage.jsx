@@ -1,8 +1,10 @@
 
-
 import { Link } from "react-router";
 
 import { exercises } from "../data/exercises";
+
+import ExerciseMotionPreview from
+  "../components/exercises/ExerciseMotionPreview";
 
 import {
   useEquipment,
@@ -14,28 +16,37 @@ import {
 
 import "./EquipmentPage.css";
 
-// Only exercises that support home training
+// ==========================================
+// HOME EXERCISE CATALOG
+// ==========================================
+
+// Only exercises that support home training.
 const homeExerciseCatalog = exercises.filter(
   (exercise) => exercise.locations.includes("home")
 );
 
-// Automatically discover equipment from the catalog
+// Automatically discover equipment from the catalog.
 const equipmentOptions = [
   ...new Set(
     homeExerciseCatalog.flatMap(
       (exercise) => exercise.equipment
     )
   ),
-].sort((first, second) => first.localeCompare(second));
+].sort((first, second) =>
+  first.localeCompare(second)
+);
 
-// Readable training location labels
+// Readable labels for training locations.
 const locationLabels = {
   home: "At Home",
   gym: "At the Gym",
   both: "Home and Gym",
 };
 
-// Reusable card for a compatible exercise
+// ==========================================
+// COMPATIBLE EXERCISE CARD
+// ==========================================
+
 function EquipmentExerciseCard({ exercise }) {
   const isBodyweight = exercise.equipment.length === 0;
 
@@ -48,6 +59,7 @@ function EquipmentExerciseCard({ exercise }) {
       to={`/exercises/${exercise.id}`}
       className="equipment-exercise-card"
     >
+      {/* Exercise category and difficulty */}
       <div className="equipment-exercise-card-top">
         <span className="equipment-exercise-category">
           {exercise.muscleGroup}
@@ -58,9 +70,22 @@ function EquipmentExerciseCard({ exercise }) {
         </span>
       </div>
 
-      <h3>{exercise.name}</h3>
+      {/* Animated thumbnail and exercise information */}
+      <div className="equipment-exercise-main">
+        <ExerciseMotionPreview
+          exerciseId={exercise.id}
+          exerciseName={exercise.name}
+          variant="thumbnail"
+        />
 
-      <p>Equipment: {equipmentLabel}</p>
+        <div className="equipment-exercise-text">
+          <h3>{exercise.name}</h3>
+
+          <p>
+            Equipment: {equipmentLabel}
+          </p>
+        </div>
+      </div>
 
       <span className="equipment-exercise-link">
         View Exercise →
@@ -69,36 +94,48 @@ function EquipmentExerciseCard({ exercise }) {
   );
 }
 
+// ==========================================
+// EQUIPMENT PAGE
+// ==========================================
+
 function EquipmentPage() {
-  // Shared equipment state
+  // Shared equipment state.
   const {
     homeEquipment,
     toggleHomeEquipment,
     clearHomeEquipment,
   } = useEquipment();
 
-  // Preferences saved in the training profile
+  // Training preferences.
   const { profile } = useTrainingProfile();
 
-  // Only show exercises that require available equipment
-  const compatibleExercises = homeExerciseCatalog.filter(
-    (exercise) =>
-      exercise.equipment.every(
-        (requiredEquipment) =>
-          homeEquipment.includes(requiredEquipment)
-      )
-  );
+  // ========================================
+  // COMPATIBLE EXERCISES
+  // ========================================
 
-  // Separate bodyweight and equipment-based exercises
-  const bodyweightExercises = compatibleExercises.filter(
-    (exercise) => exercise.equipment.length === 0
-  );
+  const compatibleExercises =
+    homeExerciseCatalog.filter(
+      (exercise) =>
+        exercise.equipment.every(
+          (requiredEquipment) =>
+            homeEquipment.includes(requiredEquipment)
+        )
+    );
 
-  const equipmentExercises = compatibleExercises.filter(
-    (exercise) => exercise.equipment.length > 0
-  );
+  // Bodyweight exercises require no equipment.
+  const bodyweightExercises =
+    compatibleExercises.filter(
+      (exercise) => exercise.equipment.length === 0
+    );
 
-  const isBodyweightOnly = homeEquipment.length === 0;
+  // Exercises that require selected equipment.
+  const equipmentExercises =
+    compatibleExercises.filter(
+      (exercise) => exercise.equipment.length > 0
+    );
+
+  const isBodyweightOnly =
+    homeEquipment.length === 0;
 
   const trainingLocation =
     locationLabels[profile?.trainingLocation] ??
@@ -106,7 +143,11 @@ function EquipmentPage() {
 
   return (
     <div className="equipment-page">
-      {/* Page heading */}
+
+      {/* ==================================
+          PAGE HEADING
+      ================================== */}
+
       <header className="equipment-page-heading">
         <span className="equipment-page-eyebrow">
           HOME TRAINING
@@ -121,8 +162,16 @@ function EquipmentPage() {
         </p>
       </header>
 
-      {/* Equipment selection and summary */}
+      {/* ==================================
+          MAIN GRID
+      ================================== */}
+
       <div className="equipment-page-grid">
+
+        {/* ==================================
+            EQUIPMENT SELECTION
+        ================================== */}
+
         <section className="equipment-selector-card">
           <div className="equipment-section-heading">
             <div>
@@ -139,8 +188,11 @@ function EquipmentPage() {
             </span>
           </div>
 
+          {/* Bodyweight information */}
           <div className="equipment-bodyweight-notice">
-            <strong>Bodyweight is always available</strong>
+            <strong>
+              Bodyweight is always available
+            </strong>
 
             <p>
               You do not need equipment to access
@@ -149,7 +201,7 @@ function EquipmentPage() {
             </p>
           </div>
 
-          {/* Equipment options from exercises.js */}
+          {/* Equipment selection */}
           {equipmentOptions.length > 0 ? (
             <div className="equipment-option-grid">
               {equipmentOptions.map((equipmentName) => {
@@ -186,6 +238,7 @@ function EquipmentPage() {
             </p>
           )}
 
+          {/* Equipment actions */}
           <div className="equipment-selector-actions">
             <button
               type="button"
@@ -203,8 +256,13 @@ function EquipmentPage() {
           </div>
         </section>
 
-        {/* Summary sidebar */}
+        {/* ==================================
+            SUMMARY SIDEBAR
+        ================================== */}
+
         <aside className="equipment-sidebar">
+
+          {/* Home setup summary */}
           <div className="equipment-summary-card">
             <span className="equipment-summary-eyebrow">
               YOUR HOME SETUP
@@ -225,43 +283,35 @@ function EquipmentPage() {
             <div className="equipment-summary-stats">
               <div>
                 <span>Equipment Items</span>
-
                 <strong>{homeEquipment.length}</strong>
               </div>
 
               <div>
                 <span>Compatible Exercises</span>
-
-                <strong>
-                  {compatibleExercises.length}
-                </strong>
+                <strong>{compatibleExercises.length}</strong>
               </div>
 
               <div>
                 <span>Bodyweight Exercises</span>
-
-                <strong>
-                  {bodyweightExercises.length}
-                </strong>
+                <strong>{bodyweightExercises.length}</strong>
               </div>
             </div>
           </div>
 
+          {/* Training profile */}
           <div className="equipment-profile-card">
             <h3>Training Profile</h3>
 
-            <p>
-              Preferred Training Location
-            </p>
+            <p>Preferred Training Location</p>
 
             <strong>{trainingLocation}</strong>
 
             {!profile ? (
-              <Link to="/profile">
+              <Link to="/settings/profile">
                 Configure Training Profile →
               </Link>
             ) : (
-              <Link to="/profile">
+              <Link to="/settings/profile">
                 Edit Training Profile →
               </Link>
             )}
@@ -277,7 +327,10 @@ function EquipmentPage() {
         </aside>
       </div>
 
-      {/* Compatible exercise results */}
+      {/* ==================================
+          COMPATIBLE HOME EXERCISES
+      ================================== */}
+
       <section className="equipment-matches">
         <div className="equipment-matches-heading">
           <div>
@@ -302,6 +355,10 @@ function EquipmentPage() {
           </span>
         </div>
 
+        {/* ==================================
+            EMPTY RESULTS
+        ================================== */}
+
         {compatibleExercises.length === 0 ? (
           <div className="equipment-no-results">
             <h3>No Compatible Exercises Found</h3>
@@ -318,7 +375,11 @@ function EquipmentPage() {
           </div>
         ) : (
           <>
-            {/* Bodyweight results */}
+
+            {/* ==================================
+                BODYWEIGHT EXERCISES
+            ================================== */}
+
             {bodyweightExercises.length > 0 && (
               <div className="equipment-result-section">
                 <div className="equipment-result-heading">
@@ -340,7 +401,10 @@ function EquipmentPage() {
               </div>
             )}
 
-            {/* Results requiring selected equipment */}
+            {/* ==================================
+                EQUIPMENT-BASED EXERCISES
+            ================================== */}
+
             {equipmentExercises.length > 0 && (
               <div className="equipment-result-section">
                 <div className="equipment-result-heading">
@@ -363,6 +427,10 @@ function EquipmentPage() {
             )}
           </>
         )}
+
+        {/* ==================================
+            EXERCISE LIBRARY LINK
+        ================================== */}
 
         <div className="equipment-library-link">
           <Link to="/exercises">

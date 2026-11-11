@@ -1,7 +1,22 @@
 
 /* ==========================================
-   EQUIPMENT PAGE
+   MY EQUIPMENT - TERRA ACTIVE
+
+   R1.4 - PART 5.1
+   Animated exercise thumbnails
+
+   Supports Light and Dark Theme.
 ========================================== */
+
+/* ==========================================
+   1. PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .equipment-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .equipment-page,
 .equipment-page * {
@@ -11,46 +26,60 @@
 .equipment-page {
   width: 100%;
   max-width: 1100px;
+  min-width: 0;
+
   margin: 0 auto;
   padding: 32px 24px 64px;
+
+  color: var(--color-text);
 }
 
-/* Page heading */
+/* ==========================================
+   2. PAGE HEADING
+========================================== */
 
 .equipment-page-heading {
   margin-bottom: 26px;
 }
 
 .equipment-page-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1.3px;
 }
 
 .equipment-page-heading h1 {
   margin: 8px 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(27px, 4vw, 38px);
+  line-height: 1.2;
 }
 
 .equipment-page-heading p {
   max-width: 660px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 14px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   MAIN LAYOUT
+   3. MAIN LAYOUT
 ========================================== */
 
 .equipment-page-grid {
   display: grid;
+
   grid-template-columns:
     minmax(0, 1.6fr)
     minmax(260px, 0.9fr);
+
   gap: 20px;
   align-items: start;
 }
@@ -59,212 +88,342 @@
   min-width: 0;
 }
 
-.equipment-selector-card,
-.equipment-summary-card,
-.equipment-profile-card,
-.equipment-matches {
-  border: 1px solid #27272a;
-  border-radius: 14px;
-  background-color: #18181b;
+/* ==========================================
+   4. SHARED SURFACES
+========================================== */
+
+.equipment-page :is(
+  .equipment-selector-card,
+  .equipment-summary-card,
+  .equipment-profile-card,
+  .equipment-matches
+) {
+  min-width: 0;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
 
-/* Equipment selector */
+/* ==========================================
+   5. EQUIPMENT SELECTOR
+========================================== */
 
 .equipment-selector-card {
   padding: 24px;
 }
 
-.equipment-section-heading,
-.equipment-matches-heading {
+.equipment-page :is(
+  .equipment-section-heading,
+  .equipment-matches-heading
+) {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
   gap: 14px;
   margin-bottom: 20px;
 }
 
 .equipment-section-heading h2 {
   margin: 0 0 8px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 19px;
 }
 
-.equipment-section-heading p,
-.equipment-matches-heading p {
+.equipment-page :is(
+  .equipment-section-heading p,
+  .equipment-matches-heading p
+) {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.6;
 }
 
-.equipment-selection-count,
-.equipment-matches-count {
+/* ==========================================
+   6. SELECTION COUNTERS
+========================================== */
+
+.equipment-page :is(
+  .equipment-selection-count,
+  .equipment-matches-count
+) {
+  display: inline-flex;
+  align-items: center;
+
   flex-shrink: 0;
-  padding: 6px 10px;
-  border-radius: 30px;
-  background-color: #14532d;
-  color: #86efac;
+
+  padding: 7px 11px;
+
+  background-color: var(--color-mint);
+
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+
+  color: var(--color-success-text);
+
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-/* Bodyweight information */
+/* ==========================================
+   7. BODYWEIGHT INFORMATION
+========================================== */
 
 .equipment-bodyweight-notice {
   margin-bottom: 20px;
-  padding: 14px 16px;
-  border-left: 3px solid #22c55e;
-  border-radius: 8px;
-  background-color: #12281b;
+  padding: 15px 16px;
+
+  background-color: var(--color-mint);
+
+  border-left:
+    4px solid var(--color-success-text);
+
+  border-radius: 9px;
 }
 
 .equipment-bodyweight-notice strong {
   display: block;
-  margin-bottom: 5px;
-  color: #dcfce7;
+  margin-bottom: 6px;
+
+  color: var(--color-text);
   font-size: 13px;
 }
 
 .equipment-bodyweight-notice p {
   margin: 0;
-  color: #c4d6ca;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
-/* Equipment checkboxes */
+/* ==========================================
+   8. EQUIPMENT OPTIONS GRID
+========================================== */
 
 .equipment-option-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 10px;
 }
+
+/* ==========================================
+   9. EQUIPMENT OPTIONS
+========================================== */
 
 .equipment-option {
   display: flex;
   align-items: center;
+
   gap: 11px;
   min-width: 0;
-  min-height: 52px;
+  min-height: 54px;
+
   padding: 12px 14px;
-  border: 1px solid #3f3f46;
+
+  background-color: var(--color-inset);
+
+  border: 2px solid var(--color-border);
   border-radius: 10px;
-  background-color: #111113;
+
+  color: var(--color-text);
+
   cursor: pointer;
+
   transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-.equipment-option:hover {
-  border-color: #71717a;
+@media (hover: hover) and (pointer: fine) {
+  .equipment-option:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
+  }
 }
+
+/* ==========================================
+   10. SELECTED EQUIPMENT
+========================================== */
 
 .equipment-option.is-selected {
-  border-color: #22c55e;
-  background-color: #12281b;
+  background-color: var(--color-mint);
+
+  border-color: var(--color-success-text);
 }
 
-.equipment-option:focus-within {
-  outline: 2px solid #4ade80;
-  outline-offset: 2px;
+.equipment-option.is-selected:hover {
+  background-color: var(--color-mint);
+
+  border-color: var(--color-success-text);
 }
+
+/* ==========================================
+   11. CHECKBOX
+========================================== */
 
 .equipment-option input {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+
+  width: 18px;
+  height: 18px;
   margin: 0;
-  accent-color: #22c55e;
+
+  accent-color: var(--color-success-text);
+
   cursor: pointer;
+}
+
+.equipment-option:focus-within {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
 }
 
 .equipment-option span {
   min-width: 0;
-  color: #f4f4f5;
+
+  color: var(--color-text);
+
   font-size: 13px;
+  font-weight: 600;
   line-height: 1.5;
+
   overflow-wrap: anywhere;
 }
 
-/* Selector actions */
+.equipment-option.is-selected span {
+  font-weight: 800;
+}
+
+/* ==========================================
+   12. SELECTOR ACTIONS
+========================================== */
 
 .equipment-selector-actions {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
+
   gap: 14px;
   margin-top: 22px;
   padding-top: 18px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
 }
 
 .equipment-reset-button {
+  min-height: 44px;
   padding: 10px 16px;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
-  background-color: transparent;
-  color: #fafafa;
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  color: var(--color-secondary-action-text);
+
+  font-family: inherit;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
+
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .equipment-reset-button:hover:not(:disabled) {
-  border-color: #4ade80;
+  background-color:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
 }
 
 .equipment-reset-button:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .equipment-live-note {
   flex: 1;
   min-width: 160px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .equipment-empty-message {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 13px;
+  line-height: 1.6;
 }
 
 /* ==========================================
-   SUMMARY SIDEBAR
+   13. SUMMARY SIDEBAR
 ========================================== */
 
 .equipment-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+
   min-width: 0;
+  gap: 16px;
 }
 
-.equipment-summary-card,
-.equipment-profile-card {
+.equipment-page :is(
+  .equipment-summary-card,
+  .equipment-profile-card
+) {
   padding: 22px;
 }
 
+/* ==========================================
+   14. HOME SETUP SUMMARY
+========================================== */
+
 .equipment-summary-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1px;
 }
 
 .equipment-summary-card h2 {
   margin: 8px 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 19px;
 }
 
 .equipment-summary-card > p {
   margin: 0 0 20px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.6;
 }
@@ -276,66 +435,91 @@
 
 .equipment-summary-stats > div {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #303036;
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.equipment-summary-stats > div:last-child {
+  border-bottom: 0;
 }
 
 .equipment-summary-stats span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
 
 .equipment-summary-stats strong {
-  color: #86efac;
-  font-size: 20px;
+  color: var(--color-accent);
+
+  font-size: 22px;
+  font-weight: 800;
+
+  font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================
+   15. TRAINING PROFILE SIDEBAR
+========================================== */
 
 .equipment-profile-card h3 {
   margin: 0 0 14px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 15px;
 }
 
 .equipment-profile-card > p {
   margin: 0 0 7px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
 
 .equipment-profile-card > strong {
   display: block;
   margin-bottom: 14px;
-  color: #f4f4f5;
+
+  color: var(--color-text);
   font-size: 14px;
 }
 
-.equipment-profile-card a,
-.equipment-library-link a,
-.equipment-no-results a {
-  color: #4ade80;
+.equipment-page :is(
+  .equipment-profile-card a,
+  .equipment-library-link a,
+  .equipment-no-results a
+) {
+  color: var(--color-accent);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
 }
 
-.equipment-profile-card a:hover,
-.equipment-library-link a:hover,
-.equipment-no-results a:hover {
+.equipment-page :is(
+  .equipment-profile-card a,
+  .equipment-library-link a,
+  .equipment-no-results a
+):hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
 
-.equipment-profile-card .equipment-profile-hint {
+.equipment-profile-hint {
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
+
   line-height: 1.7;
 }
 
 /* ==========================================
-   COMPATIBLE EXERCISES
+   16. COMPATIBLE EXERCISES
 ========================================== */
 
 .equipment-matches {
@@ -345,9 +529,14 @@
 
 .equipment-matches-heading h2 {
   margin: 7px 0 8px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 20px;
 }
+
+/* ==========================================
+   17. RESULTS SECTIONS
+========================================== */
 
 .equipment-result-section {
   margin-top: 24px;
@@ -358,117 +547,263 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 10px;
   margin-bottom: 14px;
 }
 
 .equipment-result-heading h3 {
   margin: 0;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 16px;
 }
 
 .equipment-result-heading span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
 
+/* ==========================================
+   18. EXERCISE CARDS GRID
+========================================== */
+
 .equipment-exercise-grid {
   display: grid;
+
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
+
   gap: 12px;
 }
+
+/* ==========================================
+   19. CLICKABLE EXERCISE CARD
+========================================== */
 
 .equipment-exercise-card {
   display: flex;
   flex-direction: column;
+
   min-width: 0;
   padding: 16px;
-  border: 1px solid #303036;
-  border-radius: 10px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+
+  color: var(--color-text);
   text-decoration: none;
+
   transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.equipment-exercise-card:hover {
-  border-color: #22c55e;
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .equipment-exercise-card:hover {
+    background-color: var(--color-card-hover);
+    border-color: var(--color-accent);
+
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
 }
 
-.equipment-exercise-card:focus-visible {
-  outline: 2px solid #4ade80;
-  outline-offset: 3px;
-}
+/* ==========================================
+   20. EXERCISE CARD TOP
+========================================== */
 
 .equipment-exercise-card-top {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 8px;
 }
 
-.equipment-exercise-category,
+.equipment-exercise-category {
+  color: var(--color-success-text);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .equipment-exercise-difficulty {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
 }
 
-.equipment-exercise-card h3 {
-  margin: 16px 0 9px;
-  color: #fafafa;
-  font-size: 15px;
+/* ==========================================
+   21. ANIMATED EXERCISE PREVIEW
+========================================== */
+
+/*
+  This is the new section.
+
+  Flexbox places the animated thumbnail
+  beside the exercise information.
+*/
+
+.equipment-exercise-main {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+  gap: 12px;
+
+  margin: 16px 0 18px;
 }
 
-.equipment-exercise-card p {
-  margin: 0 0 18px;
-  color: #a1a1aa;
-  font-size: 12px;
-  line-height: 1.6;
+/*
+  ExerciseMotionPreview already controls
+  the animation. We only customize its size.
+*/
+
+.equipment-exercise-main
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 68px;
+
+  width: 68px;
+  height: 68px;
+
+  border-radius: 9px;
+  border-color: var(--color-border);
+}
+
+/* Light theme preview background */
+
+html[data-theme="light"]
+.equipment-page
+.equipment-exercise-main
+.exercise-motion-preview--thumbnail {
+  background-color: #dce5e9;
+}
+
+/* Dark theme preview background */
+
+html[data-theme="dark"]
+.equipment-page
+.equipment-exercise-main
+.exercise-motion-preview--thumbnail {
+  background-color: #20252a;
+}
+
+/* ==========================================
+   22. EXERCISE TEXT
+========================================== */
+
+.equipment-exercise-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 6px;
+}
+
+.equipment-exercise-text h3 {
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: 14px;
+  line-height: 1.4;
+
   overflow-wrap: anywhere;
 }
 
+.equipment-exercise-text p {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   23. EXERCISE NAVIGATION LINK
+========================================== */
+
 .equipment-exercise-link {
   margin-top: auto;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
 }
 
-.equipment-library-link {
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid #303036;
+.equipment-exercise-card:hover
+.equipment-exercise-link {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
 }
 
-/* No matching exercises */
+/* ==========================================
+   24. EMPTY RESULT STATE
+========================================== */
 
 .equipment-no-results {
   padding: 24px;
-  border: 1px dashed #3f3f46;
+
+  background-color: var(--color-inset);
+
+  border: 1px dashed var(--color-border-strong);
   border-radius: 10px;
+
   text-align: center;
 }
 
 .equipment-no-results h3 {
   margin: 0 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 16px;
 }
 
 .equipment-no-results p {
   max-width: 420px;
   margin: 0 auto 16px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
+.equipment-library-link {
+  margin-top: 24px;
+  padding-top: 18px;
+
+  border-top: 1px solid var(--color-border);
+}
+
 /* ==========================================
-   TABLET
+   25. ACCESSIBILITY
+========================================== */
+
+.equipment-page :is(
+  .equipment-exercise-card,
+  .equipment-reset-button,
+  .equipment-profile-card a,
+  .equipment-library-link a,
+  .equipment-no-results a
+):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   26. TABLET
 ========================================== */
 
 @media (max-width: 900px) {
@@ -478,6 +813,7 @@
 
   .equipment-sidebar {
     display: grid;
+
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
   }
@@ -489,7 +825,7 @@
 }
 
 /* ==========================================
-   MOBILE
+   27. MOBILE
 ========================================== */
 
 @media (max-width: 600px) {
@@ -497,35 +833,71 @@
     padding: 20px 12px 48px;
   }
 
-  .equipment-selector-card,
-  .equipment-summary-card,
-  .equipment-profile-card,
-  .equipment-matches {
+  .equipment-page :is(
+    .equipment-selector-card,
+    .equipment-summary-card,
+    .equipment-profile-card,
+    .equipment-matches
+  ) {
     padding: 16px;
   }
 
-  .equipment-option-grid,
-  .equipment-sidebar,
-  .equipment-exercise-grid {
+  .equipment-page :is(
+    .equipment-option-grid,
+    .equipment-sidebar,
+    .equipment-exercise-grid
+  ) {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .equipment-section-heading,
-  .equipment-matches-heading {
+  .equipment-page :is(
+    .equipment-section-heading,
+    .equipment-matches-heading
+  ) {
     flex-wrap: wrap;
   }
 
-  .equipment-selection-count,
-  .equipment-matches-count {
+  .equipment-page :is(
+    .equipment-selection-count,
+    .equipment-matches-count
+  ) {
     flex-shrink: 1;
+    white-space: normal;
+  }
+
+  .equipment-option {
+    min-height: 52px;
   }
 }
 
-/* Accessibility */
+/* ==========================================
+   28. SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .equipment-exercise-main
+  .exercise-motion-preview--thumbnail {
+    flex-basis: 60px;
+
+    width: 60px;
+    height: 60px;
+  }
+
+  .equipment-exercise-text h3 {
+    font-size: 13px;
+  }
+}
+
+/* ==========================================
+   29. REDUCED MOTION
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .equipment-option,
-  .equipment-exercise-card {
+  .equipment-page :is(
+    .equipment-option,
+    .equipment-reset-button,
+    .equipment-exercise-card
+  ) {
     transition: none;
   }
 

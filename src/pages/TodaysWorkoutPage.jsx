@@ -1,34 +1,23 @@
 
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { exercises } from "../data/exercises";
 import { daysOfWeek } from "../data/workoutSplits";
-
-import {
-  normalizeExerciseTarget,
-} from "../utils/workoutTargets";
+import { normalizeExerciseTarget } from "../utils/workoutTargets";
 
 import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
 import TimedSetTimer from "../components/workouts/TimedSetTimer";
 
-import {
-  useWorkoutPlan,
-} from "../context/WorkoutPlanContext";
-
-import {
-  useWeeklySchedule,
-} from "../context/WeeklyScheduleContext";
-
-import {
-  useWorkoutSession,
-} from "../context/WorkoutSessionContext";
+import { useWorkoutPlan } from "../context/WorkoutPlanContext";
+import { useWeeklySchedule } from "../context/WeeklyScheduleContext";
+import { useWorkoutSession } from "../context/WorkoutSessionContext";
 
 import "./TodaysWorkoutPage.css";
+
+// ==========================================
+// HELPERS
+// ==========================================
 
 function findExercise(exerciseId) {
   return exercises.find(
@@ -43,11 +32,7 @@ function describeTarget(target) {
 }
 
 function formatTime(seconds) {
-  const safe = Math.max(
-    0,
-    Math.ceil(seconds)
-  );
-
+  const safe = Math.max(0, Math.ceil(seconds));
   const minutes = Math.floor(safe / 60);
   const remaining = safe % 60;
 
@@ -63,16 +48,17 @@ function getTodayId() {
   ].id;
 }
 
+// ==========================================
+// TODAY'S WORKOUT
+// ==========================================
+
 function TodaysWorkoutPage() {
   const { appliedPlan } = useWorkoutPlan();
-
-  const { weeklySchedule } =
-    useWeeklySchedule();
+  const { weeklySchedule } = useWeeklySchedule();
 
   const {
     activeWorkout,
     lastWorkout,
-
     restTimer,
     timedSetTimer,
     reviewOpen,
@@ -101,10 +87,9 @@ function TodaysWorkoutPage() {
 
   const todayId = getTodayId();
 
-  const todaySchedule =
-    weeklySchedule?.days.find(
-      (day) => day.dayId === todayId
-    );
+  const todaySchedule = weeklySchedule?.days.find(
+    (day) => day.dayId === todayId
+  );
 
   const scheduleMatches =
     Boolean(appliedPlan && weeklySchedule) &&
@@ -128,8 +113,7 @@ function TodaysWorkoutPage() {
 
   const selectedSession =
     appliedPlan?.sessions.find(
-      (session) =>
-        session.id === selectedSessionId
+      (session) => session.id === selectedSessionId
     ) ?? appliedPlan?.sessions[0];
 
   // ========================================
@@ -180,17 +164,10 @@ function TodaysWorkoutPage() {
   // QUICK SET FORM
   // ========================================
 
-  const [repsInput, setRepsInput] =
-    useState("");
-
-  const [durationInput, setDurationInput] =
-    useState("");
-
-  const [weightInput, setWeightInput] =
-    useState("");
-
-  const [formError, setFormError] =
-    useState("");
+  const [repsInput, setRepsInput] = useState("");
+  const [durationInput, setDurationInput] = useState("");
+  const [weightInput, setWeightInput] = useState("");
+  const [formError, setFormError] = useState("");
 
   const [showEarlyFinish, setShowEarlyFinish] =
     useState(false);
@@ -204,8 +181,7 @@ function TodaysWorkoutPage() {
   const [reviewTechnique, setReviewTechnique] =
     useState("");
 
-  // Restore the planned values or the most recent
-  // actual values when moving to another set.
+  // Restore the last recorded values.
   useEffect(() => {
     if (!currentExercise) {
       return;
@@ -217,7 +193,7 @@ function TodaysWorkoutPage() {
     setRepsInput(
       String(
         previousSet?.reps ??
-        target.maxReps ??
+        currentExercise.target.maxReps ??
         12
       )
     );
@@ -225,14 +201,14 @@ function TodaysWorkoutPage() {
     setDurationInput(
       String(
         previousSet?.durationSeconds ??
-        target.durationSeconds ??
+        currentExercise.target.durationSeconds ??
         30
       )
     );
 
     const previousWeight =
       previousSet?.weight ??
-      target.weight;
+      currentExercise.target.weight;
 
     setWeightInput(
       previousWeight === "" ||
@@ -250,11 +226,10 @@ function TodaysWorkoutPage() {
   ]);
 
   // ========================================
-  // TIMERS
+  // REST TIMER
   // ========================================
 
-  const [now, setNow] =
-    useState(Date.now());
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     if (restTimer.status !== "running") {
@@ -283,9 +258,10 @@ function TodaysWorkoutPage() {
         )
       : restTimer.remainingSeconds;
 
-  // An active timed exercise cannot be confirmed
-  // before its countdown is paused and stopped
-  // or has naturally finished.
+  // ========================================
+  // TIMED SET VALIDATION
+  // ========================================
+
   const currentTimedSet =
     Boolean(
       activeWorkout &&
@@ -364,7 +340,6 @@ function TodaysWorkoutPage() {
       ...activeWorkout.exercises.slice(
         currentPosition + 1
       ),
-
       ...activeWorkout.exercises.slice(
         0,
         currentPosition
@@ -506,9 +481,7 @@ function TodaysWorkoutPage() {
     );
 
     if (next) {
-      setFocusedExerciseId(
-        next.exerciseId
-      );
+      setFocusedExerciseId(next.exerciseId);
     }
   }
 
@@ -517,10 +490,7 @@ function TodaysWorkoutPage() {
       return;
     }
 
-    undoLastSet(
-      currentExercise.exerciseId
-    );
-
+    undoLastSet(currentExercise.exerciseId);
     clearRestTimer();
     setFormError("");
   }
@@ -530,8 +500,7 @@ function TodaysWorkoutPage() {
       return;
     }
 
-    const wasSkipped =
-      currentExercise.skipped;
+    const wasSkipped = currentExercise.skipped;
 
     const next = wasSkipped
       ? null
@@ -546,9 +515,7 @@ function TodaysWorkoutPage() {
     clearRestTimer();
 
     if (next) {
-      setFocusedExerciseId(
-        next.exerciseId
-      );
+      setFocusedExerciseId(next.exerciseId);
     }
   }
 
@@ -571,10 +538,7 @@ function TodaysWorkoutPage() {
   function handleReviewSubmit(event) {
     event.preventDefault();
 
-    if (
-      !reviewDifficulty ||
-      !reviewTechnique
-    ) {
+    if (!reviewDifficulty || !reviewTechnique) {
       return;
     }
 
@@ -593,17 +557,22 @@ function TodaysWorkoutPage() {
 
   return (
     <div className="today-workout-page">
+
+      {/* ==================================
+          BRAND HEADER
+      ================================== */}
+
       <header className="today-simple-heading">
         <Link to="/workouts">
           ← Workouts
         </Link>
 
-        <span>GYM TRACKER</span>
+        <span>GYM</span>
       </header>
 
-      {/* ====================================
-          NO ACTIVE WORKOUT
-      ==================================== */}
+      {/* ==================================
+          BEFORE WORKOUT
+      ================================== */}
 
       {!activeWorkout && (
         <>
@@ -697,6 +666,8 @@ function TodaysWorkoutPage() {
                   </p>
                 )}
 
+              {/* Exercises before starting */}
+
               <div className="today-start-list">
                 {selectedSession?.exerciseIds.map(
                   (exerciseId, index) => {
@@ -707,9 +678,7 @@ function TodaysWorkoutPage() {
                       normalizeExerciseTarget(
                         exerciseId,
                         selectedSession
-                          .exerciseTargets?.[
-                            exerciseId
-                          ]
+                          .exerciseTargets?.[exerciseId]
                       );
 
                     return (
@@ -717,9 +686,19 @@ function TodaysWorkoutPage() {
                         key={exerciseId}
                         className="today-start-item"
                       >
-                        <span>{index + 1}</span>
+                        <span className="today-start-number">
+                          {index + 1}
+                        </span>
 
-                        <div>
+                        <ExerciseMotionPreview
+                          exerciseId={exerciseId}
+                          exerciseName={
+                            exercise?.name ?? "Exercise"
+                          }
+                          variant="thumbnail"
+                        />
+
+                        <div className="today-start-info">
                           <strong>
                             {exercise?.name ?? "Exercise"}
                           </strong>
@@ -751,9 +730,9 @@ function TodaysWorkoutPage() {
         </>
       )}
 
-      {/* ====================================
+      {/* ==================================
           ACTIVE WORKOUT
-      ==================================== */}
+      ================================== */}
 
       {activeWorkout && currentExercise && (
         <>
@@ -778,7 +757,10 @@ function TodaysWorkoutPage() {
             </div>
           </section>
 
-          {/* All exercises completed or skipped */}
+          {/* ==================================
+              FINISHED ALL EXERCISES
+          ================================== */}
+
           {allFinished ? (
             <section className="today-simple-card today-ready-finish">
               <div className="today-finished-icon">
@@ -812,6 +794,8 @@ function TodaysWorkoutPage() {
                 </button>
               )}
 
+              {/* Review Exercises */}
+
               <details className="today-more-options">
                 <summary>
                   Review Exercises
@@ -831,14 +815,26 @@ function TodaysWorkoutPage() {
                           key={exercise.exerciseId}
                           className="today-option-group"
                         >
-                          <strong>{name}</strong>
+                          <div className="today-review-exercise-heading">
+                            <ExerciseMotionPreview
+                              exerciseId={
+                                exercise.exerciseId
+                              }
+                              exerciseName={name}
+                              variant="thumbnail"
+                            />
 
-                          <p className="today-small-note">
-                            {exercise.completedSets.length}
-                            {" "}of{" "}
-                            {exercise.target.sets}
-                            {" "}sets recorded
-                          </p>
+                            <div className="today-review-exercise-info">
+                              <strong>{name}</strong>
+
+                              <span>
+                                {exercise.completedSets.length}
+                                {" "}of{" "}
+                                {exercise.target.sets}
+                                {" "}sets recorded
+                              </span>
+                            </div>
+                          </div>
 
                           {exercise.skipped ? (
                             <button
@@ -884,6 +880,11 @@ function TodaysWorkoutPage() {
               </details>
             </section>
           ) : (
+
+            /* ==================================
+                CURRENT EXERCISE
+            ================================== */
+
             <section className="today-simple-card today-exercise-card">
               <div className="today-exercise-count">
                 Exercise {currentIndex + 1}
@@ -917,6 +918,8 @@ function TodaysWorkoutPage() {
                 </div>
               </div>
 
+              {/* Remaining Sets */}
+
               <div className="today-set-count">
                 <strong>{remainingSets}</strong>
 
@@ -926,6 +929,8 @@ function TodaysWorkoutPage() {
                     : "sets remaining"}
                 </span>
               </div>
+
+              {/* Set Progress */}
 
               <div className="today-set-dots">
                 {Array.from(
@@ -947,7 +952,8 @@ function TodaysWorkoutPage() {
                 )}
               </div>
 
-              {/* Timed exercise, e.g. Plank */}
+              {/* Timed Exercises */}
+
               {target.targetType === "duration" &&
                 !currentExercise.skipped &&
                 remainingSets > 0 && (
@@ -968,7 +974,8 @@ function TodaysWorkoutPage() {
                 />
               )}
 
-              {/* Quick set confirmation */}
+              {/* Quick Set Form */}
+
               {!currentExercise.skipped &&
                 remainingSets > 0 && (
                 <form
@@ -980,6 +987,7 @@ function TodaysWorkoutPage() {
                     "duration" ? (
                       <label>
                         Actual Seconds
+
                         <input
                           type="number"
                           min="1"
@@ -997,6 +1005,7 @@ function TodaysWorkoutPage() {
                     ) : (
                       <label>
                         Reps
+
                         <input
                           type="number"
                           min="1"
@@ -1014,6 +1023,7 @@ function TodaysWorkoutPage() {
 
                     <label>
                       Weight ({activeWorkout.weightUnit})
+
                       <input
                         type="number"
                         min="0"
@@ -1088,7 +1098,10 @@ function TodaysWorkoutPage() {
                 </>
               )}
 
-              {/* Advanced controls, hidden by default */}
+              {/* ==================================
+                  MORE OPTIONS
+              ================================== */}
+
               <details className="today-more-options">
                 <summary>More Options</summary>
 
@@ -1100,30 +1113,49 @@ function TodaysWorkoutPage() {
 
                     <div className="today-exercise-picker">
                       {activeWorkout.exercises.map(
-                        (exercise) => (
-                          <button
-                            type="button"
-                            key={exercise.exerciseId}
-                            className={
-                              currentExercise.exerciseId ===
-                              exercise.exerciseId
-                                ? "selected"
-                                : ""
-                            }
-                            onClick={() => {
-                              setFocusedExerciseId(
-                                exercise.exerciseId
-                              );
-
-                              clearRestTimer();
-                            }}
-                          >
-                            {findExercise(
+                        (exercise) => {
+                          const exerciseName =
+                            findExercise(
                               exercise.exerciseId
                             )?.name ??
-                              exercise.exerciseId}
-                          </button>
-                        )
+                            exercise.exerciseId;
+
+                          const isSelected =
+                            currentExercise.exerciseId ===
+                            exercise.exerciseId;
+
+                          return (
+                            <button
+                              type="button"
+                              key={exercise.exerciseId}
+                              className={
+                                isSelected
+                                  ? "selected"
+                                  : ""
+                              }
+                              aria-pressed={isSelected}
+                              onClick={() => {
+                                setFocusedExerciseId(
+                                  exercise.exerciseId
+                                );
+
+                                clearRestTimer();
+                              }}
+                            >
+                              <ExerciseMotionPreview
+                                exerciseId={
+                                  exercise.exerciseId
+                                }
+                                exerciseName={
+                                  exerciseName
+                                }
+                                variant="thumbnail"
+                              />
+
+                              <span>{exerciseName}</span>
+                            </button>
+                          );
+                        }
                       )}
                     </div>
                   </div>
@@ -1176,7 +1208,10 @@ function TodaysWorkoutPage() {
             </section>
           )}
 
-          {/* Finish early confirmation */}
+          {/* ==================================
+              FINISH EARLY DIALOG
+          ================================== */}
+
           {showEarlyFinish && (
             <div className="today-dialog-backdrop">
               <section
@@ -1215,7 +1250,10 @@ function TodaysWorkoutPage() {
             </div>
           )}
 
-          {/* Discard confirmation */}
+          {/* ==================================
+              DISCARD DIALOG
+          ================================== */}
+
           {showDiscard && (
             <div className="today-dialog-backdrop">
               <section
@@ -1256,7 +1294,10 @@ function TodaysWorkoutPage() {
         </>
       )}
 
-      {/* Rest timer in the foreground */}
+      {/* ==================================
+          REST TIMER
+      ================================== */}
+
       {activeWorkout &&
         restTimer.status !== "idle" && (
         <div className="today-dialog-backdrop">
@@ -1314,9 +1355,7 @@ function TodaysWorkoutPage() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    addRestTime(30)
-                  }
+                  onClick={() => addRestTime(30)}
                 >
                   +30 sec
                 </button>
@@ -1326,7 +1365,10 @@ function TodaysWorkoutPage() {
         </div>
       )}
 
-      {/* Optional biweekly feedback */}
+      {/* ==================================
+          TRAINING REVIEW
+      ================================== */}
+
       {!activeWorkout && reviewOpen && (
         <div className="today-dialog-backdrop">
           <form
@@ -1427,6 +1469,7 @@ function TodaysWorkoutPage() {
           </form>
         </div>
       )}
+
     </div>
   );
 }

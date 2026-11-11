@@ -1,6 +1,14 @@
 
 /* ==========================================
-   TODAY'S WORKOUT — HOME OVERVIEW
+   TODAY WORKOUT OVERVIEW
+   TERRA ACTIVE
+
+   Compact exercise previews
+   Light and dark theme support
+========================================== */
+
+/* ==========================================
+   1. CONTAINER
 ========================================== */
 
 .today-home-overview,
@@ -11,142 +19,441 @@
 .today-home-overview {
   width: 100%;
   max-width: 1120px;
+  min-width: 0;
+
   margin: 0 auto;
   padding: 24px 24px 0;
 }
 
-.today-home-card {
+/* ==========================================
+   2. MAIN CARD
+========================================== */
+
+html[data-theme] .today-home-card {
   width: 100%;
-  padding: 23px;
-  border: 1px solid #365c43;
-  border-radius: 15px;
-  background: linear-gradient(
-    135deg,
-    #17251b 0%,
-    #18181b 68%
+  min-width: 0;
+
+  padding: 24px;
+
+  background-color: var(
+    --color-surface,
+    #f2ece2
   );
 
-  color: #fafafa;
+  border: 1px solid var(
+    --color-border,
+    #d1c7b9
+  );
+
+  border-radius: var(
+    --radius-card,
+    14px
+  );
+
+  box-shadow: var(
+    --shadow-card,
+    none
+  );
+
+  color: var(
+    --color-text,
+    #36343b
+  );
 }
+
+/* ==========================================
+   3. HEADER
+========================================== */
 
 .today-home-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 17px;
 }
 
 .today-home-header > span:first-child {
-  color: #86efac;
+  color: var(
+    --color-accent,
+    #b14f3f
+  );
+
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.1px;
 }
 
 .today-home-date {
-  color: #a1a1aa;
+  color: var(
+    --color-text-secondary,
+    #59545a
+  );
+
   font-size: 11px;
 }
 
+/* ==========================================
+   4. TITLE AND DESCRIPTION
+========================================== */
+
 .today-home-card h2 {
   margin: 0 0 10px;
-  color: #fafafa;
-  font-size: clamp(20px, 3vw, 27px);
-  line-height: 1.25;
+
+  color: var(
+    --color-text,
+    #36343b
+  );
+
+  font-size: clamp(
+    21px,
+    3vw,
+    28px
+  );
+
+  line-height: 1.3;
 }
 
 .today-home-card > p {
   margin: 0 0 18px;
-  color: #c4c4cc;
+
+  color: var(
+    --color-text-secondary,
+    #59545a
+  );
+
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-/* Status */
+/* ==========================================
+   5. WORKOUT STATUS
+========================================== */
 
 .today-home-status {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin-bottom: 13px;
-  color: #86efac;
-  font-size: 12px;
-  font-weight: 700;
-}
 
-.today-home-status.is-complete {
-  color: #4ade80;
+  gap: 8px;
+  margin-bottom: 13px;
+
+  color: var(
+    --color-success-text,
+    #276047
+  );
+
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .today-home-pulse {
+  flex-shrink: 0;
+
   width: 8px;
   height: 8px;
+
+  background-color: var(
+    --color-success-text,
+    #276047
+  );
+
   border-radius: 50%;
-  background-color: #4ade80;
 }
 
-/* Exercise names */
+.today-home-status.is-complete {
+  color: var(
+    --color-success-text,
+    #276047
+  );
+}
+
+/* ==========================================
+   6. EXERCISE GRID
+========================================== */
+
+/*
+  Auto-fit creates as many columns as
+  comfortably fit inside the container.
+*/
 
 .today-home-exercises {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(min(100%, 220px), 1fr)
+    );
+
+  gap: 10px;
+
+  margin: 18px 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.today-home-exercise-item {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================
+   7. EXERCISE LINK
+========================================== */
+
+.today-home-exercise-link {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 19px;
+  align-items: center;
+
+  min-width: 0;
+  gap: 12px;
+
+  padding: 10px;
+
+  background-color: var(
+    --color-inset,
+    #e8e1d8
+  );
+
+  border: 1px solid var(
+    --color-border,
+    #d1c7b9
+  );
+
+  border-radius: 10px;
+
+  text-decoration: none;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-.today-home-exercises span {
-  padding: 7px 10px;
-  border: 1px solid #365c43;
-  border-radius: 7px;
-  background-color: #111c15;
+.today-home-exercise-link:hover {
+  background-color: var(
+    --color-surface-hover,
+    #ede5dc
+  );
 
-  color: #d4d4d8;
-  font-size: 11px;
+  border-color: var(
+    --color-accent,
+    #b14f3f
+  );
+}
+
+.today-home-exercise-link:focus-visible {
+  outline: 3px solid var(
+    --color-focus,
+    #b14f3f
+  );
+
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   8. ANIMATED THUMBNAIL
+========================================== */
+
+.today-home-exercise-link
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 62px;
+
+  width: 62px;
+  height: 62px;
+
+  background-color: #dce5e9;
+
+  border: 1px solid var(
+    --color-border,
+    #d1c7b9
+  );
+
+  border-radius: 9px;
+}
+
+html[data-theme="dark"]
+.today-home-exercise-link
+.exercise-motion-preview--thumbnail {
+  background-color: #20252a;
+}
+
+/* ==========================================
+   9. EXERCISE TEXT
+========================================== */
+
+.today-home-exercise-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 6px;
+}
+
+.today-home-exercise-info strong {
+  color: var(
+    --color-text,
+    #36343b
+  );
+
+  font-size: 12px;
   line-height: 1.4;
+
+  overflow-wrap: anywhere;
 }
 
-/* Actions */
+.today-home-exercise-info small {
+  color: var(
+    --color-text-secondary,
+    #59545a
+  );
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   10. REMAINING EXERCISES
+========================================== */
+
+.today-home-card > .today-home-more-count {
+  margin: 0 0 17px;
+
+  color: var(
+    --color-text-secondary,
+    #59545a
+  );
+
+  font-size: 12px;
+}
+
+/* ==========================================
+   11. PRIMARY ACTION
+========================================== */
 
 .today-home-action,
 .today-home-secondary-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 43px;
-  padding: 10px 16px;
 
-  border-radius: 8px;
+  min-height: 44px;
+
+  padding: 11px 17px;
+
+  border-radius: var(
+    --radius-button,
+    9px
+  );
+
+  font: inherit;
   font-size: 12px;
   font-weight: 800;
+
+  text-align: center;
   text-decoration: none;
 
-  transition: background-color 0.15s;
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .today-home-action {
-  border: 1px solid #22c55e;
-  background-color: #22c55e;
-  color: #052e16;
+  background-color: var(
+    --color-action,
+    #b14f3f
+  );
+
+  border: 1px solid var(
+    --color-action,
+    #b14f3f
+  );
+
+  color: var(
+    --color-action-text,
+    #ffffff
+  );
 }
 
-.today-home-action:hover {
-  background-color: #4ade80;
+.today-home-action:hover:not(:disabled) {
+  background-color: var(
+    --color-action-hover,
+    #973f32
+  );
+
+  border-color: var(
+    --color-action-hover,
+    #973f32
+  );
+
+  color: var(
+    --color-action-text,
+    #ffffff
+  );
 }
 
-.today-home-secondary-action {
-  border: 1px solid #365c43;
-  background-color: #12281b;
-  color: #86efac;
-}
-
-.today-home-secondary-action:hover {
-  background-color: #173c26;
+.today-home-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ==========================================
-   RESPONSIVENESS
+   12. SECONDARY ACTION
+========================================== */
+
+.today-home-secondary-action {
+  background-color: var(
+    --color-secondary-action-bg,
+    #e8e1d8
+  );
+
+  border: 1px solid var(
+    --color-secondary-action-border,
+    #d1c7b9
+  );
+
+  color: var(
+    --color-secondary-action-text,
+    #36343b
+  );
+}
+
+.today-home-secondary-action:hover {
+  background-color: var(
+    --color-secondary-action-hover,
+    #ded5cb
+  );
+
+  color: var(
+    --color-secondary-action-text,
+    #36343b
+  );
+}
+
+/* ==========================================
+   13. KEYBOARD ACCESSIBILITY
+========================================== */
+
+.today-home-overview :is(
+  .today-home-action,
+  .today-home-secondary-action
+):focus-visible {
+  outline: 3px solid var(
+    --color-focus,
+    #b14f3f
+  );
+
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   14. TABLET AND MOBILE
 ========================================== */
 
 @media (max-width: 650px) {
@@ -155,11 +462,11 @@
   }
 
   .today-home-card {
-    padding: 17px;
+    padding: 18px;
   }
 
   .today-home-exercises {
-    gap: 6px;
+    gap: 9px;
   }
 }
 
@@ -168,11 +475,24 @@
   .today-home-secondary-action {
     width: 100%;
   }
+
+  .today-home-exercise-link
+  .exercise-motion-preview--thumbnail {
+    flex-basis: 56px;
+
+    width: 56px;
+    height: 56px;
+  }
 }
+
+/* ==========================================
+   15. REDUCED MOTION
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .today-home-action,
-  .today-home-secondary-action {
+  .today-home-secondary-action,
+  .today-home-exercise-link {
     transition: none;
   }
 }

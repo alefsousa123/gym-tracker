@@ -1,0 +1,187 @@
+
+/* ==========================================
+   GYM - FOOTER
+
+   - Compact layout
+   - Light and dark themes
+   - Responsive design
+========================================== */
+
+/* ==========================================
+   1. FOOTER CONTAINER
+========================================== */
+
+.footer.gym-footer {
+  width: 100%;
+  margin-top: auto;
+  padding: 24px;
+
+  background-color: var(
+    --color-surface,
+    #f2ece2
+  );
+
+  border-top: 1px solid var(
+    --color-border,
+    #d1c7b9
+  );
+
+  color: var(
+    --color-text,
+    #36343b
+  );
+}
+
+/* ==========================================
+   2. CONTENT LAYOUT
+========================================== */
+
+.gym-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  width: 100%;
+  max-width: 1120px;
+
+  margin: 0 auto;
+}
+
+/* ==========================================
+   3. BRAND
+========================================== */
+
+.gym-footer-identity {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.gym-footer-brand {
+  color: var(
+    --color-accent,
+    #b14f3f
+  );
+
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+/* ==========================================
+   4. FOOTER TEXT
+========================================== */
+
+.footer.gym-footer p {
+  margin: 0;
+
+  color: var(
+    --color-text-secondary,
+    #59545a
+  );
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   5. COPYRIGHT AND CREDITS
+========================================== */
+
+.gym-footer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  gap: 6px;
+}
+
+.gym-footer-credits a {
+  color: var(
+    --color-accent,
+    #b14f3f
+  );
+
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gym-footer-credits a:hover {
+  text-decoration: underline;
+}
+
+.gym-footer-credits a:focus-visible {
+  outline: 2px solid var(
+    --color-focus,
+    #b14f3f
+  );
+
+  outline-offset: 4px;
+}
+
+/* ==========================================
+   6. DARK THEME FALLBACKS
+========================================== */
+
+html[data-theme="dark"]
+.footer.gym-footer {
+  background-color: var(
+    --color-surface,
+    #202024
+  );
+
+  border-top-color: var(
+    --color-border,
+    #393941
+  );
+
+  color: var(
+    --color-text,
+    #f3f1ef
+  );
+}
+
+html[data-theme="dark"]
+.footer.gym-footer p {
+  color: var(
+    --color-text-secondary,
+    #b9b5b5
+  );
+}
+
+/* ==========================================
+   7. MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  .footer.gym-footer {
+    padding: 22px 16px;
+  }
+
+  .gym-footer-content {
+    flex-direction: column;
+    align-items: center;
+
+    gap: 14px;
+
+    text-align: center;
+  }
+
+  .gym-footer-identity,
+  .gym-footer-meta {
+    align-items: center;
+  }
+}
+
+/* ==========================================
+   8. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .gym-footer-credits a {
+    transition: none;
+  }
+}

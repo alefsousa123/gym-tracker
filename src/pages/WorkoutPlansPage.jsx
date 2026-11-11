@@ -26,7 +26,14 @@ import {
   createWeeklyTemplate,
 } from "../data/workoutSplits";
 
+import ExerciseMotionPreview from
+  "../components/exercises/ExerciseMotionPreview";
+
 import "./WorkoutPlansPage.css";
+
+// ==========================================
+// TRAINING GOAL LABELS
+// ==========================================
 
 const goalLabels = {
   "build-muscle": "Build Muscle",
@@ -36,8 +43,47 @@ const goalLabels = {
   "general-fitness": "General Fitness",
 };
 
+// ==========================================
+// REUSABLE PLAN EXERCISE ROW
+// ==========================================
+
+function PlanExerciseRow({ exercise }) {
+  return (
+    <li className="plans-exercise-item">
+      <Link
+        to={`/exercises/${exercise.id}`}
+        className="plans-exercise-link"
+      >
+        <ExerciseMotionPreview
+          exerciseId={exercise.id}
+          exerciseName={exercise.name}
+          variant="thumbnail"
+        />
+
+        <div className="plans-exercise-info">
+          <strong>{exercise.name}</strong>
+
+          <span>{exercise.muscleGroup}</span>
+        </div>
+
+        <span
+          className="plans-exercise-arrow"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+// ==========================================
+// RECOMMENDED WORKOUT PLANS PAGE
+// ==========================================
+
 function WorkoutPlansPage() {
   const { profile } = useTrainingProfile();
+
   const { homeEquipment } = useEquipment();
 
   const {
@@ -50,18 +96,36 @@ function WorkoutPlansPage() {
     applyWorkoutPlan,
   } = useWorkoutPlan();
 
-  const [trainingLocation, setTrainingLocation] = useState(
+  // ========================================
+  // LOCAL COMPONENT STATE
+  // ========================================
+
+  const [
+    trainingLocation,
+    setTrainingLocation,
+  ] = useState(
     () =>
       profile?.trainingLocation === "gym"
         ? "gym"
         : "home"
   );
 
-  const [selectedPlanId, setSelectedPlanId] = useState(null);
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [
+    selectedPlanId,
+    setSelectedPlanId,
+  ] = useState(null);
+
+  const [
+    isConfirming,
+    setIsConfirming,
+  ] = useState(false);
+
   const [feedback, setFeedback] = useState("");
 
-  // Recalculate suggestions when inputs change
+  // ========================================
+  // RECOMMENDATIONS
+  // ========================================
+
   const recommendations = getRecommendedPlans(
     profile,
     trainingLocation,
@@ -74,40 +138,50 @@ function WorkoutPlansPage() {
     ) ?? recommendations[0];
 
   const selectedPlan = selectedRecommendation?.plan;
-  const selectedPreview = selectedRecommendation?.preview;
+
+  const selectedPreview =
+    selectedRecommendation?.preview;
 
   const canApply =
     Boolean(selectedPreview) &&
     !selectedPreview.hasEmptySession;
+
+  // ========================================
+  // TRAINING PROFILE INFORMATION
+  // ========================================
 
   const primaryGoal =
     profile?.primaryGoal ??
     profile?.trainingGoal ??
     "";
 
-  const secondaryGoal = profile?.secondaryGoal ?? "";
+  const secondaryGoal =
+    profile?.secondaryGoal ?? "";
 
   const hasValidFrequency =
     profile &&
     Number(profile.trainingDaysPerWeek) >= 1 &&
     Number(profile.trainingDaysPerWeek) <= 6;
 
-  // Change the environment used for the recommendation
+  // ========================================
+  // EVENT HANDLERS
+  // ========================================
+
   function handleLocationChange(event) {
     setTrainingLocation(event.target.value);
+
     setSelectedPlanId(null);
     setIsConfirming(false);
     setFeedback("");
   }
 
-  // Select a recommended program
   function handleSelectPlan(planId) {
     setSelectedPlanId(planId);
+
     setIsConfirming(false);
     setFeedback("");
   }
 
-  // Show the confirmation before overwriting the schedule
   function handleReviewApplication() {
     if (!canApply) {
       return;
@@ -117,7 +191,10 @@ function WorkoutPlansPage() {
     setFeedback("");
   }
 
-  // Apply the selected program and its weekly template
+  // ========================================
+  // APPLY SELECTED PLAN
+  // ========================================
+
   function handleConfirmApplication() {
     if (!profile || !selectedPlan || !canApply) {
       return;
@@ -144,7 +221,9 @@ function WorkoutPlansPage() {
             (exercise) => exercise.id
           ),
 
-          missingSlots: [...session.missingSlots],
+          missingSlots: [
+            ...session.missingSlots,
+          ],
         })
       ),
     };
@@ -153,19 +232,33 @@ function WorkoutPlansPage() {
     applyWorkoutPlan(planData);
 
     setIsConfirming(false);
+
     setFeedback(
       `${selectedPlan.name} was applied to your weekly schedule.`
     );
   }
 
+  // ========================================
+  // PAGE CONTENT
+  // ========================================
+
   return (
     <div className="workout-plans-page">
+
+      {/* ==================================
+          BACK NAVIGATION
+      ================================== */}
+
       <Link
         to="/workouts"
         className="plans-back-link"
       >
         ← Back to Workouts
       </Link>
+
+      {/* ==================================
+          PAGE HEADING
+      ================================== */}
 
       <header className="plans-page-heading">
         <span className="plans-eyebrow">
@@ -181,7 +274,10 @@ function WorkoutPlansPage() {
         </p>
       </header>
 
-      {/* Require a saved training profile */}
+      {/* ==================================
+          PROFILE VALIDATION
+      ================================== */}
+
       {!profile ? (
         <section className="plans-notice">
           <h2>Set Up Your Training Profile</h2>
@@ -212,7 +308,11 @@ function WorkoutPlansPage() {
         </section>
       ) : (
         <>
-          {/* Personalization summary */}
+
+          {/* ==================================
+              TRAINING PREFERENCES
+          ================================== */}
+
           <section className="plans-profile-panel">
             <div className="plans-profile-header">
               <div>
@@ -234,7 +334,8 @@ function WorkoutPlansPage() {
                 <span>Primary Goal</span>
 
                 <strong>
-                  {goalLabels[primaryGoal] ?? "Not selected"}
+                  {goalLabels[primaryGoal] ??
+                    "Not selected"}
                 </strong>
               </div>
 
@@ -260,10 +361,13 @@ function WorkoutPlansPage() {
                 <span>Training Days</span>
 
                 <strong>
-                  {profile.trainingDaysPerWeek} / week
+                  {profile.trainingDaysPerWeek}
+                  {" "}/ week
                 </strong>
               </div>
             </div>
+
+            {/* Training location */}
 
             <div className="plans-location-field">
               <label htmlFor="planTrainingLocation">
@@ -299,7 +403,10 @@ function WorkoutPlansPage() {
             </div>
           </section>
 
-          {/* Recommended templates */}
+          {/* ==================================
+              SUGGESTED PROGRAMS
+          ================================== */}
+
           <section className="plans-results-section">
             <div className="plans-section-heading">
               <div>
@@ -353,7 +460,8 @@ function WorkoutPlansPage() {
                         </span>
 
                         <span className="plans-template-coverage">
-                          {item.preview.coverage}% coverage
+                          {item.preview.coverage}%
+                          {" "}coverage
                         </span>
                       </div>
 
@@ -363,7 +471,8 @@ function WorkoutPlansPage() {
 
                       <span className="plans-template-frequency">
                         {item.plan.minDays}–
-                        {item.plan.maxDays} training days
+                        {item.plan.maxDays}
+                        {" "}training days
                       </span>
 
                       <span className="plans-template-action">
@@ -378,9 +487,13 @@ function WorkoutPlansPage() {
             )}
           </section>
 
-          {/* Detailed preview */}
+          {/* ==================================
+              SELECTED PLAN PREVIEW
+          ================================== */}
+
           {selectedPlan && selectedPreview && (
             <section className="plans-preview-panel">
+
               <div className="plans-section-heading">
                 <div>
                   <span className="plans-eyebrow">
@@ -396,10 +509,14 @@ function WorkoutPlansPage() {
                 </div>
 
                 <span className="plans-result-count">
-                  {selectedPreview.matchedSlots} of{" "}
-                  {selectedPreview.totalSlots} slots
+                  {selectedPreview.matchedSlots}
+                  {" "}of{" "}
+                  {selectedPreview.totalSlots}
+                  {" "}slots
                 </span>
               </div>
+
+              {/* Missing exercises warning */}
 
               {!selectedPreview.isComplete && (
                 <div className="plans-coverage-warning">
@@ -416,52 +533,62 @@ function WorkoutPlansPage() {
                 </div>
               )}
 
+              {/* ==================================
+                  SESSIONS AND ANIMATED EXERCISES
+              ================================== */}
+
               <div className="plans-session-grid">
-                {selectedPreview.sessions.map((session) => (
-                  <article
-                    key={session.id}
-                    className="plans-session-card"
-                  >
-                    <h3>{session.name}</h3>
+                {selectedPreview.sessions.map(
+                  (session) => (
+                    <article
+                      key={session.id}
+                      className="plans-session-card"
+                    >
+                      <h3>{session.name}</h3>
 
-                    <ul className="plans-exercise-list">
-                      {session.exercises.map((exercise) => (
-                        <li key={exercise.id}>
-                          <Link
-                            to={`/exercises/${exercise.id}`}
-                          >
-                            {exercise.name}
-                          </Link>
+                      <ul className="plans-exercise-list">
+                        {session.exercises.map(
+                          (exercise) => (
+                            <PlanExerciseRow
+                              key={exercise.id}
+                              exercise={exercise}
+                            />
+                          )
+                        )}
+                      </ul>
 
-                          <span>
-                            {exercise.muscleGroup}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                      {/* Missing slots */}
 
-                    {session.missingSlots.length > 0 && (
-                      <div className="plans-missing-slots">
-                        <strong>Missing Exercise Slots</strong>
+                      {session.missingSlots.length > 0 && (
+                        <div className="plans-missing-slots">
+                          <strong>
+                            Missing Exercise Slots
+                          </strong>
 
-                        <ul>
-                          {session.missingSlots.map((slot) => (
-                            <li key={slot}>
-                              {slot}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                          <ul>
+                            {session.missingSlots.map(
+                              (slot) => (
+                                <li key={slot}>
+                                  {slot}
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
 
-                    {session.exercises.length === 0 && (
-                      <p className="plans-empty-session">
-                        No compatible exercises are
-                        currently available for this session.
-                      </p>
-                    )}
-                  </article>
-                ))}
+                      {/* Empty session */}
+
+                      {session.exercises.length === 0 && (
+                        <p className="plans-empty-session">
+                          No compatible exercises are
+                          currently available for
+                          this session.
+                        </p>
+                      )}
+                    </article>
+                  )
+                )}
               </div>
 
               <p className="plans-education-note">
@@ -471,7 +598,10 @@ function WorkoutPlansPage() {
                 progression will be added in later stages.
               </p>
 
-              {/* Review before applying */}
+              {/* ==================================
+                  APPLY PLAN
+              ================================== */}
+
               {!isConfirming ? (
                 <div className="plans-apply-actions">
                   <button
@@ -493,14 +623,15 @@ function WorkoutPlansPage() {
                 </div>
               ) : (
                 <div className="plans-confirm-panel">
+
                   <h3>Apply This Workout Plan?</h3>
 
                   <p>
                     Applying this plan will replace
                     your current weekly schedule with
                     a new template for{" "}
-                    {profile.trainingDaysPerWeek} training
-                    days per week.
+                    {profile.trainingDaysPerWeek}
+                    {" "}training days per week.
                   </p>
 
                   {weeklySchedule && (
@@ -541,6 +672,8 @@ function WorkoutPlansPage() {
                 </div>
               )}
 
+              {/* Success feedback */}
+
               {feedback && (
                 <div
                   className="plans-success-message"
@@ -556,7 +689,10 @@ function WorkoutPlansPage() {
             </section>
           )}
 
-          {/* Existing selected plan */}
+          {/* ==================================
+              CURRENTLY APPLIED PLAN
+          ================================== */}
+
           {appliedPlan && (
             <section className="plans-current-plan">
               <div>
@@ -567,15 +703,16 @@ function WorkoutPlansPage() {
                 <h2>{appliedPlan.name}</h2>
 
                 <p>
-                    {appliedPlan.location === "home"
-                        ? "At Home"
-                        : "At the Gym"}
+                  {appliedPlan.location === "home"
+                    ? "At Home"
+                    : "At the Gym"}
 
-                    {" · "}
+                  {" · "}
 
-                    {typeof appliedPlan.coverage === "number"
-                        ? `${appliedPlan.coverage}% catalog coverage when applied`
-                        : "Custom exercise selection"}
+                  {typeof appliedPlan.coverage ===
+                  "number"
+                    ? `${appliedPlan.coverage}% catalog coverage when applied`
+                    : "Custom exercise selection"}
                 </p>
               </div>
 

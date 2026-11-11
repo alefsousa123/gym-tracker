@@ -1,43 +1,77 @@
 
 /* ==========================================
-   TODAY'S WORKOUT — MAIN LAYOUT
+   TODAY'S WORKOUT - TERRA ACTIVE
+   R1.4 - PART 5.3
+
+   - Exercise thumbnails
+   - Workout controls
+   - Timers and dialogs
+   - Responsive layout
+   - Light and Dark Theme
 ========================================== */
+
+/* ==========================================
+   1. PAGE AND LOCAL TOKENS
+========================================== */
+
+html[data-theme]
+.app > main:has(> .today-workout-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .today-workout-page,
 .today-workout-page * {
   box-sizing: border-box;
 }
 
-.today-workout-page {
+html[data-theme] .today-workout-page {
+  --today-danger-bg: #f4d8d1;
+  --today-danger-text: #8c332c;
+  --today-danger-border: #c47c70;
+
   width: 100%;
   max-width: 760px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 26px 20px 64px;
-  color: #fafafa;
+
+  color: var(--color-text);
 }
 
-.today-workout-page button,
-.today-workout-page input,
-.today-workout-page select {
+html[data-theme="dark"] .today-workout-page {
+  --today-danger-bg: #3d2628;
+  --today-danger-text: #ffbbb1;
+  --today-danger-border: #9b5558;
+}
+
+.today-workout-page :is(
+  button,
+  input,
+  select
+) {
   font-family: inherit;
 }
 
 /* ==========================================
-   HEADER
+   2. HEADER
 ========================================== */
 
 .today-simple-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
   margin-bottom: 24px;
 }
 
 .today-simple-heading a {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -46,81 +80,104 @@
 }
 
 .today-simple-heading > span {
-  color: #71717a;
+  color: var(--color-text-muted);
+
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.3px;
 }
 
 .today-simple-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1.2px;
 }
 
 /* ==========================================
-   MAIN CARDS
+   3. MAIN CARDS
 ========================================== */
 
 .today-simple-card,
 .today-finished-card {
   width: 100%;
   min-width: 0;
+
   padding: 24px;
-  border: 1px solid #303036;
-  border-radius: 15px;
-  background-color: #18181b;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  box-shadow: var(--shadow-card);
 }
 
 .today-simple-card h1,
 .today-finished-card h1 {
   margin: 10px 0;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(22px, 4vw, 29px);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.3;
 }
 
 .today-simple-card > p,
 .today-finished-card > p {
   margin: 0 0 18px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   START WORKOUT
+   4. SESSION PICKER
 ========================================== */
 
 .today-session-picker {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   margin: 20px 0;
 }
 
 .today-session-picker label {
-  color: #d4d4d8;
+  color: var(--color-text);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .today-session-picker select {
   width: 100%;
-  min-height: 43px;
+  min-height: 44px;
+
   padding: 9px 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
-  background: #111113;
-  color: #fafafa;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  color: var(--color-text);
+
   font-size: 13px;
 }
+
+/* ==========================================
+   5. EXERCISE LIST BEFORE STARTING
+========================================== */
 
 .today-start-list {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   margin: 20px 0 24px;
 }
@@ -128,45 +185,77 @@
 .today-start-item {
   display: flex;
   align-items: center;
+
   gap: 12px;
   padding: 12px;
-  border: 1px solid #303036;
-  border-radius: 9px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
 }
 
-.today-start-item > span {
+.today-start-number {
   display: flex;
   flex: 0 0 29px;
   align-items: center;
   justify-content: center;
+
+  width: 29px;
   height: 29px;
+
+  background-color: var(--color-mint);
+
   border-radius: 8px;
-  background-color: #14532d;
-  color: #86efac;
+
+  color: var(--color-success-text);
+
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-.today-start-item > div {
+/* Animated thumbnail */
+
+.today-start-item
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 68px;
+
+  width: 68px;
+  height: 68px;
+
+  background-color: var(--color-sky);
+
+  border-color: var(--color-border);
+  border-radius: 9px;
+}
+
+.today-start-info {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 5px;
+
+  gap: 6px;
   min-width: 0;
 }
 
-.today-start-item strong {
-  color: #fafafa;
+.today-start-info strong {
+  color: var(--color-text);
+
   font-size: 13px;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
 }
 
-.today-start-item small {
-  color: #a1a1aa;
+.today-start-info small {
+  color: var(--color-text-secondary);
+
   font-size: 11px;
+  line-height: 1.5;
 }
 
 /* ==========================================
-   WORKOUT PROGRESS
+   6. WORKOUT PROGRESS
 ========================================== */
 
 .today-active-top {
@@ -177,67 +266,84 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
   margin-bottom: 11px;
 }
 
 .today-active-meta span {
-  color: #d4d4d8;
+  color: var(--color-text-secondary);
+
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .today-active-meta strong {
-  color: #86efac;
+  color: var(--color-accent);
+
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .today-mini-progress {
   width: 100%;
   height: 8px;
+
   overflow: hidden;
+
+  background-color: var(--color-surface-soft);
+
   border-radius: 999px;
-  background-color: #303036;
 }
 
 .today-mini-progress > div {
   height: 100%;
+
+  background-color: var(--color-accent);
+
   border-radius: 999px;
-  background-color: #22c55e;
-  transition: width 0.2s ease;
+
+  transition: width 180ms ease;
 }
 
 /* ==========================================
-   CURRENT EXERCISE
+   7. CURRENT EXERCISE
 ========================================== */
 
 .today-exercise-card {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .today-exercise-count {
   margin-bottom: 18px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .today-active-exercise-heading {
   display: flex;
   align-items: center;
-  gap: 18px;
+
   min-width: 0;
+  gap: 18px;
+
   margin-bottom: 20px;
 }
 
 .today-active-exercise-heading
 .exercise-motion-preview--thumbnail {
   flex: 0 0 96px;
+
   width: 96px;
   height: 96px;
+
+  background-color: var(--color-sky);
+
+  border-color: var(--color-border);
   border-radius: 10px;
 }
 
@@ -248,21 +354,27 @@
 
 .today-active-exercise-heading h1 {
   margin: 0 0 8px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(19px, 3vw, 25px);
   line-height: 1.3;
+
   overflow-wrap: anywhere;
 }
 
 .today-active-exercise-heading p {
   margin: 0 0 9px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
   font-size: 13px;
 }
 
 .today-active-exercise-heading a {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 12px;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -271,7 +383,7 @@
 }
 
 /* ==========================================
-   SET COUNTER
+   8. REMAINING SETS
 ========================================== */
 
 .today-set-count {
@@ -279,21 +391,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 5px;
   margin: 8px 0 12px;
   padding: 14px 0;
 }
 
 .today-set-count strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: 48px;
   font-weight: 800;
   line-height: 1;
+
   font-variant-numeric: tabular-nums;
 }
 
 .today-set-count span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
 
@@ -302,6 +417,7 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+
   gap: 10px;
   margin-bottom: 25px;
 }
@@ -310,65 +426,80 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 34px;
   height: 34px;
-  border: 1px solid #3f3f46;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  background-color: #111113;
-  color: #d4d4d8;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .today-set-dots span.is-complete {
-  border-color: #22c55e;
-  background-color: #14532d;
-  color: #86efac;
+  background-color: var(--color-mint);
+
+  border-color: var(--color-success-text);
+
+  color: var(--color-success-text);
 }
 
 /* ==========================================
-   QUICK SET FORM
+   9. QUICK SET FORM
 ========================================== */
 
 .today-quick-form {
   display: flex;
   flex-direction: column;
+
   gap: 16px;
 }
 
 .today-quick-fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 14px;
 }
 
 .today-quick-fields label {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+
   min-width: 0;
-  color: #d4d4d8;
+  gap: 9px;
+
+  color: var(--color-text);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .today-quick-fields input {
   width: 100%;
   min-width: 0;
   height: 50px;
+
   padding: 0 13px;
-  border: 1px solid #3f3f46;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
   border-radius: 9px;
-  background-color: #111113;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 18px;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
 
-.today-quick-fields input:focus-visible {
-  outline: 2px solid #22c55e;
-  outline-offset: 2px;
+  font-variant-numeric: tabular-nums;
 }
 
 .today-quick-fields input:disabled {
@@ -378,13 +509,15 @@
 
 .today-error {
   margin: 0;
-  color: #fca5a5;
+
+  color: var(--today-danger-text);
+
   font-size: 12px;
   line-height: 1.6;
 }
 
 /* ==========================================
-   BUTTONS
+   10. PRIMARY ACTIONS
 ========================================== */
 
 .today-workout-page .today-main-button,
@@ -392,23 +525,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 100%;
   min-height: 50px;
+
   padding: 12px 18px;
-  border: 1px solid #22c55e;
-  border-radius: 9px;
-  background-color: #22c55e;
-  color: #052e16;
+
+  background-color: var(--color-action);
+
+  border: 1px solid var(--color-action);
+  border-radius: var(--radius-button);
+
+  color: var(--color-action-text);
+
   font-size: 14px;
   font-weight: 800;
+
   text-align: center;
   text-decoration: none;
+
   cursor: pointer;
 }
 
-.today-workout-page .today-main-button:hover:not(:disabled),
-.today-workout-page .today-main-link:hover {
-  background-color: #4ade80;
+.today-workout-page
+.today-main-button:hover:not(:disabled),
+.today-workout-page
+.today-main-link:hover {
+  background-color: var(--color-action-hover);
+
+  border-color: var(--color-action-hover);
 }
 
 .today-workout-page .today-main-button:disabled {
@@ -416,60 +561,91 @@
   cursor: not-allowed;
 }
 
+/* ==========================================
+   11. SECONDARY ACTIONS
+========================================== */
+
 .today-workout-page .today-secondary-button {
   min-height: 42px;
   padding: 10px 14px;
-  border: 1px solid #52525b;
-  border-radius: 8px;
-  background-color: #27272a;
-  color: #fafafa;
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  color:
+    var(--color-secondary-action-text);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+
   cursor: pointer;
 }
+
+.today-workout-page
+.today-secondary-button:hover {
+  background-color:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   12. DANGER ACTIONS
+========================================== */
 
 .today-workout-page .today-danger-button {
   min-height: 42px;
   padding: 10px 14px;
-  border: 1px solid #7f1d1d;
-  border-radius: 8px;
-  background-color: #301717;
-  color: #fca5a5;
+
+  background-color: var(--today-danger-bg);
+
+  border: 1px solid var(--today-danger-border);
+  border-radius: var(--radius-button);
+
+  color: var(--today-danger-text);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+
   cursor: pointer;
 }
 
-.today-workout-page .today-secondary-button:hover {
-  border-color: #86efac;
-}
-
 /* ==========================================
-   MORE OPTIONS
+   13. MORE OPTIONS
 ========================================== */
 
 .today-more-options {
   width: 100%;
+
   margin-top: 22px;
   padding-top: 17px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
 }
 
 .today-more-options summary {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   text-align: center;
+
   cursor: pointer;
   list-style-position: inside;
 }
 
 .today-more-options summary:hover {
-  color: #86efac;
+  color: var(--color-accent);
 }
 
 .today-options-content {
   display: flex;
   flex-direction: column;
+
   gap: 11px;
   padding-top: 18px;
 }
@@ -477,50 +653,155 @@
 .today-option-group {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
   min-width: 0;
 }
 
-.today-option-group strong {
-  color: #d4d4d8;
+.today-option-group > strong {
+  color: var(--color-text);
+
   font-size: 12px;
 }
+
+/* ==========================================
+   14. REVIEW EXERCISES
+========================================== */
+
+.today-review-exercise-heading {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+  gap: 12px;
+
+  padding: 10px;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.today-review-exercise-heading
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 64px;
+
+  width: 64px;
+  height: 64px;
+
+  background-color: var(--color-sky);
+
+  border-color: var(--color-border);
+}
+
+.today-review-exercise-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 6px;
+}
+
+.today-review-exercise-info strong {
+  color: var(--color-text);
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.today-review-exercise-info span {
+  color: var(--color-text-secondary);
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   15. CHANGE EXERCISE PICKER
+========================================== */
 
 .today-exercise-picker {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+
+  gap: 9px;
   margin-bottom: 8px;
 }
 
 .today-exercise-picker button {
-  padding: 9px 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
-  background-color: #111113;
-  color: #d4d4d8;
+  display: inline-flex;
+  flex: 1 1 180px;
+  align-items: center;
+
+  min-width: 0;
+  gap: 10px;
+  padding: 8px;
+
+  background-color: var(--color-inset);
+
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+
+  color: var(--color-text);
+
   font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+
   cursor: pointer;
 }
 
-.today-exercise-picker button.selected {
-  border-color: #22c55e;
-  background-color: #12281b;
-  color: #86efac;
+.today-exercise-picker button:hover {
+  background-color: var(--color-surface-hover);
 }
+
+.today-exercise-picker button.selected {
+  background-color: var(--color-mint);
+
+  border-color: var(--color-success-text);
+
+  color: var(--color-text);
+}
+
+.today-exercise-picker
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 52px;
+
+  width: 52px;
+  height: 52px;
+
+  background-color: var(--color-sky);
+
+  border-color: var(--color-border);
+}
+
+.today-exercise-picker button > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   16. SMALL INFORMATION NOTES
+========================================== */
 
 .today-small-note {
   margin: 12px 0;
   padding: 11px 13px;
+
+  background-color: var(--color-surface-soft);
+
   border-radius: 8px;
-  background-color: #27272a;
-  color: #d4d4d8;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.6;
 }
 
 /* ==========================================
-   FINISHED WORKOUT
+   17. COMPLETED WORKOUT
 ========================================== */
 
 .today-finished-card,
@@ -536,19 +817,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 60px;
   height: 60px;
+
   margin: 0 auto 16px;
+
+  background-color: var(--color-mint);
+
   border-radius: 50%;
-  background-color: #14532d;
-  color: #86efac;
+
+  color: var(--color-success-text);
+
   font-size: 30px;
   font-weight: 800;
 }
 
 .today-finished-card > a {
-  color: #86efac;
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -557,46 +846,66 @@
 }
 
 /* ==========================================
-   REST TIMER AND DIALOGS
+   18. DIALOG BACKDROP
 ========================================== */
 
 .today-dialog-backdrop {
   position: fixed;
   inset: 0;
   z-index: 9999;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 16px;
-  background-color: rgba(0, 0, 0, 0.85);
+
+  background-color: rgba(0, 0, 0, 0.72);
+
   backdrop-filter: blur(5px);
 }
+
+/* ==========================================
+   19. DIALOG PANELS
+========================================== */
 
 .today-dialog {
   display: flex;
   flex-direction: column;
+
   gap: 14px;
+
   width: min(100%, 410px);
   max-height: 90dvh;
+
   overflow-y: auto;
+
   padding: 25px;
-  border: 1px solid #365c43;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
   border-radius: 16px;
-  background-color: #18181b;
-  color: #fafafa;
-  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.5);
+
+  color: var(--color-text);
+
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.28);
 }
 
 .today-dialog h2 {
   margin: 0;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 21px;
   line-height: 1.3;
 }
 
 .today-dialog p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
@@ -606,6 +915,10 @@
   width: 100%;
 }
 
+/* ==========================================
+   20. REST TIMER
+========================================== */
+
 .today-rest-dialog {
   align-items: center;
   text-align: center;
@@ -613,40 +926,56 @@
 
 .today-big-timer {
   padding: 15px 0;
-  color: #86efac;
+
+  color: var(--color-accent);
+
   font-size: clamp(50px, 11vw, 70px);
   font-weight: 800;
   line-height: 1;
+
   font-variant-numeric: tabular-nums;
 }
 
 .today-timer-actions {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+
   width: 100%;
 }
 
 .today-timer-actions button {
   min-height: 43px;
-  border: 1px solid #3f3f46;
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
   border-radius: 9px;
-  background-color: #27272a;
-  color: #fafafa;
+
+  color: var(--color-secondary-action-text);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+
   cursor: pointer;
 }
 
 /* ==========================================
-   BIWEEKLY TRAINING REVIEW
+   21. TRAINING REVIEW
 ========================================== */
 
 .today-review-field {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
-  color: #d4d4d8;
+
+  color: var(--color-text);
+
   font-size: 12px;
   line-height: 1.6;
 }
@@ -654,16 +983,35 @@
 .today-review-field select {
   width: 100%;
   min-height: 43px;
+
   padding: 9px 12px;
-  border: 1px solid #3f3f46;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
   border-radius: 8px;
-  background-color: #111113;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 13px;
 }
 
 /* ==========================================
-   RESPONSIVE DESIGN
+   22. KEYBOARD ACCESSIBILITY
+========================================== */
+
+.today-workout-page :is(
+  button,
+  select,
+  input,
+  a
+):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   23. MOBILE
 ========================================== */
 
 @media (max-width: 650px) {
@@ -683,8 +1031,17 @@
   .today-active-exercise-heading
   .exercise-motion-preview--thumbnail {
     flex-basis: 76px;
+
     width: 76px;
     height: 76px;
+  }
+
+  .today-start-item
+  .exercise-motion-preview--thumbnail {
+    flex-basis: 58px;
+
+    width: 58px;
+    height: 58px;
   }
 
   .today-set-count strong {
@@ -696,13 +1053,33 @@
   }
 }
 
+/* ==========================================
+   24. SMALL MOBILE
+========================================== */
+
 @media (max-width: 380px) {
   .today-quick-fields {
     grid-template-columns: 1fr;
   }
 
+  .today-start-item {
+    gap: 9px;
+    padding: 9px;
+  }
+
+  .today-start-number {
+    flex-basis: 25px;
+
+    width: 25px;
+    height: 25px;
+  }
+
   .today-active-exercise-heading {
     align-items: flex-start;
+  }
+
+  .today-exercise-picker button {
+    flex-basis: 100%;
   }
 
   .today-set-dots {
@@ -720,15 +1097,8 @@
 }
 
 /* ==========================================
-   ACCESSIBILITY
+   25. REDUCED MOTION
 ========================================== */
-
-.today-workout-page button:focus-visible,
-.today-workout-page select:focus-visible,
-.today-workout-page a:focus-visible {
-  outline: 2px solid #4ade80;
-  outline-offset: 3px;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .today-mini-progress > div {

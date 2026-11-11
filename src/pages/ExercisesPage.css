@@ -1,0 +1,381 @@
+
+/* ==========================================
+   EXERCISES PAGE
+   TERRA ACTIVE - R1.4
+
+   Page-specific theme styles.
+   The original layout remains in App.css.
+========================================== */
+
+/* ==========================================
+   LIGHT THEME - PAGE BACKGROUND
+========================================== */
+
+html[data-theme="light"]
+.app > main:has(> .exercise-library-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   PAGE HEADING
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .section-label {
+  color: var(--color-accent);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-page-heading h1 {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-page-heading p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   SEARCH AND FILTER PANEL
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .exercise-filters {
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme="light"]
+.exercise-library-page .filter-field label {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.filter-field :is(input, select) {
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  color: var(--color-text);
+
+  font-family: inherit;
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.filter-field input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.filter-field :is(input, select):hover {
+  border-color: var(--color-accent);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.filter-field :is(input, select):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   CLEAR FILTERS - SECONDARY ACTION
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .clear-filters-button {
+  min-height: 44px;
+  padding: 10px 15px;
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  color:
+    var(--color-secondary-action-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.clear-filters-button:hover {
+  background-color:
+    var(--color-secondary-action-hover);
+
+  border-color: var(--color-accent);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.clear-filters-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESULTS COUNTER
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .exercise-results p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   EXERCISE CARDS
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .exercise-card {
+  overflow: hidden;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+/*
+  The entire card contains a Link.
+  Hover indicates navigation without
+  making it resemble a giant button.
+*/
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="light"]
+  .exercise-library-page .exercise-card:hover {
+    background-color: var(--color-surface-hover);
+
+    border-color: var(--color-accent);
+
+    box-shadow: var(--shadow-card-hover);
+
+    transform: translateY(-2px);
+  }
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-card:focus-within {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-card-link {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-card-link:focus-visible {
+  outline: none;
+}
+
+/* ==========================================
+   EXERCISE IMAGE PREVIEW
+========================================== */
+
+/*
+  Replace the dark background behind
+  animated previews with a soft surface.
+
+  The dimensions and animations remain
+  controlled by ExerciseMotionPreview.css.
+*/
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-motion-preview--card {
+  background-color: #dce6e8;
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-motion-placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   CARD INFORMATION
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .exercise-card h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-difficulty {
+  background-color: var(--color-butter);
+
+  color: var(--color-warning-text);
+
+  border-radius: 999px;
+
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-muscle {
+  color: var(--color-success-text);
+
+  font-weight: 700;
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-details {
+  border-top:
+    1px solid var(--color-border);
+}
+
+html[data-theme="light"]
+.exercise-library-page .detail-label {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-details > div > span:last-child {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page .view-exercise-link {
+  color: var(--color-accent);
+
+  font-weight: 800;
+}
+
+/* ==========================================
+   EMPTY SEARCH STATE
+========================================== */
+
+html[data-theme="light"]
+.exercise-library-page .exercise-empty-state {
+  background-color: var(--color-surface);
+
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-empty-state h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-empty-state p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="light"]
+.exercise-library-page .exercise-empty-state button {
+  background-color: var(--color-action);
+
+  border: 1px solid var(--color-action);
+  border-radius: var(--radius-button);
+
+  color: var(--color-action-text);
+
+  min-height: 44px;
+  padding: 11px 18px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-empty-state button:hover {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+
+html[data-theme="light"]
+.exercise-library-page
+.exercise-empty-state button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVE REFINEMENTS
+========================================== */
+
+@media (max-width: 600px) {
+  html[data-theme="light"]
+  .exercise-library-page .exercise-filters {
+    padding: 16px;
+  }
+
+  html[data-theme="light"]
+  .exercise-library-page .exercise-card-content {
+    padding: 18px;
+  }
+
+  html[data-theme="light"]
+  .exercise-library-page .clear-filters-button {
+    width: 100%;
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="light"]
+  .exercise-library-page .exercise-card {
+    transition: none;
+    transform: none;
+  }
+}

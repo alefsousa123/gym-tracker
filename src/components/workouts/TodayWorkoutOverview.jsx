@@ -1,11 +1,11 @@
 
-import {
-  Link,
-  useNavigate,
-} from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { exercises } from "../../data/exercises";
 import { daysOfWeek } from "../../data/workoutSplits";
+
+import ExerciseMotionPreview from
+  "../exercises/ExerciseMotionPreview";
 
 import {
   useWorkoutPlan,
@@ -21,12 +21,122 @@ import {
 
 import "./TodayWorkoutOverview.css";
 
+// ==========================================
+// EXERCISE CATALOG
+// ==========================================
+
+const exerciseCatalog = new Map(
+  exercises.map((exercise) => [
+    exercise.id,
+    exercise,
+  ])
+);
+
+// ==========================================
+// HELPER FUNCTIONS
+// ==========================================
+
 function getTodayId() {
   const index =
     (new Date().getDay() + 6) % 7;
 
   return daysOfWeek[index].id;
 }
+
+function countCompletedSets(workout) {
+  return workout?.exercises.reduce(
+    (total, exercise) =>
+      total + exercise.completedSets.length,
+    0
+  ) ?? 0;
+}
+
+function countPlannedSets(workout) {
+  return workout?.exercises.reduce(
+    (total, exercise) =>
+      total + Number(exercise.target.sets),
+    0
+  ) ?? 0;
+}
+
+// ==========================================
+// REUSABLE EXERCISE PREVIEW
+// ==========================================
+
+function TodayExercisePreview({ exerciseId }) {
+  const exercise =
+    exerciseCatalog.get(exerciseId);
+
+  const exerciseName =
+    exercise?.name ?? "Unknown Exercise";
+
+  return (
+    <li className="today-home-exercise-item">
+      <Link
+        to={`/exercises/${exerciseId}`}
+        className="today-home-exercise-link"
+      >
+        <ExerciseMotionPreview
+          exerciseId={exerciseId}
+          exerciseName={exerciseName}
+          variant="thumbnail"
+        />
+
+        <span className="today-home-exercise-info">
+          <strong>{exerciseName}</strong>
+
+          <small>
+            {exercise?.muscleGroup ?? "Exercise"}
+          </small>
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+// ==========================================
+// REUSABLE EXERCISE LIST
+// ==========================================
+
+function TodayExerciseList({ exerciseIds }) {
+  const previewExercises =
+    exerciseIds.slice(0, 5);
+
+  const remainingExercises = Math.max(
+    0,
+    exerciseIds.length - previewExercises.length
+  );
+
+  if (exerciseIds.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <ul className="today-home-exercises">
+        {previewExercises.map((exerciseId) => (
+          <TodayExercisePreview
+            key={exerciseId}
+            exerciseId={exerciseId}
+          />
+        ))}
+      </ul>
+
+      {remainingExercises > 0 && (
+        <p className="today-home-more-count">
+          +{remainingExercises} more{" "}
+          {remainingExercises === 1
+            ? "exercise"
+            : "exercises"} in this session
+        </p>
+      )}
+    </>
+  );
+}
+
+// ==========================================
+// TODAY WORKOUT OVERVIEW
+// ==========================================
 
 function TodayWorkoutOverview() {
   const navigate = useNavigate();
@@ -41,6 +151,10 @@ function TodayWorkoutOverview() {
     lastWorkout,
     startWorkout,
   } = useWorkoutSession();
+
+  // ========================================
+  // TODAY'S SCHEDULE
+  // ========================================
 
   const todayId = getTodayId();
 
@@ -62,6 +176,10 @@ function TodayWorkoutOverview() {
         )
       : null;
 
+  // ========================================
+  // COMPLETED WORKOUT
+  // ========================================
+
   const completedToday =
     Boolean(lastWorkout?.finishedAt) &&
     new Date(
@@ -69,29 +187,32 @@ function TodayWorkoutOverview() {
     ).toDateString() ===
       new Date().toDateString();
 
+  // ========================================
+  // ACTIVE WORKOUT PROGRESS
+  // ========================================
+
   const completedSets =
-    activeWorkout?.exercises.reduce(
-      (total, exercise) =>
-        total + exercise.completedSets.length,
-      0
-    ) ?? 0;
+    countCompletedSets(activeWorkout);
 
   const plannedSets =
-    activeWorkout?.exercises.reduce(
-      (total, exercise) =>
-        total + Number(exercise.target.sets),
-      0
-    ) ?? 0;
+    countPlannedSets(activeWorkout);
 
-  function getExerciseName(exerciseId) {
-    return (
-      exercises.find(
-        (exercise) => exercise.id === exerciseId
-      )?.name ?? "Exercise"
-    );
-  }
+  // The active workout is the source of truth
+  // when a training session is in progress.
+  const activeExerciseIds =
+    activeWorkout?.exercises.map(
+      (exercise) => exercise.exerciseId
+    ) ?? [];
 
-  // One click starts the scheduled session.
+  // When no workout is active, show the
+  // exercises scheduled for today.
+  const scheduledExerciseIds =
+    todaySession?.exerciseIds ?? [];
+
+  // ========================================
+  // START TODAY'S WORKOUT
+  // ========================================
+
   function handleStartTodaysWorkout() {
     if (
       activeWorkout ||
@@ -110,9 +231,18 @@ function TodayWorkoutOverview() {
     navigate("/workouts/today");
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <section className="today-home-overview">
       <div className="today-home-card">
+
+        {/* ==================================
+            HEADER
+        ================================== */}
+
         <div className="today-home-header">
           <span>YOUR TRAINING TODAY</span>
 
@@ -128,11 +258,18 @@ function TodayWorkoutOverview() {
           </span>
         </div>
 
-        {/* Active workout */}
+        {/* ==================================
+            WORKOUT IN PROGRESS
+        ================================== */}
+
         {activeWorkout ? (
           <>
             <div className="today-home-status">
-              <span className="today-home-pulse" />
+              <span
+                className="today-home-pulse"
+                aria-hidden="true"
+              />
+
               Workout in Progress
             </div>
 
@@ -145,6 +282,12 @@ function TodayWorkoutOverview() {
               {" "}sets completed.
             </p>
 
+            {/* NEW: exercises during training */}
+
+            <TodayExerciseList
+              exerciseIds={activeExerciseIds}
+            />
+
             <Link
               className="today-home-action"
               to="/workouts/today"
@@ -152,11 +295,17 @@ function TodayWorkoutOverview() {
               Continue Workout →
             </Link>
           </>
+
         ) : completedToday ? (
+
+          /* ==================================
+              WORKOUT ALREADY COMPLETED
+          ================================== */
+
           <>
-            {/* Completed today */}
             <div className="today-home-status is-complete">
               ✓{" "}
+
               {lastWorkout.status === "completed"
                 ? "Workout Completed"
                 : "Session Saved"}
@@ -169,6 +318,7 @@ function TodayWorkoutOverview() {
             <p>
               {lastWorkout.totalCompletedSets}
               {" "}sets recorded today.
+
               {lastWorkout.status === "partial"
                 ? " This session was partially completed."
                 : " Great work showing up!"}
@@ -181,16 +331,21 @@ function TodayWorkoutOverview() {
               View Session Summary →
             </Link>
           </>
+
         ) : !appliedPlan ? (
+
+          /* ==================================
+              NO APPLIED PLAN
+          ================================== */
+
           <>
-            {/* No plan */}
             <h2>
               Ready to Build Your Training?
             </h2>
 
             <p>
-              Choose a recommended workout
-              plan to get started.
+              Choose a recommended workout plan
+              to get started.
             </p>
 
             <Link
@@ -200,9 +355,14 @@ function TodayWorkoutOverview() {
               Find My Workout Plan →
             </Link>
           </>
+
         ) : todaySession ? (
+
+          /* ==================================
+              SCHEDULED WORKOUT
+          ================================== */
+
           <>
-            {/* Scheduled workout */}
             <h2>
               {todaySession.name}
             </h2>
@@ -211,39 +371,27 @@ function TodayWorkoutOverview() {
               {appliedPlan.name}
             </p>
 
-            <div className="today-home-exercises">
-              {todaySession.exerciseIds
-                .slice(0, 5)
-                .map((exerciseId) => (
-                  <span key={exerciseId}>
-                    {getExerciseName(exerciseId)}
-                  </span>
-                ))}
-
-              {todaySession.exerciseIds.length > 5 && (
-                <span>
-                  +{todaySession.exerciseIds.length - 5}
-                  {" "}more
-                </span>
-              )}
-            </div>
+            <TodayExerciseList
+              exerciseIds={scheduledExerciseIds}
+            />
 
             <button
               type="button"
               className="today-home-action"
-              style={{
-                cursor: "pointer",
-                fontFamily: "inherit",
-              }}
               onClick={handleStartTodaysWorkout}
-              disabled={!todaySession.exerciseIds.length}
+              disabled={!scheduledExerciseIds.length}
             >
               Start Today's Workout →
             </button>
           </>
+
         ) : (
+
+          /* ==================================
+              REST / ACTIVE RECOVERY
+          ================================== */
+
           <>
-            {/* Rest day or schedule mismatch */}
             <div className="today-home-status">
               Rest & Recovery
             </div>
@@ -271,6 +419,7 @@ function TodayWorkoutOverview() {
             </Link>
           </>
         )}
+
       </div>
     </section>
   );

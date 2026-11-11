@@ -1,39 +1,75 @@
 
 import { useState } from "react";
 
-import ExerciseCard from "../components/exercises/ExerciseCard";
-import ExerciseFilters from "../components/exercises/ExerciseFilters";
+import ExerciseCard from
+  "../components/exercises/ExerciseCard";
+
+import ExerciseFilters from
+  "../components/exercises/ExerciseFilters";
 
 import { exercises } from "../data/exercises";
 
+// Styles specific to this page
+import "./ExercisesPage.css";
+
 function ExercisesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMuscle, setSelectedMuscle] = useState("all");
-  const [selectedLocation, setSelectedLocation] = useState("all");
+
+  const [
+    selectedMuscle,
+    setSelectedMuscle,
+  ] = useState("all");
+
+  const [
+    selectedLocation,
+    setSelectedLocation,
+  ] = useState("all");
+
+  // ==========================================
+  // AVAILABLE MUSCLE GROUPS
+  // ==========================================
 
   const muscleGroups = [
-    ...new Set(exercises.map((exercise) => exercise.muscleGroup)),
+    ...new Set(
+      exercises.map(
+        (exercise) => exercise.muscleGroup
+      )
+    ),
   ].sort();
 
-  const filteredExercises = exercises.filter((exercise) => {
-    const matchesSearch = exercise.name
-      .toLowerCase()
-      .includes(searchTerm.trim().toLowerCase());
+  // ==========================================
+  // FILTER EXERCISES
+  // ==========================================
 
-    const matchesMuscle =
-      selectedMuscle === "all" ||
-      exercise.muscleGroup === selectedMuscle;
+  const filteredExercises = exercises.filter(
+    (exercise) => {
+      const matchesSearch = exercise.name
+        .toLowerCase()
+        .includes(
+          searchTerm.trim().toLowerCase()
+        );
 
-    const matchesLocation =
-      selectedLocation === "all" ||
-      exercise.locations.includes(selectedLocation);
+      const matchesMuscle =
+        selectedMuscle === "all" ||
+        exercise.muscleGroup === selectedMuscle;
 
-    return (
-      matchesSearch &&
-      matchesMuscle &&
-      matchesLocation
-    );
-  });
+      const matchesLocation =
+        selectedLocation === "all" ||
+        exercise.locations.includes(
+          selectedLocation
+        );
+
+      return (
+        matchesSearch &&
+        matchesMuscle &&
+        matchesLocation
+      );
+    }
+  );
+
+  // ==========================================
+  // RESET FILTERS
+  // ==========================================
 
   function handleClearFilters() {
     setSearchTerm("");
@@ -43,6 +79,11 @@ function ExercisesPage() {
 
   return (
     <div className="exercise-library-page">
+
+      {/* ==================================
+          PAGE HEADING
+      ================================== */}
+
       <div className="exercise-page-heading">
         <span className="section-label">
           EXERCISE LIBRARY
@@ -56,6 +97,10 @@ function ExercisesPage() {
         </p>
       </div>
 
+      {/* ==================================
+          SEARCH AND FILTERS
+      ================================== */}
+
       <ExerciseFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -67,11 +112,20 @@ function ExercisesPage() {
         onClearFilters={handleClearFilters}
       />
 
+      {/* ==================================
+          RESULTS COUNTER
+      ================================== */}
+
       <div className="exercise-results">
         <p>
-          {filteredExercises.length} exercises found
+          {filteredExercises.length}
+          {" "}exercises found
         </p>
       </div>
+
+      {/* ==================================
+          EXERCISE RESULTS
+      ================================== */}
 
       {filteredExercises.length > 0 ? (
         <div className="exercise-library-grid">
@@ -84,6 +138,7 @@ function ExercisesPage() {
         </div>
       ) : (
         <div className="exercise-empty-state">
+
           <h2>No Exercises Found</h2>
 
           <p>
@@ -96,6 +151,7 @@ function ExercisesPage() {
           >
             Clear Filters
           </button>
+
         </div>
       )}
     </div>

@@ -1,7 +1,24 @@
 
 /* ==========================================
-   RECOMMENDED WORKOUT PLANS
+   RECOMMENDED PLANS - TERRA ACTIVE
+   R1.4 - PART 5.2
+
+   - Training preferences
+   - Recommended plan selection
+   - Animated exercise previews
+   - Plan confirmation
+   - Light and Dark Theme
 ========================================== */
+
+/* ==========================================
+   1. PAGE
+========================================== */
+
+html[data-theme]
+.app > main:has(> .workout-plans-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .workout-plans-page,
 .workout-plans-page * {
@@ -11,36 +28,58 @@
 .workout-plans-page {
   width: 100%;
   max-width: 1120px;
+  min-width: 0;
+
   margin: 0 auto;
   padding: 28px 24px 64px;
+
+  color: var(--color-text);
 }
 
-.plans-back-link {
-  display: inline-block;
-  margin-bottom: 24px;
-  color: #4ade80;
+/* ==========================================
+   2. BACK NAVIGATION
+========================================== */
+
+.workout-plans-page .plans-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
+  margin-bottom: 20px;
+
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.plans-back-link:hover {
+.workout-plans-page .plans-back-link:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* ==========================================
+   3. PAGE HEADING
+========================================== */
 
 .plans-page-heading {
   margin-bottom: 26px;
 }
 
-.plans-eyebrow {
-  color: #4ade80;
+.workout-plans-page .plans-eyebrow {
+  color: var(--color-accent);
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1.2px;
 }
 
 .plans-page-heading h1 {
   margin: 8px 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(27px, 4vw, 38px);
   line-height: 1.2;
 }
@@ -48,32 +87,46 @@
 .plans-page-heading p {
   max-width: 720px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 14px;
   line-height: 1.7;
 }
 
-/* Shared panels */
+/* ==========================================
+   4. MAIN PANELS
+========================================== */
 
-.plans-profile-panel,
-.plans-preview-panel,
-.plans-current-plan,
-.plans-notice {
+.workout-plans-page :is(
+  .plans-profile-panel,
+  .plans-preview-panel,
+  .plans-current-plan,
+  .plans-notice
+) {
+  min-width: 0;
   padding: 22px;
-  border: 1px solid #303036;
-  border-radius: 14px;
-  background-color: #18181b;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
 }
 
-.plans-profile-panel,
-.plans-results-section,
-.plans-preview-panel,
-.plans-current-plan {
+.workout-plans-page :is(
+  .plans-profile-panel,
+  .plans-results-section,
+  .plans-preview-panel,
+  .plans-current-plan
+) {
   margin-top: 20px;
 }
 
 /* ==========================================
-   PROFILE SUMMARY
+   5. SECTION HEADINGS
 ========================================== */
 
 .plans-profile-header,
@@ -82,48 +135,73 @@
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
+
   gap: 14px;
   margin-bottom: 18px;
 }
 
-.plans-profile-header h2,
-.plans-section-heading h2 {
+.workout-plans-page :is(
+  .plans-profile-header h2,
+  .plans-section-heading h2
+) {
   margin: 0 0 7px;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 19px;
+  line-height: 1.4;
 }
 
-.plans-profile-header p,
-.plans-section-heading p {
+.workout-plans-page :is(
+  .plans-profile-header p,
+  .plans-section-heading p
+) {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
-.plans-profile-header a,
-.plans-location-field a,
-.plans-notice a,
-.plans-current-plan a,
-.plans-success-message a {
-  color: #4ade80;
+/* ==========================================
+   6. TEXT LINKS
+========================================== */
+
+.workout-plans-page :is(
+  .plans-profile-header a,
+  .plans-location-field a,
+  .plans-notice a,
+  .plans-current-plan a,
+  .plans-success-message a
+) {
+  color: var(--color-accent);
+
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
 }
 
-.plans-profile-header a:hover,
-.plans-location-field a:hover,
-.plans-notice a:hover,
-.plans-current-plan a:hover,
-.plans-success-message a:hover {
+.workout-plans-page :is(
+  .plans-profile-header a,
+  .plans-location-field a,
+  .plans-notice a,
+  .plans-current-plan a,
+  .plans-success-message a
+):hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
 
+/* ==========================================
+   7. TRAINING PROFILE SUMMARY
+========================================== */
+
 .plans-profile-details {
   display: grid;
+
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
+
   gap: 12px;
   margin-bottom: 22px;
 }
@@ -131,228 +209,449 @@
 .plans-profile-details > div {
   display: flex;
   flex-direction: column;
+
+  min-width: 0;
   gap: 8px;
   padding: 13px;
-  border: 1px solid #303036;
-  border-radius: 9px;
-  background-color: #111113;
+
+  background-color: var(--color-mint);
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.plans-profile-details > div:nth-child(2) {
+  background-color: var(--color-lavender);
+}
+
+.plans-profile-details > div:nth-child(3) {
+  background-color: var(--color-peach);
+}
+
+.plans-profile-details > div:nth-child(4) {
+  background-color: var(--color-butter);
 }
 
 .plans-profile-details span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 
 .plans-profile-details strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: 13px;
+  font-weight: 800;
   text-transform: capitalize;
+
   overflow-wrap: anywhere;
 }
+
+/* ==========================================
+   8. TRAINING LOCATION
+========================================== */
 
 .plans-location-field {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   gap: 10px;
   padding-top: 18px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
 }
 
 .plans-location-field label {
-  color: #e4e4e7;
+  color: var(--color-text);
+
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .plans-location-field select {
   width: min(100%, 320px);
-  height: 42px;
-  padding: 0 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
-  background-color: #111113;
-  color: #fafafa;
+  min-height: 44px;
+
+  padding: 9px 12px;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  color: var(--color-text);
+
   font: inherit;
   font-size: 13px;
+  cursor: pointer;
+}
+
+.plans-location-field select:hover {
+  border-color: var(--color-accent);
 }
 
 .plans-location-field select:focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
 .plans-location-field p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   TEMPLATE RESULTS
+   9. RESULT COUNTS
 ========================================== */
 
 .plans-result-count {
-  padding: 6px 10px;
-  border-radius: 20px;
-  background-color: #14532d;
-  color: #86efac;
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 11px;
+
+  background-color: var(--color-mint);
+
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+
+  color: var(--color-success-text);
+
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
+  white-space: nowrap;
 }
+
+/* ==========================================
+   10. RECOMMENDED PLAN GRID
+========================================== */
 
 .plans-template-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 12px;
 }
+
+/* ==========================================
+   11. SELECTABLE PLAN CARD
+========================================== */
 
 .plans-template-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   gap: 12px;
+
   width: 100%;
   min-width: 0;
   padding: 19px;
-  border: 1px solid #303036;
+
+  background-color: var(--color-surface);
+
+  border: 2px solid var(--color-border);
   border-radius: 12px;
-  background-color: #18181b;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font: inherit;
   text-align: left;
+
   cursor: pointer;
+
   transition:
-    border-color 0.2s,
-    background-color 0.2s;
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.plans-template-card:hover {
-  border-color: #71717a;
+@media (hover: hover) and (pointer: fine) {
+  .plans-template-card:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
+  }
 }
+
+/* ==========================================
+   12. SELECTED PLAN
+========================================== */
+
+/*
+  Selection uses sage green.
+
+  Terracotta is reserved for
+  primary action buttons.
+*/
 
 .plans-template-card.is-selected {
-  border-color: #22c55e;
-  background-color: #14251a;
+  background-color: var(--color-mint);
+  border-color: var(--color-success-text);
+}
+
+.plans-template-card.is-selected:hover {
+  background-color: var(--color-mint);
+  border-color: var(--color-success-text);
 }
 
 .plans-template-card:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
+/* ==========================================
+   13. PLAN CARD CONTENT
+========================================== */
+
 .plans-template-top {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 8px;
   width: 100%;
 }
 
 .plans-template-tag {
-  color: #86efac;
+  color: var(--color-success-text);
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .plans-template-coverage {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 
 .plans-template-card h3 {
   margin: 0;
+
+  color: var(--color-text);
+
   font-size: 18px;
-  color: #fafafa;
+  line-height: 1.4;
 }
 
 .plans-template-card p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 .plans-template-frequency {
-  color: #d4d4d8;
+  color: var(--color-text-secondary);
+
   font-size: 12px;
 }
 
 .plans-template-action {
   margin-top: auto;
   padding-top: 4px;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.plans-template-card.is-selected
+.plans-template-action {
+  color: var(--color-success-text);
 }
 
 /* ==========================================
-   PLAN PREVIEW
+   14. PLAN PREVIEW
 ========================================== */
 
 .plans-session-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
+  align-items: start;
+
   gap: 12px;
 }
 
 .plans-session-card {
   min-width: 0;
   padding: 17px;
-  border: 1px solid #303036;
-  border-radius: 10px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
 }
 
-.plans-session-card h3 {
-  margin: 0 0 14px;
+.plans-session-card > h3 {
+  margin: 0 0 15px;
+
+  color: var(--color-text);
+
   font-size: 16px;
-  color: #fafafa;
+  line-height: 1.4;
 }
+
+/* ==========================================
+   15. ANIMATED EXERCISE LIST
+========================================== */
 
 .plans-exercise-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0;
+
+  gap: 9px;
+
   margin: 0;
+  padding: 0;
+
   list-style: none;
 }
 
-.plans-exercise-list li {
+.plans-exercise-item {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  The entire exercise row is a link.
+*/
+
+.plans-exercise-link {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+  align-items: center;
 
-.plans-exercise-list a {
-  color: #86efac;
-  font-size: 13px;
-  font-weight: 600;
+  min-width: 0;
+  gap: 12px;
+  padding: 10px;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+
   text-decoration: none;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.plans-exercise-list a:hover {
-  text-decoration: underline;
+.plans-exercise-link:hover {
+  background-color: var(--color-card-hover);
+  border-color: var(--color-accent);
+
+  box-shadow: var(--shadow-card);
 }
 
-.plans-exercise-list span {
-  color: #a1a1aa;
+.plans-exercise-link:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   16. ANIMATED THUMBNAIL
+========================================== */
+
+.plans-exercise-link
+.exercise-motion-preview--thumbnail {
+  flex: 0 0 68px;
+
+  width: 68px;
+  height: 68px;
+
+  background-color: var(--color-sky);
+
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+}
+
+/*
+  Keep a comfortable image background
+  in both color themes.
+*/
+
+html[data-theme="light"]
+.plans-exercise-link
+.exercise-motion-preview--thumbnail {
+  background-color: #dce5e9;
+}
+
+html[data-theme="dark"]
+.plans-exercise-link
+.exercise-motion-preview--thumbnail {
+  background-color: #20252a;
+}
+
+/* ==========================================
+   17. EXERCISE INFORMATION
+========================================== */
+
+.plans-exercise-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 6px;
+}
+
+.plans-exercise-info strong {
+  color: var(--color-text);
+
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.plans-exercise-info span {
+  color: var(--color-text-secondary);
+
   font-size: 11px;
+  line-height: 1.5;
 }
 
-/* Missing exercise warnings */
+.plans-exercise-arrow {
+  flex-shrink: 0;
+
+  color: var(--color-accent);
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   18. COVERAGE WARNINGS
+========================================== */
 
 .plans-coverage-warning,
 .plans-confirm-warning {
   padding: 13px 15px;
-  border-left: 3px solid #f59e0b;
-  border-radius: 8px;
-  background-color: #302414;
-  color: #fde68a;
+
+  background-color: var(--color-warning-bg);
+
+  border-left: 4px solid var(--color-warning-text);
+  border-radius: 9px;
+
+  color: var(--color-warning-text);
+
   font-size: 12px;
   line-height: 1.7;
 }
@@ -370,42 +669,53 @@
 .plans-confirm-warning {
   margin-top: 0;
   margin-bottom: 0;
+  color: var(--color-warning-text);
 }
+
+/* ==========================================
+   19. MISSING EXERCISE SLOTS
+========================================== */
 
 .plans-missing-slots {
   margin-top: 15px;
   padding-top: 13px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
 }
 
 .plans-missing-slots strong {
-  color: #fcd34d;
+  color: var(--color-warning-text);
   font-size: 12px;
 }
 
 .plans-missing-slots ul {
   margin: 8px 0 0;
   padding-left: 18px;
-  color: #d4d4d8;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.8;
 }
 
 .plans-empty-session {
-  color: #fca5a5;
+  color: var(--color-accent);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 .plans-education-note {
   margin: 18px 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.8;
 }
 
 /* ==========================================
-   APPLY AND CONFIRMATION
+   20. APPLY BUTTONS
 ========================================== */
 
 .plans-apply-actions,
@@ -413,92 +723,154 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 12px;
 }
 
 .plans-apply-button {
   min-height: 44px;
   padding: 12px 19px;
-  border: none;
-  border-radius: 8px;
-  background-color: #22c55e;
-  color: #052e16;
+
+  background-color: var(--color-action);
+
+  border: 1px solid var(--color-action);
+  border-radius: var(--radius-button);
+
+  color: var(--color-action-text);
+
+  font: inherit;
   font-size: 13px;
   font-weight: 800;
+
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .plans-apply-button:hover:not(:disabled) {
-  background-color: #4ade80;
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
 }
 
 .plans-apply-button:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+.plans-apply-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
 .plans-apply-hint {
-  color: #fcd34d;
+  color: var(--color-warning-text);
+
   font-size: 12px;
   line-height: 1.6;
 }
 
+/* ==========================================
+   21. PLAN CONFIRMATION
+========================================== */
+
 .plans-confirm-panel {
   margin-top: 16px;
   padding: 20px;
-  border: 1px solid #365c43;
+
+  background-color: var(--color-surface-soft);
+
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background-color: #122018;
 }
 
 .plans-confirm-panel h3 {
   margin: 0 0 10px;
+
+  color: var(--color-text);
   font-size: 17px;
-  color: #fafafa;
 }
 
 .plans-confirm-panel > p {
-  color: #d4d4d8;
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 .plans-confirm-panel .plans-confirm-warning {
-  color: #fde68a;
   margin: 12px 0;
+  color: var(--color-warning-text);
 }
 
 .plans-confirm-actions {
   margin-top: 18px;
 }
 
+/* ==========================================
+   22. CANCEL BUTTON
+========================================== */
+
 .plans-cancel-button {
   min-height: 44px;
   padding: 11px 17px;
-  border: 1px solid #52525b;
-  border-radius: 8px;
-  background-color: transparent;
-  color: #fafafa;
+
+  background-color:
+    var(--color-secondary-action-bg);
+
+  border:
+    1px solid var(--color-secondary-action-border);
+
+  border-radius: var(--radius-button);
+
+  color: var(--color-secondary-action-text);
+
+  font: inherit;
   font-size: 13px;
+  font-weight: 700;
+
   cursor: pointer;
 }
+
+.plans-cancel-button:hover {
+  background-color:
+    var(--color-secondary-action-hover);
+}
+
+.plans-cancel-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   23. SUCCESS MESSAGE
+========================================== */
 
 .plans-success-message {
   margin-top: 18px;
   padding: 15px;
-  border: 1px solid #365c43;
+
+  background-color: var(--color-mint);
+
+  border: 1px solid var(--color-border);
+  border-left:
+    4px solid var(--color-success-text);
+
   border-radius: 9px;
-  background-color: #12281b;
 }
 
 .plans-success-message p {
   margin: 0 0 9px;
-  color: #dcfce7;
+
+  color: var(--color-text);
+
   font-size: 13px;
+  line-height: 1.6;
 }
 
 /* ==========================================
-   CURRENT PLAN AND EMPTY STATES
+   24. CURRENT PLAN
 ========================================== */
 
 .plans-current-plan {
@@ -506,36 +878,46 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 15px;
 }
 
 .plans-current-plan h2 {
   margin: 7px 0;
-  color: #fafafa;
+
+  color: var(--color-text);
   font-size: 18px;
 }
 
 .plans-current-plan p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
+
+/* ==========================================
+   25. EMPTY AND PROFILE NOTICES
+========================================== */
 
 .plans-notice h2,
 .plans-notice h3 {
   margin: 0 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
 }
 
 .plans-notice p {
   margin: 0 0 16px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   RESPONSIVENESS
+   26. TABLET
 ========================================== */
 
 @media (max-width: 850px) {
@@ -545,15 +927,21 @@
   }
 }
 
+/* ==========================================
+   27. MOBILE
+========================================== */
+
 @media (max-width: 650px) {
   .workout-plans-page {
     padding: 20px 12px 48px;
   }
 
-  .plans-profile-panel,
-  .plans-preview-panel,
-  .plans-current-plan,
-  .plans-notice {
+  .workout-plans-page :is(
+    .plans-profile-panel,
+    .plans-preview-panel,
+    .plans-current-plan,
+    .plans-notice
+  ) {
     padding: 16px;
   }
 
@@ -571,18 +959,47 @@
   }
 }
 
+/* ==========================================
+   28. SMALL MOBILE
+========================================== */
+
 @media (max-width: 400px) {
   .plans-profile-details {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .plans-exercise-link {
+    gap: 10px;
+    padding: 9px;
+  }
+
+  .plans-exercise-link
+  .exercise-motion-preview--thumbnail {
+    flex-basis: 58px;
+
+    width: 58px;
+    height: 58px;
+  }
+
   .plans-apply-button {
     width: 100%;
   }
+
+  .plans-exercise-arrow {
+    font-size: 14px;
+  }
 }
 
+/* ==========================================
+   29. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
-  .plans-template-card {
+  .workout-plans-page :is(
+    .plans-template-card,
+    .plans-exercise-link,
+    .plans-apply-button
+  ) {
     transition: none;
   }
 }
