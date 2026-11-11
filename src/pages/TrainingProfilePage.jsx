@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import BackToPreviousPage from
   "../components/navigation/BackToPreviousPage";
@@ -140,14 +140,6 @@ function TrainingProfilePage() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // ========================================
-  // SYNC SAVED PROFILE
-  // ========================================
-
-  useEffect(() => {
-    setForm(createFormState(profile));
-  }, [profile]);
 
   // ========================================
   // UPDATE FORM FIELDS

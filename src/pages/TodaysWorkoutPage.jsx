@@ -181,14 +181,33 @@ function TodaysWorkoutPage() {
   const [reviewTechnique, setReviewTechnique] =
     useState("");
 
-  // Restore the last recorded values.
-  useEffect(() => {
-    if (!currentExercise) {
-      return;
-    }
+  // ========================================
+  // QUICK SET FORM SYNCHRONIZATION
+  // ========================================
 
+  const [initializedFormKey, setInitializedFormKey] =
+    useState(null);
+
+  const formKey = currentExercise
+    ? [
+        activeWorkout?.id,
+        currentExercise.exerciseId,
+        completedForExercise,
+      ].join(":")
+    : null;
+
+  if (
+    formKey !== null &&
+    initializedFormKey !== formKey
+  ) {
     const previousSet =
       currentExercise.completedSets.at(-1);
+
+    const previousWeight =
+      previousSet?.weight ??
+      currentExercise.target.weight;
+
+    setInitializedFormKey(formKey);
 
     setRepsInput(
       String(
@@ -206,10 +225,6 @@ function TodaysWorkoutPage() {
       )
     );
 
-    const previousWeight =
-      previousSet?.weight ??
-      currentExercise.target.weight;
-
     setWeightInput(
       previousWeight === "" ||
       previousWeight === null ||
@@ -219,27 +234,28 @@ function TodaysWorkoutPage() {
     );
 
     setFormError("");
-  }, [
-    activeWorkout?.id,
-    currentExercise?.exerciseId,
-    completedForExercise,
-  ]);
+  }
 
   // ========================================
   // REST TIMER
   // ========================================
 
-  const [now, setNow] = useState(Date.now());
+  // ========================================
+  // REST TIMER CLOCK
+  // ========================================
+
+  const [restClock, setRestClock] = useState(null);
 
   useEffect(() => {
     if (restTimer.status !== "running") {
       return;
     }
 
-    setNow(Date.now());
-
     const intervalId = setInterval(() => {
-      setNow(Date.now());
+      setRestClock({
+        endsAt: restTimer.endsAt,
+        now: Date.now(),
+      });
     }, 250);
 
     return () => clearInterval(intervalId);
@@ -248,12 +264,18 @@ function TodaysWorkoutPage() {
     restTimer.endsAt,
   ]);
 
+  const restClockReady =
+    restClock !== null &&
+    restClock.endsAt === restTimer.endsAt &&
+    Number.isFinite(restTimer.endsAt);
+
   const restSecondsLeft =
-    restTimer.status === "running"
+    restTimer.status === "running" &&
+    restClockReady
       ? Math.max(
           0,
           Math.ceil(
-            (restTimer.endsAt - now) / 1000
+            (restTimer.endsAt - restClock.now) / 1000
           )
         )
       : restTimer.remainingSeconds;

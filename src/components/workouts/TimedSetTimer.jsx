@@ -10,6 +10,10 @@ import {
 
 import "./TimedSetTimer.css";
 
+// ==========================================
+// TIME FORMATTER
+// ==========================================
+
 function formatMilliseconds(milliseconds) {
   const seconds = Math.max(
     0,
@@ -24,6 +28,10 @@ function formatMilliseconds(milliseconds) {
     String(remainingSeconds).padStart(2, "0")
   );
 }
+
+// ==========================================
+// TIMED SET TIMER
+// ==========================================
 
 function TimedSetTimer({
   workoutId,
@@ -42,6 +50,10 @@ function TimedSetTimer({
     clearTimedSet,
   } = useWorkoutSession();
 
+  // ========================================
+  // TARGET DURATION
+  // ========================================
+
   const seconds = Math.max(
     1,
     Math.min(
@@ -52,8 +64,10 @@ function TimedSetTimer({
 
   const defaultTotalMs = seconds * 1000;
 
-  // This timer belongs to one exact exercise
-  // and one exact set of the current workout.
+  // ========================================
+  // CURRENT TIMER IDENTIFICATION
+  // ========================================
+
   const isCurrentTimer =
     timedSetTimer.workoutId === workoutId &&
     timedSetTimer.exerciseId === exerciseId &&
@@ -69,31 +83,76 @@ function TimedSetTimer({
         endsAt: null,
       };
 
-  const [now, setNow] = useState(Date.now());
+  // ========================================
+  // CLOCK STATE
+  // ========================================
 
-  // Update the visible countdown without
-  // modifying the saved timer every second.
+  // Null indicates that the first timer
+  // tick has not happened yet.
+  //
+  // Unlike useState(Date.now()), this
+  // initial value is pure.
+
+  const [now, setNow] = useState(null);
+
+  // ========================================
+  // CLOCK UPDATES
+  // ========================================
+
   useEffect(() => {
     if (timer.status !== "running") {
       return;
     }
 
-    setNow(Date.now());
+    // Update the clock from the interval
+    // callback, not synchronously from
+    // the effect body.
 
     const intervalId = setInterval(() => {
       setNow(Date.now());
     }, 200);
 
-    return () => clearInterval(intervalId);
-  }, [timer.status, timer.endsAt]);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [
+    timer.status,
+    timer.endsAt,
+  ]);
+
+  // ========================================
+  // REMAINING TIME
+  // ========================================
+
+  // Until the first tick, use the saved
+  // remaining time.
+  //
+  // The timer will synchronize with the
+  // real end timestamp on the next tick.
+
+  const hasClockTick =
+    now !== null &&
+    Number.isFinite(now);
+
+  const hasValidEndTime =
+    Number.isFinite(timer.endsAt);
 
   const remainingMs =
-    timer.status === "running"
+    timer.status === "running" &&
+    hasClockTick &&
+    hasValidEndTime
       ? Math.max(
           0,
-          timer.endsAt - now
+          Math.min(
+            timer.remainingMs,
+            timer.endsAt - now
+          )
         )
       : timer.remainingMs;
+
+  // ========================================
+  // ELAPSED TIME
+  // ========================================
 
   const elapsedMs =
     timer.status === "running"
@@ -103,16 +162,24 @@ function TimedSetTimer({
         )
       : timer.elapsedMs;
 
+  // ========================================
+  // PROGRESS PERCENTAGE
+  // ========================================
+
   const progress = Math.max(
     0,
     Math.min(
       100,
-      (elapsedMs / timer.totalMs) * 100
+      timer.totalMs > 0
+        ? (elapsedMs / timer.totalMs) * 100
+        : 0
     )
   );
 
-  // Recover the actual duration after reloading
-  // or when the exercise timer is stopped.
+  // ========================================
+  // RESTORE RECORDED DURATION
+  // ========================================
+
   useEffect(() => {
     if (!isCurrentTimer) {
       return;
@@ -144,10 +211,18 @@ function TimedSetTimer({
     onDurationChange,
   ]);
 
+  // ========================================
+  // DISPLAY TIME
+  // ========================================
+
   const displayTime =
     timer.status === "stopped"
       ? formatMilliseconds(elapsedMs)
       : formatMilliseconds(remainingMs);
+
+  // ========================================
+  // START HANDLER
+  // ========================================
 
   function handleStart() {
     startTimedSet({
@@ -157,6 +232,10 @@ function TimedSetTimer({
       targetSeconds: seconds,
     });
   }
+
+  // ========================================
+  // STATUS MESSAGES
+  // ========================================
 
   const statusMessage = {
     idle: "Start when you are ready.",
@@ -169,8 +248,15 @@ function TimedSetTimer({
       "Time recorded. Confirm the set below.",
   };
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <div className="timed-set-timer">
+
+      {/* TIMER HEADING */}
+
       <div className="timed-set-heading">
         <span>EXERCISE TIMER</span>
 
@@ -179,6 +265,8 @@ function TimedSetTimer({
         </span>
       </div>
 
+      {/* CURRENT TIME */}
+
       <div
         className="timed-set-clock"
         role="timer"
@@ -186,6 +274,8 @@ function TimedSetTimer({
       >
         {displayTime}
       </div>
+
+      {/* PROGRESS BAR */}
 
       <div
         className="timed-set-progress"
@@ -202,9 +292,13 @@ function TimedSetTimer({
         />
       </div>
 
+      {/* STATUS MESSAGE */}
+
       <p className="timed-set-message">
         {statusMessage[timer.status]}
       </p>
+
+      {/* START */}
 
       {timer.status === "idle" && (
         <button
@@ -215,6 +309,8 @@ function TimedSetTimer({
           ▶ Start Timer
         </button>
       )}
+
+      {/* PAUSE / STOP EARLY */}
 
       {timer.status === "running" && (
         <div className="timed-set-actions">
@@ -236,6 +332,8 @@ function TimedSetTimer({
         </div>
       )}
 
+      {/* RESUME / STOP EARLY */}
+
       {timer.status === "paused" && (
         <div className="timed-set-actions">
           <button
@@ -256,6 +354,8 @@ function TimedSetTimer({
         </div>
       )}
 
+      {/* RESTART */}
+
       {(timer.status === "finished" ||
         timer.status === "stopped") && (
         <button
@@ -267,10 +367,13 @@ function TimedSetTimer({
         </button>
       )}
 
+      {/* NOTE */}
+
       <p className="timed-set-note">
         The timer tracks exercise duration.
         You may also enter the actual time manually.
       </p>
+
     </div>
   );
 }

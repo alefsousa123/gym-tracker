@@ -9,7 +9,7 @@ import {
 
 import {
   ThemeProvider,
-} from "./context/ThemeContext";
+} from "./context/ThemeProvider";
 
 import App from "./App";
 

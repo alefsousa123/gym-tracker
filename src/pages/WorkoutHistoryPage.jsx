@@ -175,6 +175,13 @@ function WorkoutHistoryPage() {
   const [dateFilter, setDateFilter] =
     useState("all");
 
+  // Reference time for relative date filters.
+  // Updated when the user changes the filter.
+  const [
+    dateFilterTimestamp,
+    setDateFilterTimestamp,
+  ] = useState(null);
+
   const [confirmDelete, setConfirmDelete] =
     useState(false);
 
@@ -221,7 +228,7 @@ function WorkoutHistoryPage() {
   // ========================================
 
   const filteredWorkouts = useMemo(() => {
-    const now = Date.now();
+    const now = dateFilterTimestamp;
 
     const searchTerm =
       search.trim().toLowerCase();
@@ -278,6 +285,7 @@ function WorkoutHistoryPage() {
     search,
     statusFilter,
     dateFilter,
+    dateFilterTimestamp,
   ]);
 
   // ========================================
@@ -765,9 +773,10 @@ function WorkoutHistoryPage() {
             <select
               id="whDate"
               value={dateFilter}
-              onChange={(event) =>
-                setDateFilter(event.target.value)
-              }
+              onChange={(event) => {
+                setDateFilter(event.target.value);
+                setDateFilterTimestamp(Date.now());
+              }}
             >
               <option value="all">
                 All Time

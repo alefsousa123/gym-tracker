@@ -124,23 +124,23 @@ const NotFoundPage = lazy(() =>
 
 import {
   TrainingProfileProvider,
-} from "./context/TrainingProfileContext";
+} from "./context/TrainingProfileProvider";
 
 import {
   EquipmentProvider,
-} from "./context/EquipmentContext";
+} from "./context/EquipmentProvider";
 
 import {
   WeeklyScheduleProvider,
-} from "./context/WeeklyScheduleContext";
+} from "./context/WeeklyScheduleProvider";
 
 import {
   WorkoutPlanProvider,
-} from "./context/WorkoutPlanContext";
+} from "./context/WorkoutPlanProvider";
 
 import {
   WorkoutSessionProvider,
-} from "./context/WorkoutSessionContext";
+} from "./context/WorkoutSessionProvider";
 
 // ==========================================
 // PAGE LOADING FALLBACK
