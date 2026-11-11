@@ -1,11 +1,18 @@
 
-import { Link, useNavigate } from "react-router";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
 
-import { exercises } from "../../data/exercises";
-import { daysOfWeek } from "../../data/workoutSplits";
+import {
+  Link,
+  useNavigate,
+} from "react-router";
 
-import ExerciseMotionPreview from
-  "../exercises/ExerciseMotionPreview";
+import { daysOfWeek } from
+  "../../data/workoutSplits";
 
 import {
   useWorkoutPlan,
@@ -22,15 +29,43 @@ import {
 import "./TodayWorkoutOverview.css";
 
 // ==========================================
-// EXERCISE CATALOG
+// LAZY EXERCISE PREVIEW
 // ==========================================
 
-const exerciseCatalog = new Map(
-  exercises.map((exercise) => [
-    exercise.id,
-    exercise,
-  ])
+// Do not load the image preview component
+// until an exercise list is displayed.
+
+const ExerciseMotionPreview = lazy(() =>
+  import("../exercises/ExerciseMotionPreview")
 );
+
+// ==========================================
+// LAZY EXERCISE CATALOG
+// ==========================================
+
+let exerciseCatalogPromise = null;
+
+function loadExerciseCatalog() {
+  if (!exerciseCatalogPromise) {
+    exerciseCatalogPromise = import(
+      "../../data/exercises"
+    )
+      .then(({ exercises }) => {
+        return new Map(
+          exercises.map((exercise) => [
+            exercise.id,
+            exercise,
+          ])
+        );
+      })
+      .catch((error) => {
+        exerciseCatalogPromise = null;
+        throw error;
+      });
+  }
+
+  return exerciseCatalogPromise;
+}
 
 // ==========================================
 // HELPER FUNCTIONS
@@ -46,7 +81,8 @@ function getTodayId() {
 function countCompletedSets(workout) {
   return workout?.exercises.reduce(
     (total, exercise) =>
-      total + exercise.completedSets.length,
+      total +
+      (exercise.completedSets?.length ?? 0),
     0
   ) ?? 0;
 }
@@ -54,16 +90,20 @@ function countCompletedSets(workout) {
 function countPlannedSets(workout) {
   return workout?.exercises.reduce(
     (total, exercise) =>
-      total + Number(exercise.target.sets),
+      total +
+      Number(exercise.target?.sets ?? 0),
     0
   ) ?? 0;
 }
 
 // ==========================================
-// REUSABLE EXERCISE PREVIEW
+// EXERCISE PREVIEW
 // ==========================================
 
-function TodayExercisePreview({ exerciseId }) {
+function TodayExercisePreview({
+  exerciseId,
+  exerciseCatalog,
+}) {
   const exercise =
     exerciseCatalog.get(exerciseId);
 
@@ -76,11 +116,22 @@ function TodayExercisePreview({ exerciseId }) {
         to={`/exercises/${exerciseId}`}
         className="today-home-exercise-link"
       >
-        <ExerciseMotionPreview
-          exerciseId={exerciseId}
-          exerciseName={exerciseName}
-          variant="thumbnail"
-        />
+        <Suspense
+          fallback={
+            <span
+              className="today-home-exercise-preview-loading"
+              aria-label="Loading exercise preview"
+            >
+              🏋️
+            </span>
+          }
+        >
+          <ExerciseMotionPreview
+            exerciseId={exerciseId}
+            exerciseName={exerciseName}
+            variant="thumbnail"
+          />
+        </Suspense>
 
         <span className="today-home-exercise-info">
           <strong>{exerciseName}</strong>
@@ -95,21 +146,116 @@ function TodayExercisePreview({ exerciseId }) {
 }
 
 // ==========================================
-// REUSABLE EXERCISE LIST
+// EXERCISE LIST
 // ==========================================
 
 function TodayExerciseList({ exerciseIds }) {
+  const [exerciseCatalog, setExerciseCatalog] =
+    useState(null);
+
+  const [loadError, setLoadError] =
+    useState(false);
+
+  const [retryCount, setRetryCount] =
+    useState(0);
+
+  // ========================================
+  // LOAD CATALOG ONLY WHEN NEEDED
+  // ========================================
+
+  useEffect(() => {
+    if (exerciseIds.length === 0) {
+      return;
+    }
+
+    let isActive = true;
+
+    loadExerciseCatalog()
+      .then((catalog) => {
+        if (isActive) {
+          setExerciseCatalog(catalog);
+          setLoadError(false);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Failed to load exercise catalog:",
+          error
+        );
+
+        if (isActive) {
+          setLoadError(true);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [
+    exerciseIds.length,
+    retryCount,
+  ]);
+
+  if (exerciseIds.length === 0) {
+    return null;
+  }
+
   const previewExercises =
     exerciseIds.slice(0, 5);
 
   const remainingExercises = Math.max(
     0,
-    exerciseIds.length - previewExercises.length
+    exerciseIds.length -
+      previewExercises.length
   );
 
-  if (exerciseIds.length === 0) {
-    return null;
+  // ========================================
+  // LOADING
+  // ========================================
+
+  if (!exerciseCatalog && !loadError) {
+    return (
+      <p
+        className="today-home-more-count"
+        role="status"
+      >
+        Loading exercise previews...
+      </p>
+    );
   }
+
+  // ========================================
+  // ERROR
+  // ========================================
+
+  if (!exerciseCatalog && loadError) {
+    return (
+      <div>
+        <p className="today-home-more-count">
+          Exercise previews are temporarily
+          unavailable.
+        </p>
+
+        <button
+          type="button"
+          className="today-home-secondary-action"
+          onClick={() => {
+            setLoadError(false);
+
+            setRetryCount(
+              (previous) => previous + 1
+            );
+          }}
+        >
+          Retry Loading
+        </button>
+      </div>
+    );
+  }
+
+  // ========================================
+  // PREVIEWS
+  // ========================================
 
   return (
     <>
@@ -118,6 +264,7 @@ function TodayExerciseList({ exerciseIds }) {
           <TodayExercisePreview
             key={exerciseId}
             exerciseId={exerciseId}
+            exerciseCatalog={exerciseCatalog}
           />
         ))}
       </ul>
@@ -141,7 +288,8 @@ function TodayExerciseList({ exerciseIds }) {
 function TodayWorkoutOverview() {
   const navigate = useNavigate();
 
-  const { appliedPlan } = useWorkoutPlan();
+  const { appliedPlan } =
+    useWorkoutPlan();
 
   const { weeklySchedule } =
     useWeeklySchedule();
@@ -165,14 +313,16 @@ function TodayWorkoutOverview() {
 
   const matchingSplit =
     Boolean(appliedPlan && weeklySchedule) &&
-    appliedPlan.splitId === weeklySchedule.splitId;
+    appliedPlan.splitId ===
+      weeklySchedule.splitId;
 
   const todaySession =
     matchingSplit &&
     todaySchedule?.activity === "workout"
       ? appliedPlan.sessions.find(
           (session) =>
-            session.id === todaySchedule.sessionId
+            session.id ===
+            todaySchedule.sessionId
         )
       : null;
 
@@ -197,15 +347,11 @@ function TodayWorkoutOverview() {
   const plannedSets =
     countPlannedSets(activeWorkout);
 
-  // The active workout is the source of truth
-  // when a training session is in progress.
   const activeExerciseIds =
     activeWorkout?.exercises.map(
       (exercise) => exercise.exerciseId
     ) ?? [];
 
-  // When no workout is active, show the
-  // exercises scheduled for today.
   const scheduledExerciseIds =
     todaySession?.exerciseIds ?? [];
 
@@ -239,12 +385,12 @@ function TodayWorkoutOverview() {
     <section className="today-home-overview">
       <div className="today-home-card">
 
-        {/* ==================================
-            HEADER
-        ================================== */}
+        {/* HEADER */}
 
         <div className="today-home-header">
-          <span>YOUR TRAINING TODAY</span>
+          <span>
+            YOUR TRAINING TODAY
+          </span>
 
           <span className="today-home-date">
             {new Intl.DateTimeFormat(
@@ -282,8 +428,6 @@ function TodayWorkoutOverview() {
               {" "}sets completed.
             </p>
 
-            {/* NEW: exercises during training */}
-
             <TodayExerciseList
               exerciseIds={activeExerciseIds}
             />
@@ -298,9 +442,7 @@ function TodayWorkoutOverview() {
 
         ) : completedToday ? (
 
-          /* ==================================
-              WORKOUT ALREADY COMPLETED
-          ================================== */
+          /* COMPLETED WORKOUT */
 
           <>
             <div className="today-home-status is-complete">
@@ -311,9 +453,7 @@ function TodayWorkoutOverview() {
                 : "Session Saved"}
             </div>
 
-            <h2>
-              {lastWorkout.sessionName}
-            </h2>
+            <h2>{lastWorkout.sessionName}</h2>
 
             <p>
               {lastWorkout.totalCompletedSets}
@@ -334,9 +474,7 @@ function TodayWorkoutOverview() {
 
         ) : !appliedPlan ? (
 
-          /* ==================================
-              NO APPLIED PLAN
-          ================================== */
+          /* NO APPLIED PLAN */
 
           <>
             <h2>
@@ -358,18 +496,12 @@ function TodayWorkoutOverview() {
 
         ) : todaySession ? (
 
-          /* ==================================
-              SCHEDULED WORKOUT
-          ================================== */
+          /* SCHEDULED WORKOUT */
 
           <>
-            <h2>
-              {todaySession.name}
-            </h2>
+            <h2>{todaySession.name}</h2>
 
-            <p>
-              {appliedPlan.name}
-            </p>
+            <p>{appliedPlan.name}</p>
 
             <TodayExerciseList
               exerciseIds={scheduledExerciseIds}
@@ -387,9 +519,7 @@ function TodayWorkoutOverview() {
 
         ) : (
 
-          /* ==================================
-              REST / ACTIVE RECOVERY
-          ================================== */
+          /* REST DAY */
 
           <>
             <div className="today-home-status">

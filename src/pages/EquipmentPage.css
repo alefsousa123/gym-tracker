@@ -905,3 +905,254 @@ html[data-theme="dark"]
     transform: none;
   }
 }
+
+/* ==========================================
+   C2.2 - EQUIPMENT PHOTOS
+========================================== */
+
+.equipment-option .equipment-option-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 48px;
+
+  width: 48px;
+  height: 48px;
+
+  overflow: hidden;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+}
+
+.equipment-option .equipment-option-media img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 4px;
+
+  object-fit: contain;
+}
+
+.equipment-option .equipment-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  color: var(--color-text-secondary);
+}
+
+.equipment-option .equipment-photo-placeholder svg {
+  width: 22px;
+  height: 22px;
+}
+
+.equipment-option .equipment-option-name {
+  flex: 1;
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .equipment-option .equipment-option-media {
+    flex-basis: 42px;
+
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* ==========================================
+   C2.4 - EQUIPMENT CATALOG IMPROVEMENTS
+========================================== */
+
+/* EQUIPMENT SEARCH */
+
+.equipment-search-section {
+  margin: 22px 0 12px;
+}
+
+.equipment-search-section > label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: var(--color-text);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.equipment-search-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.equipment-search-controls input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+
+  padding: 11px 14px;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 9px;
+
+  color: var(--color-text);
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.equipment-search-controls input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.8;
+}
+
+.equipment-search-controls input:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.equipment-clear-search {
+  min-height: 44px;
+  padding: 10px 15px;
+
+  background-color: var(--color-inset);
+
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+
+  color: var(--color-text);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* RESULT COUNTERS */
+
+.equipment-list-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  gap: 8px;
+  margin: 12px 0 16px;
+
+  color: var(--color-text-secondary);
+
+  font-size: 12px;
+}
+
+/* LOAD MORE BUTTON */
+
+.equipment-pagination {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 22px;
+}
+
+.equipment-pagination .equipment-reset-button {
+  min-width: 190px;
+}
+
+/* EMPTY SEARCH RESULT */
+
+.equipment-search-empty {
+  padding: 24px 16px;
+
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 10px;
+
+  text-align: center;
+}
+
+.equipment-search-empty p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+/* ==========================================
+   PERMANENT LIGHT PHOTO BACKGROUND
+========================================== */
+
+/*
+  Equipment photographs contain dark objects.
+  Use a light neutral background in both themes.
+*/
+
+html[data-theme="light"]
+.equipment-page
+.equipment-option .equipment-option-media,
+
+html[data-theme="dark"]
+.equipment-page
+.equipment-option .equipment-option-media {
+  background-color: #f7f8fa;
+  border-color: #dfe4e8;
+}
+
+.equipment-page
+.equipment-option .equipment-option-media img {
+  width: 100%;
+  height: 100%;
+
+  padding: 4px;
+  object-fit: contain;
+}
+
+/* PLACEHOLDER CONTRAST */
+
+html[data-theme="dark"]
+.equipment-page
+.equipment-option .equipment-photo-placeholder,
+
+html[data-theme="light"]
+.equipment-page
+.equipment-option .equipment-photo-placeholder {
+  color: #56616d;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .equipment-search-controls {
+    flex-wrap: wrap;
+  }
+
+  .equipment-search-controls input {
+    flex-basis: 100%;
+  }
+
+  .equipment-clear-search {
+    width: 100%;
+  }
+
+  .equipment-list-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .equipment-pagination .equipment-reset-button {
+    width: 100%;
+  }
+}

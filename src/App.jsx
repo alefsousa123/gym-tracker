@@ -1,5 +1,10 @@
 
 import {
+  lazy,
+  Suspense,
+} from "react";
+
+import {
   Navigate,
   Route,
   Routes,
@@ -10,32 +15,112 @@ import "./App.css";
 
 import AppLayout from "./AppLayout";
 
-import HomePage from "./pages/HomePage";
-import DashboardPage from "./pages/DashboardPage";
+// ==========================================
+// LAZY LOADED PAGES
+// ==========================================
 
-import WorkoutsPage from "./pages/WorkoutsPage";
-import WeeklySchedulePage from "./pages/WeeklySchedulePage";
-import WorkoutPlansPage from "./pages/WorkoutPlansPage";
-import WorkoutBuilderPage from "./pages/WorkoutBuilderPage";
-import TodaysWorkoutPage from "./pages/TodaysWorkoutPage";
+// The components below are loaded only when
+// the corresponding route is first opened.
 
-import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
-import ConsistencyPage from "./pages/ConsistencyPage";
-import TrainingInsightsPage from "./pages/TrainingInsightsPage";
-import TrainingChartsPage from "./pages/TrainingChartsPage";
-import BodyFatEstimatorPage from "./pages/BodyFatEstimatorPage";
-import BodyMeasurementsPage from "./pages/BodyMeasurementsPage";
+// WELCOME AND DASHBOARD
 
-import ExercisesPage from "./pages/ExercisesPage";
-import ExerciseDetailsPage from "./pages/ExerciseDetailsPage";
+const HomePage = lazy(() =>
+  import("./pages/HomePage")
+);
 
-import ProgressPage from "./pages/ProgressPage";
+const DashboardPage = lazy(() =>
+  import("./pages/DashboardPage")
+);
 
-import TrainingProfilePage from "./pages/TrainingProfilePage";
-import EquipmentPage from "./pages/EquipmentPage";
-import SettingsPage from "./pages/SettingsPage";
+// WORKOUTS
 
-import NotFoundPage from "./pages/NotFoundPage";
+const WorkoutsPage = lazy(() =>
+  import("./pages/WorkoutsPage")
+);
+
+const TodaysWorkoutPage = lazy(() =>
+  import("./pages/TodaysWorkoutPage")
+);
+
+const WeeklySchedulePage = lazy(() =>
+  import("./pages/WeeklySchedulePage")
+);
+
+const WorkoutPlansPage = lazy(() =>
+  import("./pages/WorkoutPlansPage")
+);
+
+const WorkoutBuilderPage = lazy(() =>
+  import("./pages/WorkoutBuilderPage")
+);
+
+// PROGRESS
+
+const ProgressPage = lazy(() =>
+  import("./pages/ProgressPage")
+);
+
+const WorkoutHistoryPage = lazy(() =>
+  import("./pages/WorkoutHistoryPage")
+);
+
+const ConsistencyPage = lazy(() =>
+  import("./pages/ConsistencyPage")
+);
+
+const TrainingInsightsPage = lazy(() =>
+  import("./pages/TrainingInsightsPage")
+);
+
+const TrainingChartsPage = lazy(() =>
+  import("./pages/TrainingChartsPage")
+);
+
+const BodyFatEstimatorPage = lazy(() =>
+  import("./pages/BodyFatEstimatorPage")
+);
+
+const BodyMeasurementsPage = lazy(() =>
+  import("./pages/BodyMeasurementsPage")
+);
+
+// EXERCISES
+
+const ExercisesPage = lazy(() =>
+  import("./pages/ExercisesPage")
+);
+
+const ExerciseDetailsPage = lazy(() =>
+  import("./pages/ExerciseDetailsPage")
+);
+
+// SETTINGS
+
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage")
+);
+
+const TrainingProfilePage = lazy(() =>
+  import("./pages/TrainingProfilePage")
+);
+
+const EquipmentPage = lazy(() =>
+  import("./pages/EquipmentPage")
+);
+
+// NOT FOUND
+
+const NotFoundPage = lazy(() =>
+  import("./pages/NotFoundPage")
+);
+
+// ==========================================
+// SHARED CONTEXT PROVIDERS
+// ==========================================
+
+// Providers remain statically imported.
+// Their state must stay available while
+// the user navigates between pages.
 
 import {
   TrainingProfileProvider,
@@ -56,6 +141,87 @@ import {
 import {
   WorkoutSessionProvider,
 } from "./context/WorkoutSessionContext";
+
+// ==========================================
+// PAGE LOADING FALLBACK
+// ==========================================
+
+function PageLoading() {
+  return (
+    <section
+      role="status"
+      aria-live="polite"
+      aria-label="Loading page"
+      style={{
+        width: "100%",
+        minHeight: "260px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "12px",
+        padding: "32px 20px",
+        color: "var(--color-text)",
+        backgroundColor: "var(--color-page)",
+        textAlign: "center",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          width: "44px",
+          height: "44px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "12px",
+          backgroundColor: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          fontSize: "22px",
+        }}
+      >
+        🏋️
+      </div>
+
+      <strong
+        style={{
+          fontSize: "15px",
+          fontWeight: 700,
+        }}
+      >
+        Loading Page
+      </strong>
+
+      <p
+        style={{
+          margin: 0,
+          color: "var(--color-text-secondary)",
+          fontSize: "12px",
+        }}
+      >
+        Preparing your workout experience...
+      </p>
+    </section>
+  );
+}
+
+// ==========================================
+// LAZY ROUTE WRAPPER
+// ==========================================
+
+// Suspense handles the temporary loading
+// state of each route independently.
+//
+// Keeping Suspense inside the page route
+// preserves AppLayout, Header and Footer.
+
+function LazyRoute({ component: Component }) {
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <Component />
+    </Suspense>
+  );
+}
 
 // ==========================================
 // LEGACY HISTORY REDIRECT
@@ -85,12 +251,13 @@ function App() {
         <WeeklyScheduleProvider>
           <WorkoutPlanProvider>
             <WorkoutSessionProvider>
+
               <Routes>
                 <Route element={<AppLayout />}>
 
-                  {/* ==================================
+                  {/* ==========================
                       ROOT ROUTE
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/"
@@ -102,100 +269,160 @@ function App() {
                     }
                   />
 
-                  {/* ==================================
-                      PUBLIC WELCOME PAGE
-                  ================================== */}
+                  {/* ==========================
+                      WELCOME
+                  ========================== */}
 
                   <Route
                     path="/welcome"
-                    element={<HomePage />}
+                    element={
+                      <LazyRoute
+                        component={HomePage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       DASHBOARD
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/dashboard"
-                    element={<DashboardPage />}
+                    element={
+                      <LazyRoute
+                        component={DashboardPage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       WORKOUTS
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/workouts"
-                    element={<WorkoutsPage />}
+                    element={
+                      <LazyRoute
+                        component={WorkoutsPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/workouts/today"
-                    element={<TodaysWorkoutPage />}
+                    element={
+                      <LazyRoute
+                        component={TodaysWorkoutPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/workouts/schedule"
-                    element={<WeeklySchedulePage />}
+                    element={
+                      <LazyRoute
+                        component={WeeklySchedulePage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/workouts/plans"
-                    element={<WorkoutPlansPage />}
+                    element={
+                      <LazyRoute
+                        component={WorkoutPlansPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/workouts/builder"
-                    element={<WorkoutBuilderPage />}
+                    element={
+                      <LazyRoute
+                        component={WorkoutBuilderPage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       PROGRESS
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/progress"
-                    element={<ProgressPage />}
+                    element={
+                      <LazyRoute
+                        component={ProgressPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/history"
-                    element={<WorkoutHistoryPage />}
+                    element={
+                      <LazyRoute
+                        component={WorkoutHistoryPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/history/:workoutId"
-                    element={<WorkoutHistoryPage />}
+                    element={
+                      <LazyRoute
+                        component={WorkoutHistoryPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/consistency"
-                    element={<ConsistencyPage />}
+                    element={
+                      <LazyRoute
+                        component={ConsistencyPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/performance"
-                    element={<TrainingInsightsPage />}
+                    element={
+                      <LazyRoute
+                        component={TrainingInsightsPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/charts"
-                    element={<TrainingChartsPage />}
+                    element={
+                      <LazyRoute
+                        component={TrainingChartsPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/body-fat"
-                    element={<BodyFatEstimatorPage />}
+                    element={
+                      <LazyRoute
+                        component={BodyFatEstimatorPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/progress/measurements"
-                    element={<BodyMeasurementsPage />}
+                    element={
+                      <LazyRoute
+                        component={BodyMeasurementsPage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
-                      OLD WORKOUT ROUTES
-                  ================================== */}
+                  {/* ==========================
+                      LEGACY WORKOUT ROUTES
+                  ========================== */}
 
                   <Route
                     path="/workouts/history"
@@ -209,7 +436,9 @@ function App() {
 
                   <Route
                     path="/workouts/history/:workoutId"
-                    element={<LegacyHistoryRedirect />}
+                    element={
+                      <LegacyHistoryRedirect />
+                    }
                   />
 
                   <Route
@@ -222,42 +451,62 @@ function App() {
                     }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       EXERCISES
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/exercises"
-                    element={<ExercisesPage />}
+                    element={
+                      <LazyRoute
+                        component={ExercisesPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/exercises/:exerciseId"
-                    element={<ExerciseDetailsPage />}
+                    element={
+                      <LazyRoute
+                        component={ExerciseDetailsPage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       SETTINGS
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="/settings"
-                    element={<SettingsPage />}
+                    element={
+                      <LazyRoute
+                        component={SettingsPage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/settings/profile"
-                    element={<TrainingProfilePage />}
+                    element={
+                      <LazyRoute
+                        component={TrainingProfilePage}
+                      />
+                    }
                   />
 
                   <Route
                     path="/settings/equipment"
-                    element={<EquipmentPage />}
+                    element={
+                      <LazyRoute
+                        component={EquipmentPage}
+                      />
+                    }
                   />
 
-                  {/* ==================================
-                      OLD SETTINGS ROUTES
-                  ================================== */}
+                  {/* ==========================
+                      LEGACY SETTINGS ROUTES
+                  ========================== */}
 
                   <Route
                     path="/profile"
@@ -279,17 +528,22 @@ function App() {
                     }
                   />
 
-                  {/* ==================================
+                  {/* ==========================
                       PAGE NOT FOUND
-                  ================================== */}
+                  ========================== */}
 
                   <Route
                     path="*"
-                    element={<NotFoundPage />}
+                    element={
+                      <LazyRoute
+                        component={NotFoundPage}
+                      />
+                    }
                   />
 
                 </Route>
               </Routes>
+
             </WorkoutSessionProvider>
           </WorkoutPlanProvider>
         </WeeklyScheduleProvider>

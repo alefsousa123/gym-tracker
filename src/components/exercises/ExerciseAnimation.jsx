@@ -1,28 +1,70 @@
 
 import { useState } from "react";
 
-import exerciseImages from "../../data/exerciseImages.json";
-import { exerciseVideos } from "../../data/exerciseVideos";
+import {
+  getExerciseFrames,
+} from "../../utils/exerciseMedia";
 
-function ExerciseAnimation({ exerciseId, exerciseName }) {
-  const [isPlaying, setIsPlaying] = useState(true);
+import {
+  exerciseVideos,
+} from "../../data/exerciseVideos";
 
-  const images = exerciseImages[exerciseId];
+// ==========================================
+// EXERCISE ANIMATION
+// ==========================================
+
+function ExerciseAnimation({
+  exerciseId,
+  exerciseName,
+}) {
+  const [isPlaying, setIsPlaying] =
+    useState(true);
+
+  const [failedFrames, setFailedFrames] =
+    useState([]);
+
+  // ========================================
+  // EXERCISE MEDIA
+  // ========================================
+
   const video = exerciseVideos[exerciseId];
 
-  // Use a local animation when one is available.
+  const frames = getExerciseFrames(
+    exerciseId
+  ).filter(
+    (src) => !failedFrames.includes(src)
+  );
+
+  // ========================================
+  // HANDLE IMAGE ERRORS
+  // ========================================
+
+  function handleImageError(src) {
+    setFailedFrames((previous) =>
+      previous.includes(src)
+        ? previous
+        : [...previous, src]
+    );
+  }
+
+  // ========================================
+  // LOCAL VIDEO
+  // ========================================
+
   if (video?.localVideo) {
     return (
       <section className="exercise-animation-panel">
+
         <div className="animation-heading">
           <h2>Exercise Demonstration</h2>
+
           <span className="animation-badge">
             Video Loop
           </span>
         </div>
 
         <video
-          key={video.localVideo}
+          key={`${exerciseId}-${video.localVideo}`}
           className="exercise-loop-video"
           src={video.localVideo}
           autoPlay
@@ -30,84 +72,123 @@ function ExerciseAnimation({ exerciseId, exerciseName }) {
           loop
           playsInline
           controls
-          aria-label={`${exerciseName} exercise demonstration`}
+          aria-label={
+            `${exerciseName} exercise demonstration`
+          }
         >
           Your browser does not support video playback.
         </video>
+
       </section>
     );
   }
 
-  if (!images) {
-    return null;
+  // ========================================
+  // NO IMAGES AVAILABLE
+  // ========================================
+
+  if (frames.length === 0) {
+    return (
+      <section className="exercise-animation-panel">
+
+        <div className="animation-heading">
+          <h2>Exercise Demonstration</h2>
+        </div>
+
+        <div className="exercise-motion-placeholder">
+          <span aria-hidden="true">🏋️</span>
+
+          <p>Demonstration Not Available</p>
+        </div>
+
+      </section>
+    );
   }
 
-  // Preserve the corrected Push-Up image order.
-  const imageList =
-    exerciseId === "push-up"
-      ? [images.peak, images.start]
-      : [images.start, images.peak];
+  // ========================================
+  // IMAGE DEMONSTRATION
+  // ========================================
 
-  const availableImages = imageList.filter(Boolean);
+  const hasTwoPositions =
+    frames.length >= 2;
 
-  // Handle static exercises with a single main image.
-  if (availableImages.length === 0 && images.main) {
-    availableImages.push(images.main);
-  }
-
-  if (availableImages.length === 0) {
-    return null;
-  }
-
-  const hasTwoPositions = availableImages.length >= 2;
+  const animationState =
+    isPlaying ? "running" : "paused";
 
   return (
     <section className="exercise-animation-panel">
+
+      {/* HEADING */}
+
       <div className="animation-heading">
         <h2>Exercise Demonstration</h2>
 
         <span className="animation-badge">
-          {hasTwoPositions ? "Pose Preview" : "Static Preview"}
+          {hasTwoPositions
+            ? "Pose Preview"
+            : "Static Preview"}
         </span>
       </div>
 
+      {/* IMAGES */}
+
       <div
         className="exercise-animation-stage"
-        style={{
-          animationPlayState: isPlaying ? "running" : "paused",
-        }}
+        key={exerciseId}
       >
         <img
           className="animation-image animation-image-first"
-          src={availableImages[0]}
+          src={frames[0]}
           alt={`${exerciseName} first position`}
+          style={{
+            animationPlayState: animationState,
+          }}
+          onError={() =>
+            handleImageError(frames[0])
+          }
         />
 
         {hasTwoPositions && (
           <img
             className="animation-image animation-image-second"
-            src={availableImages[1]}
+            src={frames[1]}
             alt={`${exerciseName} second position`}
+            style={{
+              animationPlayState: animationState,
+            }}
+            onError={() =>
+              handleImageError(frames[1])
+            }
           />
         )}
       </div>
 
+      {/* ANIMATION CONTROLS */}
+
       {hasTwoPositions && (
         <>
           <p className="animation-description">
-            This preview alternates between exercise positions.
-            It is not a continuous movement demonstration.
+            This preview alternates between exercise
+            positions. It is not a continuous movement
+            demonstration.
           </p>
 
           <button
             className="animation-control"
             type="button"
-            onClick={() => setIsPlaying((previous) => !previous)}
+            onClick={() =>
+              setIsPlaying(
+                (previous) => !previous
+              )
+            }
           >
-            {isPlaying ? "Pause Preview" : "Play Preview"}
+            {isPlaying
+              ? "Pause Preview"
+              : "Play Preview"}
           </button>
         </>
       )}
+
     </section>
   );
 }

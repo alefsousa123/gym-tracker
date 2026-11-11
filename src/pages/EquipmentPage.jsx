@@ -1,10 +1,14 @@
 
+import { useState } from "react";
 import { Link } from "react-router";
 
 import BackToPreviousPage from
   "../components/navigation/BackToPreviousPage";
 
 import { exercises } from "../data/exercises";
+
+import { isExerciseAvailable } from
+  "../data/workoutPlans";
 
 import ExerciseMotionPreview from
   "../components/exercises/ExerciseMotionPreview";
@@ -20,26 +24,184 @@ import {
 import "./EquipmentPage.css";
 
 // ==========================================
+// CONFIGURATION
+// ==========================================
+
+const EQUIPMENT_PAGE_SIZE = 24;
+
+// ==========================================
+// REPDB EQUIPMENT IMAGE CATALOG
+// ==========================================
+
+const equipmentImageIds = [
+  "ab-crunch-machine",
+  "ab-wheel",
+  "air-bike",
+  "assisted-pullup-machine",
+  "back-extension-machine",
+  "barbell",
+  "battle-rope",
+  "bicep-curl-machine",
+  "bicycle",
+  "bosu-ball",
+  "cable",
+  "chest-fly-machine",
+  "chest-press-machine",
+  "climbing-rope",
+  "dip-machine",
+  "dip-station",
+  "donkey-calf-raise-machine",
+  "dumbbell",
+  "elliptical",
+  "ez-bar",
+  "flat-bench",
+  "glute-ham-developer",
+  "hack-squat",
+  "hip-abduction-machine",
+  "hip-adduction-machine",
+  "hip-thrust-machine",
+  "jump-rope",
+  "kettlebell",
+  "lat-pulldown-machine",
+  "leg-curl",
+  "leg-extension",
+  "leg-press",
+  "loop-band",
+  "medicine-ball",
+  "pec-deck",
+  "plate-loaded-dip-machine",
+  "plate-loaded-lateral-raise-machine",
+  "plates",
+  "plyo-box",
+  "preacher-curl-machine",
+  "pull-up-bar",
+  "resistance-band",
+  "reverse-fly-machine",
+  "rings",
+  "rower",
+  "sandbag",
+  "seated-calf-raise-machine",
+  "seated-row-machine",
+  "shoulder-press-machine",
+  "shrug-machine",
+  "ski-erg",
+  "slam-ball",
+  "sled",
+  "smith-machine",
+  "stability-ball",
+  "stair-climber",
+  "standing-calf-raise-machine",
+  "stationary-bike",
+  "suspension-trainer",
+  "trap-bar",
+  "treadmill",
+  "tricep-extension-machine",
+  "wall-ball",
+  "wrist-roller",
+];
+
+// ==========================================
+// EQUIPMENT NAME MAPPING
+// ==========================================
+
+const equipmentNameOverrides = {
+  "barbell": "Barbell",
+  "cable": "Cable Machine",
+  "dip-station": "Dip Bars",
+  "dumbbell": "Dumbbells",
+  "ez-bar": "EZ Bar",
+  "flat-bench": "Bench",
+  "kettlebell": "Kettlebells",
+  "leg-press": "Leg Press Machine",
+  "plates": "Weight Plates",
+  "pull-up-bar": "Pull-Up Bar",
+  "resistance-band": "Resistance Bands",
+  "smith-machine": "Smith Machine",
+  "stability-ball": "Stability Ball",
+  "suspension-trainer": "Suspension Trainer",
+  "trap-bar": "Trap Bar",
+  "medicine-ball": "Medicine Ball",
+  "jump-rope": "Jump Rope",
+  "ski-erg": "Ski Erg",
+  "bosu-ball": "BOSU Ball",
+  "ab-wheel": "Ab Wheel",
+  "ab-crunch-machine": "Ab Crunch Machine",
+};
+
+// ==========================================
+// EQUIPMENT LABEL HELPERS
+// ==========================================
+
+function humanizeEquipmentName(value) {
+  return value
+    .split("-")
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() +
+        word.slice(1)
+    )
+    .join(" ");
+}
+
+// ==========================================
+// REPDB EQUIPMENT OPTIONS
+// ==========================================
+
+const repdbEquipmentOptions = [
+  ...equipmentImageIds.map((imageId) => ({
+    id: imageId,
+
+    name:
+      equipmentNameOverrides[imageId] ??
+      humanizeEquipmentName(imageId),
+
+    imageUrl:
+      `/repdb-images/equipment-${imageId}.webp`,
+  })),
+
+  // Custom adjustable bench.
+  // Reuses the original flat bench image.
+  {
+    id: "adjustable-bench",
+    name: "Bench (Adjustable)",
+    imageUrl:
+      "/repdb-images/equipment-flat-bench.webp",
+  },
+];
+
+const repdbEquipmentNames = new Set(
+  repdbEquipmentOptions.map(
+    (equipment) => equipment.name
+  )
+);
+
+// ==========================================
 // HOME EXERCISE CATALOG
 // ==========================================
 
-// Only exercises that support home training.
 const homeExerciseCatalog = exercises.filter(
-  (exercise) => exercise.locations.includes("home")
+  (exercise) =>
+    exercise.locations.includes("home")
 );
 
-// Automatically discover equipment from the catalog.
-const equipmentOptions = [
+// Keep additional equipment used by exercises
+// even when RepDB has no matching photograph.
+
+const additionalCatalogNames = [
   ...new Set(
     homeExerciseCatalog.flatMap(
       (exercise) => exercise.equipment
     )
   ),
-].sort((first, second) =>
-  first.localeCompare(second)
+].filter(
+  (equipmentName) =>
+    !repdbEquipmentNames.has(equipmentName)
 );
 
-// Readable labels for training locations.
+// ==========================================
+// LOCATION LABELS
+// ==========================================
+
 const locationLabels = {
   home: "At Home",
   gym: "At the Gym",
@@ -47,11 +209,60 @@ const locationLabels = {
 };
 
 // ==========================================
+// EQUIPMENT PHOTO
+// ==========================================
+
+function EquipmentPhoto({ imageUrl }) {
+  const [failedImage, setFailedImage] =
+    useState(null);
+
+  const showImage =
+    Boolean(imageUrl) &&
+    failedImage !== imageUrl;
+
+  return (
+    <span
+      className="equipment-option-media"
+      aria-hidden="true"
+    >
+      {showImage ? (
+        <img
+          src={imageUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() =>
+            setFailedImage(imageUrl)
+          }
+        />
+      ) : (
+        <span className="equipment-photo-placeholder">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m6.5 6.5-3 3 11 11 3-3" />
+            <path d="m3.5 9.5-2 2 11 11 2-2" />
+            <path d="m17.5 17.5 3-3-11-11-3 3" />
+            <path d="m20.5 14.5 2-2-11-11-2 2" />
+          </svg>
+        </span>
+      )}
+    </span>
+  );
+}
+
+// ==========================================
 // COMPATIBLE EXERCISE CARD
 // ==========================================
 
 function EquipmentExerciseCard({ exercise }) {
-  const isBodyweight = exercise.equipment.length === 0;
+  const isBodyweight =
+    exercise.equipment.length === 0;
 
   const equipmentLabel = isBodyweight
     ? "Bodyweight"
@@ -62,7 +273,6 @@ function EquipmentExerciseCard({ exercise }) {
       to={`/exercises/${exercise.id}`}
       className="equipment-exercise-card"
     >
-      {/* Exercise category and difficulty */}
       <div className="equipment-exercise-card-top">
         <span className="equipment-exercise-category">
           {exercise.muscleGroup}
@@ -73,7 +283,6 @@ function EquipmentExerciseCard({ exercise }) {
         </span>
       </div>
 
-      {/* Animated thumbnail and exercise information */}
       <div className="equipment-exercise-main">
         <ExerciseMotionPreview
           exerciseId={exercise.id}
@@ -102,39 +311,124 @@ function EquipmentExerciseCard({ exercise }) {
 // ==========================================
 
 function EquipmentPage() {
-  // Shared equipment state.
   const {
     homeEquipment,
     toggleHomeEquipment,
     clearHomeEquipment,
   } = useEquipment();
 
-  // Training preferences.
   const { profile } = useTrainingProfile();
+
+  // ========================================
+  // SEARCH AND PAGINATION
+  // ========================================
+
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [visibleCount, setVisibleCount] =
+    useState(EQUIPMENT_PAGE_SIZE);
+
+  // ========================================
+  // BUILD ALL EQUIPMENT OPTIONS
+  // ========================================
+
+  // Preserve equipment names from the catalog
+  // and previously saved user selections.
+
+  const additionalNames = [
+    ...new Set([
+      ...additionalCatalogNames,
+      ...homeEquipment,
+    ]),
+  ].filter(
+    (name) => !repdbEquipmentNames.has(name)
+  );
+
+  const additionalOptions =
+    additionalNames.map((name) => ({
+      id: `additional:${name}`,
+      name,
+      imageUrl: null,
+    }));
+
+  const allEquipmentOptions = [
+    ...repdbEquipmentOptions,
+    ...additionalOptions,
+  ].sort((first, second) =>
+    first.name.localeCompare(
+      second.name,
+      "en",
+      { sensitivity: "base" }
+    )
+  );
+
+  // ========================================
+  // SEARCH EQUIPMENT
+  // ========================================
+
+  const normalizedSearch =
+    searchTerm.trim().toLowerCase();
+
+  const filteredEquipment =
+    allEquipmentOptions.filter(
+      (equipment) =>
+        equipment.name
+          .toLowerCase()
+          .includes(normalizedSearch)
+    );
+
+  const visibleEquipment =
+    filteredEquipment.slice(0, visibleCount);
+
+  const hasMoreEquipment =
+    visibleEquipment.length <
+    filteredEquipment.length;
+
+  function handleSearchChange(event) {
+    setSearchTerm(event.target.value);
+    setVisibleCount(EQUIPMENT_PAGE_SIZE);
+  }
+
+  function handleClearSearch() {
+    setSearchTerm("");
+    setVisibleCount(EQUIPMENT_PAGE_SIZE);
+  }
+
+  function handleLoadMore() {
+    setVisibleCount(
+      (previous) =>
+        previous + EQUIPMENT_PAGE_SIZE
+    );
+  }
 
   // ========================================
   // COMPATIBLE EXERCISES
   // ========================================
 
+  // Use the same compatibility function
+  // used by workout plans and Workout Builder.
+
   const compatibleExercises =
     homeExerciseCatalog.filter(
       (exercise) =>
-        exercise.equipment.every(
-          (requiredEquipment) =>
-            homeEquipment.includes(requiredEquipment)
+        isExerciseAvailable(
+          exercise,
+          "home",
+          homeEquipment
         )
     );
 
-  // Bodyweight exercises require no equipment.
   const bodyweightExercises =
     compatibleExercises.filter(
-      (exercise) => exercise.equipment.length === 0
+      (exercise) =>
+        exercise.equipment.length === 0
     );
 
-  // Exercises that require selected equipment.
   const equipmentExercises =
     compatibleExercises.filter(
-      (exercise) => exercise.equipment.length > 0
+      (exercise) =>
+        exercise.equipment.length > 0
     );
 
   const isBodyweightOnly =
@@ -144,12 +438,14 @@ function EquipmentPage() {
     locationLabels[profile?.trainingLocation] ??
     "Not configured";
 
+  // ========================================
+  // PAGE CONTENT
+  // ========================================
+
   return (
     <div className="equipment-page">
 
-      {/* ==================================
-          CONTEXTUAL BACK NAVIGATION
-      ================================== */}
+      {/* BACK NAVIGATION */}
 
       <BackToPreviousPage
         fallbackTo="/settings"
@@ -157,9 +453,7 @@ function EquipmentPage() {
         className="equipment-return-link"
       />
 
-      {/* ==================================
-          PAGE HEADING
-      ================================== */}
+      {/* PAGE HEADING */}
 
       <header className="equipment-page-heading">
         <span className="equipment-page-eyebrow">
@@ -170,29 +464,26 @@ function EquipmentPage() {
 
         <p>
           Select the equipment you have available at home.
-          Gym Tracker will show exercises compatible with
-          your setup.
+          Gym Tracker will show compatible exercises
+          based on your setup.
         </p>
       </header>
 
-      {/* ==================================
-          MAIN GRID
-      ================================== */}
+      {/* MAIN GRID */}
 
       <div className="equipment-page-grid">
 
-        {/* ==================================
-            EQUIPMENT SELECTION
-        ================================== */}
+        {/* EQUIPMENT SELECTION */}
 
         <section className="equipment-selector-card">
+
           <div className="equipment-section-heading">
             <div>
               <h2>Available Equipment</h2>
 
               <p>
-                Choose all items you can use for home
-                workouts.
+                Explore all RepDB equipment types and
+                select the items you can use.
               </p>
             </div>
 
@@ -201,57 +492,137 @@ function EquipmentPage() {
             </span>
           </div>
 
-          {/* Bodyweight information */}
+          {/* BODYWEIGHT INFORMATION */}
+
           <div className="equipment-bodyweight-notice">
             <strong>
               Bodyweight is always available
             </strong>
 
             <p>
-              You do not need equipment to access
-              bodyweight exercises. Leave everything
-              unchecked to use Bodyweight Only.
+              You do not need equipment for bodyweight
+              exercises. Leave everything unchecked
+              to use Bodyweight Only.
             </p>
           </div>
 
-          {/* Equipment selection */}
-          {equipmentOptions.length > 0 ? (
-            <div className="equipment-option-grid">
-              {equipmentOptions.map((equipmentName) => {
-                const isSelected =
-                  homeEquipment.includes(equipmentName);
+          {/* EQUIPMENT SEARCH */}
 
-                return (
-                  <label
-                    key={equipmentName}
-                    className={
-                      `equipment-option ${
-                        isSelected ? "is-selected" : ""
-                      }`
-                    }
-                  >
-                    <input
-                      type="checkbox"
-                      value={equipmentName}
-                      checked={isSelected}
-                      onChange={() =>
-                        toggleHomeEquipment(equipmentName)
-                      }
-                    />
+          <div className="equipment-search-section">
+            <label htmlFor="equipment-search">
+              Search Equipment
+            </label>
 
-                    <span>{equipmentName}</span>
-                  </label>
-                );
-              })}
+            <div className="equipment-search-controls">
+              <input
+                id="equipment-search"
+                type="search"
+                placeholder="Search by equipment name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="equipment-clear-search"
+                  onClick={handleClearSearch}
+                >
+                  Clear
+                </button>
+              )}
             </div>
+          </div>
+
+          {/* RESULT COUNTERS */}
+
+          <div className="equipment-list-meta">
+            <span>
+              {filteredEquipment.length}
+              {" "}equipment types found
+            </span>
+
+            <span>
+              Showing {visibleEquipment.length}
+              {" "}of {filteredEquipment.length}
+            </span>
+          </div>
+
+          {/* EQUIPMENT OPTIONS */}
+
+          {filteredEquipment.length > 0 ? (
+            <>
+              <div className="equipment-option-grid">
+                {visibleEquipment.map((equipment) => {
+                  const isSelected =
+                    homeEquipment.includes(
+                      equipment.name
+                    );
+
+                  return (
+                    <label
+                      key={equipment.id}
+                      className={
+                        `equipment-option ${
+                          isSelected
+                            ? "is-selected"
+                            : ""
+                        }`
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        value={equipment.name}
+                        checked={isSelected}
+                        onChange={() =>
+                          toggleHomeEquipment(
+                            equipment.name
+                          )
+                        }
+                      />
+
+                      <EquipmentPhoto
+                        imageUrl={equipment.imageUrl}
+                      />
+
+                      <span className="equipment-option-name">
+                        {equipment.name}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {/* LOAD MORE */}
+
+              {hasMoreEquipment && (
+                <div className="equipment-pagination">
+                  <button
+                    type="button"
+                    className="equipment-reset-button"
+                    onClick={handleLoadMore}
+                  >
+                    Load More Equipment
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            <p className="equipment-empty-message">
-              No home equipment has been added to
-              the exercise library yet.
-            </p>
+            <div className="equipment-search-empty">
+              <p>No equipment found.</p>
+
+              <button
+                type="button"
+                className="equipment-reset-button"
+                onClick={handleClearSearch}
+              >
+                Clear Search
+              </button>
+            </div>
           )}
 
-          {/* Equipment actions */}
+          {/* EQUIPMENT ACTIONS */}
+
           <div className="equipment-selector-actions">
             <button
               type="button"
@@ -269,13 +640,10 @@ function EquipmentPage() {
           </div>
         </section>
 
-        {/* ==================================
-            SUMMARY SIDEBAR
-        ================================== */}
+        {/* SUMMARY SIDEBAR */}
 
         <aside className="equipment-sidebar">
 
-          {/* Home setup summary */}
           <div className="equipment-summary-card">
             <span className="equipment-summary-eyebrow">
               YOUR HOME SETUP
@@ -311,7 +679,8 @@ function EquipmentPage() {
             </div>
           </div>
 
-          {/* Training profile */}
+          {/* TRAINING PROFILE */}
+
           <div className="equipment-profile-card">
             <h3>Training Profile</h3>
 
@@ -340,11 +709,10 @@ function EquipmentPage() {
         </aside>
       </div>
 
-      {/* ==================================
-          COMPATIBLE HOME EXERCISES
-      ================================== */}
+      {/* COMPATIBLE HOME EXERCISES */}
 
       <section className="equipment-matches">
+
         <div className="equipment-matches-heading">
           <div>
             <span className="equipment-page-eyebrow">
@@ -354,7 +722,7 @@ function EquipmentPage() {
             <h2>Compatible Home Exercises</h2>
 
             <p>
-              Exercises that match your available
+              Exercises that match your selected
               equipment and support home training.
             </p>
           </div>
@@ -368,9 +736,7 @@ function EquipmentPage() {
           </span>
         </div>
 
-        {/* ==================================
-            EMPTY RESULTS
-        ================================== */}
+        {/* EMPTY RESULTS */}
 
         {compatibleExercises.length === 0 ? (
           <div className="equipment-no-results">
@@ -378,8 +744,7 @@ function EquipmentPage() {
 
             <p>
               No exercises currently match this setup.
-              The available list will grow as we expand
-              the exercise library.
+              Try selecting different equipment.
             </p>
 
             <Link to="/exercises">
@@ -388,10 +753,7 @@ function EquipmentPage() {
           </div>
         ) : (
           <>
-
-            {/* ==================================
-                BODYWEIGHT EXERCISES
-            ================================== */}
+            {/* BODYWEIGHT EXERCISES */}
 
             {bodyweightExercises.length > 0 && (
               <div className="equipment-result-section">
@@ -414,9 +776,7 @@ function EquipmentPage() {
               </div>
             )}
 
-            {/* ==================================
-                EQUIPMENT-BASED EXERCISES
-            ================================== */}
+            {/* EQUIPMENT-BASED EXERCISES */}
 
             {equipmentExercises.length > 0 && (
               <div className="equipment-result-section">
@@ -441,9 +801,7 @@ function EquipmentPage() {
           </>
         )}
 
-        {/* ==================================
-            EXERCISE LIBRARY LINK
-        ================================== */}
+        {/* FULL LIBRARY LINK */}
 
         <div className="equipment-library-link">
           <Link to="/exercises">

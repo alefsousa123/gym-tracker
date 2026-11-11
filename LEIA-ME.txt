@@ -1,0 +1,41 @@
+GYM TRACKER - C5.3 (METADADOS E DETALHES REPDB)
+================================================
+
+ARQUIVOS COMPLETOS INCLUSOS
+  src/data/exercises.js
+  src/pages/ExerciseDetailsPage.jsx
+  scripts/splitRepdb.mjs
+
+REQUISITOS
+  Projeto React/Vite gym-tracker na raiz do terminal.
+  Arquivo src/data/repdb.generated.json (o atual, com 701 exercicios).
+  Arquivos anteriores src/context, CSS, imagens e importacoes mantidos.
+
+COMO INSTALAR
+1. Entre na pasta gym-tracker no Terminal.
+2. Faca uma copia dos arquivos que serao substituidos.
+3. Extraia este ZIP na raiz do projeto, preservando subpastas.
+4. Execute: node scripts/splitRepdb.mjs
+5. Execute: npm run build
+6. Execute: npm run preview
+
+O script cria automaticamente:
+  src/data/repdb.catalog.generated.json
+  src/data/repdb.details.0.generated.json
+  src/data/repdb.details.1.generated.json
+  src/data/repdb.details.2.generated.json
+  src/data/repdb.details.3.generated.json
+
+Nenhum ID original e alterado. O arquivo repdb.generated.json
+original NAO e modificado. Reexecute o script sempre que
+atualizar a RepDB.
+
+TESTE
+- Biblioteca: busca, filtros, Load More.
+- Detalhes de exercicio RepDB: instructions e tips.
+- Detalhes de exercicio original: guias existentes.
+- Variacoes e imagens dos exercicios relacionados.
+- Plano e treino em andamento.
+
+Se o build falhar por importar repdb.catalog.generated.json,
+execute o passo 4 antes do passo 5.

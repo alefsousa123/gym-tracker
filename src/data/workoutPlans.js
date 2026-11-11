@@ -1,7 +1,10 @@
 
 import { exercises } from "./exercises";
 
-// Curated workout templates
+// ==========================================
+// CURATED WORKOUT TEMPLATES
+// ==========================================
+
 export const workoutPlans = [
   {
     id: "full-body-foundation",
@@ -281,29 +284,192 @@ export const workoutPlans = [
   },
 ];
 
-// Check whether an exercise matches the environment
+// ==========================================
+// EXERCISE EQUIPMENT COMPATIBILITY
+// ==========================================
+
 export function isExerciseAvailable(
   exercise,
   location,
   homeEquipment
 ) {
+  // Check whether this exercise supports
+  // the requested training location.
   if (!exercise.locations.includes(location)) {
     return false;
   }
 
-  // Gym exercises use the gym's available equipment.
-  // Actual gym inventory can be modeled later.
+  // Gym workouts assume gym equipment is available.
+  // A detailed gym inventory can be added later.
   if (location === "gym") {
     return true;
   }
 
-  // Home exercises need every required item.
-  return exercise.equipment.every((item) =>
-    homeEquipment.includes(item)
+  // ========================================
+  // AVAILABLE HOME EQUIPMENT
+  // ========================================
+
+  const availableEquipment = new Set(
+    homeEquipment
+  );
+
+  const hasFlatBench =
+    availableEquipment.has("Bench") ||
+    availableEquipment.has("Flat Bench");
+
+  const hasAdjustableBench =
+    availableEquipment.has("Bench (Adjustable)");
+
+  const hasInclineBench =
+    availableEquipment.has("Incline Bench");
+
+  const hasDeclineBench =
+    availableEquipment.has("Decline Bench");
+
+  // ========================================
+  // DETECT BENCH REQUIREMENTS
+  // ========================================
+
+  const benchEquipmentNames = [
+    "Bench",
+    "Flat Bench",
+    "Incline Bench",
+    "Decline Bench",
+    "Bench (Adjustable)",
+  ];
+
+  const requiresBench = exercise.equipment.some(
+    (item) =>
+      benchEquipmentNames.includes(item)
+  );
+
+  const requiresIncline =
+    requiresBench &&
+    /\bincline\b/i.test(exercise.name);
+
+  const requiresDecline =
+    requiresBench &&
+    /\bdecline\b/i.test(exercise.name);
+
+  // ========================================
+  // INCLINE BENCH VALIDATION
+  // ========================================
+
+  // An exercise requiring an inclined bench
+  // cannot be performed with a flat-only bench.
+
+  if (
+    requiresIncline &&
+    !hasAdjustableBench &&
+    !hasInclineBench
+  ) {
+    return false;
+  }
+
+  // ========================================
+  // DECLINE BENCH VALIDATION
+  // ========================================
+
+  // We do not assume that every adjustable
+  // bench supports decline positions.
+
+  if (
+    requiresDecline &&
+    !hasDeclineBench
+  ) {
+    return false;
+  }
+
+  // ========================================
+  // VERIFY REQUIRED EQUIPMENT
+  // ========================================
+
+  return exercise.equipment.every(
+    (requiredEquipment) => {
+
+      // ====================================
+      // GENERIC BENCH REQUIREMENT
+      // ====================================
+
+      if (requiredEquipment === "Bench") {
+
+        // Incline movements need an inclined bench.
+        if (requiresIncline) {
+          return (
+            hasAdjustableBench ||
+            hasInclineBench
+          );
+        }
+
+        // Decline movements need a compatible
+        // decline bench.
+        if (requiresDecline) {
+          return hasDeclineBench;
+        }
+
+        // A flat or adjustable bench can support
+        // a standard flat-bench movement.
+        return (
+          hasFlatBench ||
+          hasAdjustableBench
+        );
+      }
+
+      // ====================================
+      // FLAT BENCH REQUIREMENT
+      // ====================================
+
+      if (requiredEquipment === "Flat Bench") {
+        return (
+          hasFlatBench ||
+          hasAdjustableBench
+        );
+      }
+
+      // ====================================
+      // INCLINE BENCH REQUIREMENT
+      // ====================================
+
+      if (requiredEquipment === "Incline Bench") {
+        return (
+          hasInclineBench ||
+          hasAdjustableBench
+        );
+      }
+
+      // ====================================
+      // ADJUSTABLE BENCH REQUIREMENT
+      // ====================================
+
+      if (
+        requiredEquipment === "Bench (Adjustable)"
+      ) {
+        return hasAdjustableBench;
+      }
+
+      // ====================================
+      // DECLINE BENCH REQUIREMENT
+      // ====================================
+
+      if (requiredEquipment === "Decline Bench") {
+        return hasDeclineBench;
+      }
+
+      // ====================================
+      // ALL OTHER EQUIPMENT
+      // ====================================
+
+      return availableEquipment.has(
+        requiredEquipment
+      );
+    }
   );
 }
 
-// Build the exercise suggestions for each session
+// ==========================================
+// BUILD WORKOUT PLAN PREVIEW
+// ==========================================
+
 export function buildPlanPreview(
   plan,
   location,
@@ -363,10 +529,13 @@ export function buildPlanPreview(
   const coverage =
     totalSlots === 0
       ? 0
-      : Math.round((matchedSlots / totalSlots) * 100);
+      : Math.round(
+          (matchedSlots / totalSlots) * 100
+        );
 
   const hasEmptySession = sessions.some(
-    (session) => session.exercises.length === 0
+    (session) =>
+      session.exercises.length === 0
   );
 
   return {
@@ -375,11 +544,15 @@ export function buildPlanPreview(
     matchedSlots,
     coverage,
     hasEmptySession,
-    isComplete: matchedSlots === totalSlots,
+    isComplete:
+      matchedSlots === totalSlots,
   };
 }
 
-// Rank plans using profile priorities and coverage
+// ==========================================
+// GET RECOMMENDED WORKOUT PLANS
+// ==========================================
+
 export function getRecommendedPlans(
   profile,
   location,
@@ -402,7 +575,8 @@ export function getRecommendedPlans(
   }
 
   const primaryGoal =
-    profile.primaryGoal ?? profile.trainingGoal;
+    profile.primaryGoal ??
+    profile.trainingGoal;
 
   const secondaryGoal =
     profile.secondaryGoal ?? "";
@@ -412,7 +586,9 @@ export function getRecommendedPlans(
       (plan) =>
         frequency >= plan.minDays &&
         frequency <= plan.maxDays &&
-        plan.levels.includes(profile.experienceLevel)
+        plan.levels.includes(
+          profile.experienceLevel
+        )
     )
     .map((plan) => {
       const preview = buildPlanPreview(
@@ -434,7 +610,7 @@ export function getRecommendedPlans(
         score += 3;
       }
 
-      // Favor plans that can use more available exercises
+      // Favor plans with more available exercises.
       score += preview.coverage / 20;
 
       return {

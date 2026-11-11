@@ -1,37 +1,56 @@
 
-import exerciseImages from "../../data/exerciseImages.json";
+import { useState } from "react";
+
+import {
+  getExerciseFrames,
+} from "../../utils/exerciseMedia";
 
 import "./ExerciseMotionPreview.css";
+
+// ==========================================
+// EXERCISE MOTION PREVIEW
+// ==========================================
 
 function ExerciseMotionPreview({
   exerciseId,
   exerciseName,
   variant = "card",
 }) {
-  const images = exerciseImages[exerciseId];
+  const [failedFrames, setFailedFrames] =
+    useState([]);
 
-  // Match the pose order already used in ExerciseAnimation.
-  const frames =
-    exerciseId === "push-up"
-      ? [images?.peak, images?.start]
-      : [images?.start, images?.peak];
+  // ========================================
+  // AVAILABLE FRAMES
+  // ========================================
 
-  const availableFrames = frames.filter(Boolean);
+  const frames = getExerciseFrames(
+    exerciseId
+  ).filter(
+    (src) => !failedFrames.includes(src)
+  );
 
-  // A single main image is a fallback when two poses
-  // are not available.
-  const firstFrame =
-    availableFrames[0] ?? images?.main ?? null;
-
-  const secondFrame =
-    availableFrames[1] &&
-    availableFrames[1] !== firstFrame
-      ? availableFrames[1]
-      : null;
+  const firstFrame = frames[0] ?? null;
+  const secondFrame = frames[1] ?? null;
 
   const hasAnimation = Boolean(
     firstFrame && secondFrame
   );
+
+  // ========================================
+  // IMAGE ERROR HANDLING
+  // ========================================
+
+  function handleImageError(src) {
+    setFailedFrames((previous) =>
+      previous.includes(src)
+        ? previous
+        : [...previous, src]
+    );
+  }
+
+  // ========================================
+  // CSS CLASSES
+  // ========================================
 
   const previewClass = [
     "exercise-motion-preview",
@@ -40,6 +59,10 @@ function ExerciseMotionPreview({
   ]
     .filter(Boolean)
     .join(" ");
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <div
@@ -60,6 +83,9 @@ function ExerciseMotionPreview({
             aria-hidden="true"
             loading="lazy"
             decoding="async"
+            onError={() =>
+              handleImageError(firstFrame)
+            }
           />
 
           {hasAnimation && (
@@ -70,6 +96,9 @@ function ExerciseMotionPreview({
               aria-hidden="true"
               loading="lazy"
               decoding="async"
+              onError={() =>
+                handleImageError(secondFrame)
+              }
             />
           )}
         </>

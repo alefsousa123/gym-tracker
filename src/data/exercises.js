@@ -1,5 +1,13 @@
+import repdbExercises from "./repdb.catalog.generated.json";
 
-export const exercises = [
+// ==========================================
+// ORIGINAL GYM TRACKER EXERCISES
+// ==========================================
+
+// Preserve these original IDs because saved
+// plans and workout history may reference them.
+
+const originalExercises = [
   {
     id: "push-up",
     name: "Push-Up",
@@ -169,3 +177,34 @@ export const exercises = [
     ],
   },
 ];
+
+// ==========================================
+// IMPORTED REPDB EXERCISES
+// ==========================================
+
+// Build a Set of existing exercise IDs.
+const originalExerciseIds = new Set(
+  originalExercises.map((exercise) => exercise.id)
+);
+
+// Prevent duplicate IDs and prioritize
+// the original Gym Tracker exercises.
+const additionalExercises = repdbExercises.filter(
+  (exercise) => !originalExerciseIds.has(exercise.id)
+);
+
+// ==========================================
+// COMPLETE EXERCISE CATALOG
+// ==========================================
+
+// Both sources use the same normalized data
+// structure and can be consumed by React.
+
+export const exercises = [
+  ...originalExercises,
+  ...additionalExercises,
+].sort((first, second) =>
+  first.name.localeCompare(second.name, "en", {
+    sensitivity: "base",
+  })
+);
