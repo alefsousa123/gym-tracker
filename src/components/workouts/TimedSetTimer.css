@@ -1,11 +1,29 @@
 
 /* ==========================================
-   TIMED EXERCISE TIMER
+   TIMED SET TIMER - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Countdown
+   - Progress bar
+   - Timer actions
+   - Accessibility
+   - Responsive layout
 ========================================== */
+
+/* ==========================================
+   1. TIMER CONTAINER
+========================================== */
+
+.timed-set-timer,
+.timed-set-timer * {
+  box-sizing: border-box;
+}
 
 .timed-set-timer {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 
   width: 100%;
@@ -14,70 +32,106 @@
   margin: 20px 0;
   padding: 18px;
 
-  border: 1px solid #365c43;
-  border-radius: 13px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-card);
 
-  background-color: #122018;
-  color: #fafafa;
+  background-color: var(--color-mint);
+  color: var(--color-text);
 }
+
+/* ==========================================
+   2. TIMER HEADING
+========================================== */
 
 .timed-set-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 9px;
 }
 
 .timed-set-heading span:first-child {
-  color: #86efac;
+  color: var(--color-success-text);
+
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1px;
 }
 
 .timed-set-heading span:last-child {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
+  line-height: 1.5;
 }
+
+/* ==========================================
+   3. COUNTDOWN CLOCK
+========================================== */
 
 .timed-set-clock {
   padding: 12px 0 5px;
 
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(44px, 9vw, 64px);
-  line-height: 1;
   font-weight: 800;
+  line-height: 1;
+
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
+/* ==========================================
+   4. PROGRESS TRACK
+========================================== */
+
 .timed-set-progress {
   width: 100%;
   height: 7px;
+
   overflow: hidden;
 
   border-radius: 999px;
-  background-color: #303036;
+
+  background-color: var(--color-surface-soft);
 }
+
+/* ==========================================
+   5. PROGRESS FILL
+========================================== */
 
 .timed-set-progress > div {
   height: 100%;
+
   border-radius: 999px;
 
-  background-color: #22c55e;
-  transition: width 0.2s linear;
+  background-color: var(--color-success-text);
+
+  transition: width 200ms linear;
 }
+
+/* ==========================================
+   6. STATUS MESSAGE
+========================================== */
 
 .timed-set-message {
   min-height: 20px;
   margin: 0;
 
-  color: #d4d4d8;
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.6;
+
   text-align: center;
 }
+
+/* ==========================================
+   7. SHARED BUTTON STYLES
+========================================== */
 
 .timed-set-primary,
 .timed-set-secondary {
@@ -87,57 +141,107 @@
 
   width: 100%;
   min-height: 45px;
+
   padding: 11px 14px;
 
-  border-radius: 9px;
+  border-radius: var(--radius-button);
 
-  font: inherit;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 700;
 
+  text-align: center;
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
+
+/* ==========================================
+   8. PRIMARY BUTTON
+========================================== */
 
 .timed-set-primary {
-  border: 1px solid #22c55e;
-  background-color: #22c55e;
-  color: #052e16;
+  border: 1px solid var(--color-action);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
 }
 
-.timed-set-primary:hover {
-  background-color: #4ade80;
+.timed-set-primary:hover:not(:disabled) {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
 }
+
+/* ==========================================
+   9. SECONDARY BUTTON
+========================================== */
 
 .timed-set-secondary {
-  border: 1px solid #52525b;
-  background-color: #27272a;
-  color: #fafafa;
+  border: 1px solid var(--color-secondary-action-border);
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
 }
 
-.timed-set-secondary:hover {
-  border-color: #86efac;
+.timed-set-secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
 }
+
+/* ==========================================
+   10. DISABLED BUTTONS
+========================================== */
+
+.timed-set-primary:disabled,
+.timed-set-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   11. TIMER ACTIONS
+========================================== */
 
 .timed-set-actions {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 9px;
 }
 
+/* ==========================================
+   12. INFORMATION NOTE
+========================================== */
+
 .timed-set-note {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.6;
+
   text-align: center;
 }
 
+/* ==========================================
+   13. KEYBOARD ACCESSIBILITY
+========================================== */
+
 .timed-set-primary:focus-visible,
 .timed-set-secondary:focus-visible {
-  outline: 2px solid #86efac;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
+
+/* ==========================================
+   14. MOBILE
+========================================== */
 
 @media (max-width: 420px) {
   .timed-set-timer {
@@ -147,10 +251,21 @@
   .timed-set-clock {
     font-size: 46px;
   }
+
+  .timed-set-actions {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
 }
 
+/* ==========================================
+   15. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
-  .timed-set-progress > div {
+  .timed-set-progress > div,
+  .timed-set-primary,
+  .timed-set-secondary {
     transition: none;
   }
 }

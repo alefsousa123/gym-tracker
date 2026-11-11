@@ -1,0 +1,165 @@
+
+/* ==========================================
+   BACK TO PREVIOUS PAGE
+
+   Shared navigation component.
+
+   Supports:
+   - Light theme
+   - Dark theme
+   - Keyboard navigation
+   - Responsive layouts
+========================================== */
+
+/* ==========================================
+   1. DEFAULT LINK
+========================================== */
+
+html[data-theme]
+.app a.back-to-previous-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 9px;
+
+  width: fit-content;
+  max-width: 100%;
+  min-height: 40px;
+
+  margin: 0 0 20px;
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--radius-button);
+
+  background-color: transparent;
+
+  color: var(--color-accent);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease;
+}
+
+/* ==========================================
+   2. ARROW ICON
+========================================== */
+
+html[data-theme]
+.back-to-previous-page-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+
+  transition:
+    transform 180ms ease;
+}
+
+/* ==========================================
+   3. LABEL
+========================================== */
+
+html[data-theme]
+.back-to-previous-page-label {
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   4. HOVER
+========================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme]
+  .app a.back-to-previous-page:hover {
+    color: var(--color-accent-hover);
+    text-decoration: none;
+  }
+
+  html[data-theme]
+  .back-to-previous-page:hover
+  .back-to-previous-page-arrow {
+    transform: translateX(-3px);
+  }
+
+  html[data-theme]
+  .back-to-previous-page:hover
+  .back-to-previous-page-label {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* ==========================================
+   5. KEYBOARD ACCESSIBILITY
+========================================== */
+
+html[data-theme]
+.app a.back-to-previous-page:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+
+  text-decoration: none;
+}
+
+/* ==========================================
+   6. ACTIVE STATE
+========================================== */
+
+html[data-theme]
+.app a.back-to-previous-page:active {
+  color: var(--color-accent-hover);
+}
+
+/* ==========================================
+   7. MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  html[data-theme]
+  .app a.back-to-previous-page {
+    min-height: 40px;
+    margin-bottom: 18px;
+
+    font-size: 12px;
+  }
+
+  html[data-theme]
+  .back-to-previous-page-arrow {
+    font-size: 18px;
+  }
+}
+
+/* ==========================================
+   8. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme]
+  .back-to-previous-page-arrow {
+    transition: none;
+  }
+
+  html[data-theme]
+  .back-to-previous-page:hover
+  .back-to-previous-page-arrow {
+    transform: none;
+  }
+}

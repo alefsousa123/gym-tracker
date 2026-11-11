@@ -1,29 +1,48 @@
 
 /* ==========================================
    EXERCISE MOTION PREVIEW
+   TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Animated exercise demonstrations
+   - Card and thumbnail variants
+   - Placeholder styling
+   - Reduced motion accessibility
+========================================== */
+
+/* ==========================================
+   1. MAIN CONTAINER
 ========================================== */
 
 .exercise-motion-preview {
   position: relative;
   display: block;
+
   width: 100%;
   aspect-ratio: 16 / 10;
+
   overflow: hidden;
 
-  border: 1px solid #303036;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
 
   isolation: isolate;
 }
 
-/* Both images occupy exactly the same space */
+/* ==========================================
+   2. IMAGE FRAMES
+========================================== */
 
 .exercise-motion-frame {
   position: absolute;
   inset: 0;
 
   display: block;
+
   width: 100%;
   height: 100%;
 
@@ -31,31 +50,43 @@
   object-position: center;
 }
 
-/* Main image starts visible */
+/* ==========================================
+   3. FIRST FRAME
+========================================== */
 
 .exercise-motion-frame--first {
   opacity: 1;
 }
 
-/* Second image starts hidden */
+/* ==========================================
+   4. SECOND FRAME
+========================================== */
 
 .exercise-motion-frame--second {
   opacity: 0;
 }
 
 /* ==========================================
-   ANIMATION
+   5. ANIMATION
 ========================================== */
 
-.has-animation .exercise-motion-frame--first {
-  animation: exercise-motion-first 3s ease-in-out infinite;
+.has-animation
+.exercise-motion-frame--first {
+  animation:
+    exercise-motion-first
+    3s ease-in-out infinite;
 }
 
-.has-animation .exercise-motion-frame--second {
-  animation: exercise-motion-second 3s ease-in-out infinite;
+.has-animation
+.exercise-motion-frame--second {
+  animation:
+    exercise-motion-second
+    3s ease-in-out infinite;
 }
 
-/* Show pose one, then pose two, then repeat */
+/* ==========================================
+   6. FIRST FRAME KEYFRAMES
+========================================== */
 
 @keyframes exercise-motion-first {
   0%, 42% {
@@ -70,6 +101,10 @@
     opacity: 1;
   }
 }
+
+/* ==========================================
+   7. SECOND FRAME KEYFRAMES
+========================================== */
 
 @keyframes exercise-motion-second {
   0%, 42% {
@@ -86,72 +121,95 @@
 }
 
 /* ==========================================
-   SIZE VARIANTS
+   8. EXERCISE CARD VARIANT
 ========================================== */
-
-/* Exercise catalog cards */
 
 .exercise-motion-preview--card {
   width: 100%;
   aspect-ratio: 16 / 10;
 }
 
-/* Workout Builder lists */
+/* ==========================================
+   9. THUMBNAIL VARIANT
+========================================== */
 
 .exercise-motion-preview--thumbnail {
   flex: 0 0 72px;
+
   width: 72px;
   height: 72px;
+
   aspect-ratio: 1;
   border-radius: 9px;
 }
 
-/* Placeholder */
+/* ==========================================
+   10. PLACEHOLDER
+========================================== */
 
 .exercise-motion-placeholder {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   gap: 5px;
 
   width: 100%;
   height: 100%;
 
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   text-align: center;
 }
 
+/* ==========================================
+   11. PLACEHOLDER CONTENT
+========================================== */
+
 .exercise-motion-placeholder span {
+  color: var(--color-text);
+
   font-size: 24px;
 }
 
 .exercise-motion-placeholder small {
+  color: var(--color-text-secondary);
+
   font-size: 10px;
+  line-height: 1.5;
 }
 
 /* ==========================================
-   ACCESSIBILITY
+   12. SMALL MOBILE
 ========================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .has-animation .exercise-motion-frame {
-    animation: none;
-  }
-
-  .has-animation .exercise-motion-frame--first {
-    opacity: 1;
-  }
-
-  .has-animation .exercise-motion-frame--second {
-    opacity: 0;
-  }
-}
 
 @media (max-width: 480px) {
   .exercise-motion-preview--thumbnail {
     flex-basis: 58px;
+
     width: 58px;
     height: 58px;
+  }
+}
+
+/* ==========================================
+   13. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .has-animation
+  .exercise-motion-frame {
+    animation: none;
+  }
+
+  .has-animation
+  .exercise-motion-frame--first {
+    opacity: 1;
+  }
+
+  .has-animation
+  .exercise-motion-frame--second {
+    opacity: 0;
   }
 }

@@ -1,73 +1,131 @@
 
 /* ==========================================
-   EXERCISE TARGETS EDITOR
+   EXERCISE TARGETS EDITOR - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Exercise target panels
+   - Sets and repetitions
+   - Duration and rest
+   - Weight and measurement
+   - Informational notes
+========================================== */
+
+/* ==========================================
+   1. SELECTED EXERCISE WRAPPER
 ========================================== */
 
 .builder-selected-item {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
   min-width: 0;
 }
 
+/* ==========================================
+   2. TARGET EDITOR PANEL
+========================================== */
+
 .exercise-targets-editor {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
 
 .exercise-targets-editor[open] {
-  border-color: #365c43;
+  border-color: var(--color-border-strong);
 }
+
+/* ==========================================
+   3. SUMMARY
+========================================== */
 
 .exercise-targets-summary {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
+
   gap: 6px 12px;
   padding: 12px 14px;
+
+  color: var(--color-text);
+
   cursor: pointer;
   list-style-position: inside;
 }
 
+.exercise-targets-summary:hover {
+  background-color: var(--color-surface-hover);
+}
+
 .exercise-targets-summary::marker {
-  color: #4ade80;
+  color: var(--color-accent);
 }
 
 .exercise-targets-summary-title {
-  color: #e4e4e7;
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 700;
 }
 
 .exercise-targets-summary-values {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.5;
 }
 
+/* ==========================================
+   4. TARGET EDITOR CONTENT
+========================================== */
+
 .exercise-targets-content {
   padding: 14px;
-  border-top: 1px solid #303036;
+
+  border-top: 1px solid var(--color-border);
+
+  background-color: var(--color-surface);
 }
+
+/* ==========================================
+   5. DESCRIPTION
+========================================== */
 
 .exercise-targets-description {
   margin: 0 0 16px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 .exercise-targets-description strong {
-  color: #fafafa;
+  color: var(--color-text);
 }
+
+/* ==========================================
+   6. FORM GRID
+========================================== */
 
 .exercise-targets-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 13px;
 }
 
@@ -75,54 +133,101 @@
   min-width: 0;
 }
 
+/* ==========================================
+   7. FORM LABELS
+========================================== */
+
 .exercise-targets-field label {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
-  color: #d4d4d8;
+
+  color: var(--color-text);
+
   font-size: 11px;
   font-weight: 600;
 }
+
+/* ==========================================
+   8. INPUTS AND SELECTS
+========================================== */
 
 .exercise-targets-field input,
 .exercise-targets-field select {
   width: 100%;
   min-width: 0;
   height: 40px;
+
   padding: 0 10px;
-  border: 1px solid #3f3f46;
+
+  border: 1px solid var(--color-border-strong);
   border-radius: 7px;
-  background-color: #18181b;
-  color: #fafafa;
-  font: inherit;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 12px;
+}
+
+.exercise-targets-field input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.exercise-targets-field input:hover,
+.exercise-targets-field select:hover {
+  border-color: var(--color-accent);
 }
 
 .exercise-targets-field input:focus-visible,
 .exercise-targets-field select:focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+/* ==========================================
+   9. INFORMATION NOTE
+========================================== */
 
 .exercise-targets-note {
   margin-top: 16px;
   padding: 12px 14px;
-  border-left: 3px solid #22c55e;
+
+  border-left: 3px solid var(--color-success-text);
   border-radius: 7px;
-  background-color: #12281b;
+
+  background-color: var(--color-mint);
 }
 
 .exercise-targets-note strong {
-  color: #dcfce7;
+  color: var(--color-text);
+
   font-size: 12px;
 }
 
 .exercise-targets-note p {
   margin: 7px 0 0;
-  color: #d4d4d8;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.7;
 }
+
+/* ==========================================
+   10. KEYBOARD ACCESSIBILITY
+========================================== */
+
+.exercise-targets-summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+  border-radius: 7px;
+}
+
+/* ==========================================
+   11. MOBILE
+========================================== */
 
 @media (max-width: 480px) {
   .exercise-targets-grid {
@@ -135,5 +240,15 @@
 
   .exercise-targets-content {
     padding: 11px;
+  }
+}
+
+/* ==========================================
+   12. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .exercise-targets-editor {
+    transition: none;
   }
 }

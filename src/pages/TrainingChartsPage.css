@@ -1,7 +1,26 @@
 
 /* ==========================================
-   TRAINING CHARTS
+   TRAINING CHARTS - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Exercise filters
+   - Statistics
+   - SVG performance charts
+   - Session data table
+   - Empty states
+   - Responsive layouts
 ========================================== */
+
+/* ==========================================
+   1. PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .tc-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .tc-page,
 .tc-page * {
@@ -9,36 +28,65 @@
 }
 
 .tc-page {
+  --tc-load-color: var(--color-accent);
+  --tc-volume-color: #30668f;
+  --tc-reps-color: #7553a6;
+
   width: 100%;
   max-width: 1100px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 26px 22px 64px;
-  color: #fafafa;
+
+  background-color: transparent;
+  color: var(--color-text);
 }
 
 /* ==========================================
-   PAGE HEADER
+   2. DARK CHART COLORS
 ========================================== */
 
-.tc-back-link {
-  display: inline-block;
+html[data-theme="dark"] .tc-page {
+  --tc-load-color: var(--color-accent);
+  --tc-volume-color: #91c9fa;
+  --tc-reps-color: #cbb5fb;
+}
+
+/* ==========================================
+   3. BACK NAVIGATION
+========================================== */
+
+.tc-page .tc-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
   margin-bottom: 22px;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.tc-back-link:hover {
+.tc-page .tc-back-link:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* ==========================================
+   4. PAGE HEADER
+========================================== */
 
 .tc-header {
   margin-bottom: 25px;
 }
 
 .tc-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -46,7 +94,9 @@
 
 .tc-header h1 {
   margin: 8px 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(26px, 4vw, 36px);
   line-height: 1.25;
 }
@@ -54,23 +104,35 @@
 .tc-header p {
   max-width: 700px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   PANELS
+   5. MAIN PANELS
 ========================================== */
 
 .tc-panel {
   min-width: 0;
+
   margin-bottom: 18px;
   padding: 21px;
-  border: 1px solid #303036;
-  border-radius: 13px;
-  background-color: #18181b;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
+
+/* ==========================================
+   6. PANEL HEADINGS
+========================================== */
 
 .tc-panel-heading {
   margin-bottom: 20px;
@@ -78,310 +140,575 @@
 
 .tc-panel-heading h2 {
   margin: 0 0 8px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 18px;
   line-height: 1.4;
 }
 
 .tc-panel-heading p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   FILTERS
+   7. FILTER GRID
 ========================================== */
 
 .tc-filters {
   display: grid;
+
   grid-template-columns:
     minmax(0, 1.4fr)
     minmax(0, 1.2fr)
     minmax(0, 0.8fr);
+
   gap: 14px;
 }
+
+/* ==========================================
+   8. FILTER FIELDS
+========================================== */
 
 .tc-field {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   min-width: 0;
-  color: #d4d4d8;
+
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 600;
 }
+
+/* ==========================================
+   9. SELECT CONTROLS
+========================================== */
 
 .tc-field select {
   width: 100%;
   min-width: 0;
   min-height: 45px;
+
   padding: 10px 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 9px;
-  background-color: #111113;
-  color: #fafafa;
-  font: inherit;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.tc-field select:hover {
+  border-color: var(--color-accent);
 }
 
 .tc-field select:focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
 /* ==========================================
-   STATISTICS
+   10. STATISTICS GRID
 ========================================== */
 
 .tc-stats-grid {
   display: grid;
+
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
+
   gap: 12px;
   margin-bottom: 18px;
 }
 
+/* ==========================================
+   11. STATISTIC CARDS
+========================================== */
+
 .tc-stat-card {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   min-width: 0;
   padding: 17px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 11px;
-  background-color: #18181b;
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
 
+/* Subtle colors for different metrics */
+
+.tc-stat-card:nth-child(4n + 1) {
+  background-color: var(--color-mint);
+}
+
+.tc-stat-card:nth-child(4n + 2) {
+  background-color: var(--color-sky);
+}
+
+.tc-stat-card:nth-child(4n + 3) {
+  background-color: var(--color-lavender);
+}
+
+.tc-stat-card:nth-child(4n) {
+  background-color: var(--color-peach);
+}
+
+/* ==========================================
+   12. STATISTIC TYPOGRAPHY
+========================================== */
+
 .tc-stat-card > span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.5;
 }
 
 .tc-stat-card > strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(17px, 2.5vw, 24px);
   font-weight: 800;
+
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 
 .tc-stat-card > small {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 10px;
   line-height: 1.5;
 }
 
 /* ==========================================
-   SVG CHARTS
+   13. CHART CONTAINER
 ========================================== */
 
 .tc-chart-scroll {
   width: 100%;
   min-width: 0;
+
   overflow-x: auto;
   overflow-y: hidden;
+
   padding-bottom: 10px;
 }
 
 .tc-svg-chart {
   display: block;
+
   width: 100%;
   height: auto;
+
   overflow: visible;
 }
 
+/* ==========================================
+   14. SVG GRID LINES
+========================================== */
+
+.tc-page .tc-svg-chart line {
+  stroke: var(--color-border-strong);
+}
+
+/* ==========================================
+   15. SVG AXIS LABELS
+========================================== */
+
+.tc-page .tc-svg-chart text {
+  fill: var(--color-text-secondary);
+}
+
+/* ==========================================
+   16. SVG POINT OUTLINES
+========================================== */
+
+.tc-page .tc-svg-chart circle {
+  stroke: var(--color-surface);
+
+  transition:
+    fill 180ms ease,
+    stroke 180ms ease;
+}
+
+/* ==========================================
+   17. MAXIMUM RECORDED LOAD CHART
+========================================== */
+
+/*
+  Existing JSX uses #4ade80 for
+  the Maximum Recorded Load chart.
+
+  These CSS rules override its SVG
+  presentation attributes.
+*/
+
+.tc-page .tc-svg-chart
+polyline[stroke="#4ade80"] {
+  stroke: var(--tc-load-color);
+}
+
+.tc-page .tc-svg-chart
+circle[fill="#4ade80"] {
+  fill: var(--tc-load-color);
+}
+
+/* ==========================================
+   18. LOGGED LOAD-VOLUME CHART
+========================================== */
+
+.tc-page .tc-svg-chart
+polyline[stroke="#60a5fa"] {
+  stroke: var(--tc-volume-color);
+}
+
+.tc-page .tc-svg-chart
+circle[fill="#60a5fa"] {
+  fill: var(--tc-volume-color);
+}
+
+/* ==========================================
+   19. TOTAL REPETITIONS CHART
+========================================== */
+
+.tc-page .tc-svg-chart
+polyline[stroke="#c4b5fd"] {
+  stroke: var(--tc-reps-color);
+}
+
+.tc-page .tc-svg-chart
+circle[fill="#c4b5fd"] {
+  fill: var(--tc-reps-color);
+}
+
+/* ==========================================
+   20. CHART FOOTNOTE
+========================================== */
+
 .tc-chart-footnote {
   margin: 12px 0 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-muted);
+
   font-size: 11px;
   line-height: 1.7;
 }
+
+/* ==========================================
+   21. EMPTY CHART
+========================================== */
 
 .tc-empty-chart {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   gap: 10px;
   min-height: 150px;
   padding: 18px;
-  border: 1px dashed #3f3f46;
+
+  border: 1px dashed var(--color-border-strong);
   border-radius: 10px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
   text-align: center;
 }
 
 .tc-empty-chart strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: 13px;
 }
 
 .tc-empty-chart p {
   max-width: 440px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   DATA TABLE
+   22. DATA TABLE CONTAINER
 ========================================== */
 
 .tc-table-scroll {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 9px;
+
+  background-color: var(--color-surface);
 }
+
+/* ==========================================
+   23. DATA TABLE
+========================================== */
 
 .tc-data-table {
   width: 100%;
   min-width: 660px;
+
   border-collapse: collapse;
+
+  color: var(--color-text);
   font-size: 12px;
 }
+
+/* ==========================================
+   24. TABLE CELLS
+========================================== */
 
 .tc-data-table th,
 .tc-data-table td {
   padding: 13px 14px;
+
   text-align: left;
   vertical-align: middle;
 }
 
+/* ==========================================
+   25. TABLE HEADER
+========================================== */
+
 .tc-data-table thead {
-  background-color: #27272a;
+  background-color: var(--color-surface-soft);
 }
 
 .tc-data-table th {
-  color: #d4d4d8;
+  color: var(--color-text);
+
   font-size: 11px;
   font-weight: 700;
+
   white-space: nowrap;
 }
 
+/* ==========================================
+   26. TABLE ROWS
+========================================== */
+
 .tc-data-table tbody tr {
-  border-top: 1px solid #303036;
+  border-top: 1px solid var(--color-border);
+
+  transition:
+    background-color 180ms ease;
 }
 
 .tc-data-table tbody tr:nth-child(even) {
-  background-color: #1f1f23;
+  background-color: var(--color-inset);
 }
 
+.tc-data-table tbody tr:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* ==========================================
+   27. TABLE VALUES
+========================================== */
+
 .tc-data-table td {
-  color: #d4d4d8;
+  color: var(--color-text-secondary);
+
   font-variant-numeric: tabular-nums;
 }
 
 .tc-data-table td strong {
   display: block;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 700;
 }
 
 .tc-data-table td small {
   display: block;
+
   margin-top: 5px;
-  color: #a1a1aa;
+
+  color: var(--color-text-muted);
+
   font-size: 10px;
 }
 
+/* ==========================================
+   28. INFORMATION NOTE
+========================================== */
+
 .tc-info-note {
   margin: 13px 0 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   EXPLANATIONS
+   29. EXPLANATIONS
 ========================================== */
 
 .tc-explanations {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 }
 
 .tc-explanations p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.8;
 }
 
 .tc-explanations strong {
-  color: #e4e4e7;
+  color: var(--color-text);
 }
+
+/* ==========================================
+   30. NAVIGATION LINKS
+========================================== */
 
 .tc-links {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
   margin-top: 20px;
 }
+
+/* ==========================================
+   31. SECONDARY LINK
+========================================== */
 
 .tc-secondary-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-height: 43px;
   padding: 10px 15px;
-  border: 1px solid #52525b;
-  border-radius: 8px;
-  background-color: #27272a;
-  color: #fafafa;
+
+  border: 1px solid var(--color-secondary-action-border);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
+
   font-size: 12px;
   font-weight: 700;
+
   text-align: center;
   text-decoration: none;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 .tc-secondary-link:hover {
-  border-color: #86efac;
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
+
+  color: var(--color-secondary-action-text);
 }
+
+/* ==========================================
+   32. PRIMARY LINK
+========================================== */
 
 .tc-primary-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-height: 44px;
   padding: 11px 17px;
-  border: 1px solid #22c55e;
-  border-radius: 9px;
-  background-color: #22c55e;
-  color: #052e16;
+
+  border: 1px solid var(--color-action);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
+
   font-size: 12px;
   font-weight: 800;
+
+  text-align: center;
   text-decoration: none;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .tc-primary-link:hover {
-  background-color: #4ade80;
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
 }
 
 /* ==========================================
-   EMPTY HISTORY
+   33. EMPTY HISTORY PAGE
 ========================================== */
 
 .tc-empty-page {
   padding: 30px 22px;
+
   text-align: center;
 }
 
 .tc-empty-page h2 {
   margin: 0 0 12px;
+
+  color: var(--color-text);
+
   font-size: 19px;
 }
 
 .tc-empty-page p {
   max-width: 540px;
   margin: 0 auto 14px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
@@ -391,16 +718,17 @@
 }
 
 /* ==========================================
-   ACCESSIBILITY
+   34. ACCESSIBILITY
 ========================================== */
 
-.tc-page a:focus-visible {
-  outline: 2px solid #4ade80;
+.tc-page a:focus-visible,
+.tc-page select:focus-visible {
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
 /* ==========================================
-   TABLET
+   35. TABLET
 ========================================== */
 
 @media (max-width: 850px) {
@@ -420,7 +748,7 @@
 }
 
 /* ==========================================
-   MOBILE
+   36. MOBILE
 ========================================== */
 
 @media (max-width: 600px) {
@@ -433,7 +761,8 @@
   }
 
   .tc-filters {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      minmax(0, 1fr);
   }
 
   .tc-filters .tc-field:first-child {
@@ -460,19 +789,39 @@
     flex-direction: column;
   }
 
-  .tc-secondary-link {
+  .tc-secondary-link,
+  .tc-primary-link {
     width: 100%;
   }
 }
 
+/* ==========================================
+   37. SMALL MOBILE
+========================================== */
+
 @media (max-width: 380px) {
   .tc-stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      minmax(0, 1fr);
   }
 }
+
+/* ==========================================
+   38. REDUCED MOTION
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .tc-page * {
     scroll-behavior: auto;
+  }
+
+  .tc-page :is(
+    .tc-field select,
+    .tc-data-table tbody tr,
+    .tc-secondary-link,
+    .tc-primary-link,
+    .tc-svg-chart circle
+  ) {
+    transition: none;
   }
 }

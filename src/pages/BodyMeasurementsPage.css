@@ -1,7 +1,27 @@
 
 /* ==========================================
-   BODY MEASUREMENTS
+   BODY MEASUREMENTS - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Measurement form
+   - Feedback messages
+   - Statistics
+   - SVG progress chart
+   - Measurement history
+   - Guidance and privacy
+   - Responsive layouts
 ========================================== */
+
+/* ==========================================
+   1. PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .bm-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .bm-page,
 .bm-page * {
@@ -9,36 +29,61 @@
 }
 
 .bm-page {
+  --bm-error-text: #a52f3c;
+  --bm-error-bg: #f4dfe1;
+  --bm-error-border: #d6a3a8;
+
   width: 100%;
   max-width: 1050px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 26px 22px 64px;
-  color: #fafafa;
+
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .bm-page {
+  --bm-error-text: #ffb4ba;
+  --bm-error-bg: #40282e;
+  --bm-error-border: #87515b;
 }
 
 /* ==========================================
-   PAGE HEADER
+   2. BACK NAVIGATION
 ========================================== */
 
-.bm-back-link {
-  display: inline-block;
+.bm-page .bm-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
   margin-bottom: 22px;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.bm-back-link:hover {
+.bm-page .bm-back-link:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* ==========================================
+   3. PAGE HEADER
+========================================== */
 
 .bm-header {
   margin-bottom: 25px;
 }
 
 .bm-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -46,6 +91,9 @@
 
 .bm-header h1 {
   margin: 8px 0 10px;
+
+  color: var(--color-text);
+
   font-size: clamp(26px, 4vw, 36px);
   line-height: 1.25;
 }
@@ -53,220 +101,367 @@
 .bm-header p {
   max-width: 700px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   PANELS
+   4. MAIN PANELS
 ========================================== */
 
 .bm-panel {
   min-width: 0;
   margin-bottom: 18px;
   padding: 22px;
-  border: 1px solid #303036;
-  border-radius: 13px;
-  background: #18181b;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
+
+/* ==========================================
+   5. SECTION HEADINGS
+========================================== */
 
 .bm-section-heading {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
+
   gap: 12px;
   margin-bottom: 20px;
 }
 
 .bm-section-heading h2 {
   margin: 0 0 7px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 18px;
 }
 
 .bm-section-heading p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   FORM
+   6. MEASUREMENT FORM
 ========================================== */
 
 .bm-form {
   display: flex;
   flex-direction: column;
+
   gap: 18px;
 }
 
 .bm-form-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 16px;
 }
+
+/* ==========================================
+   7. FORM FIELDS
+========================================== */
 
 .bm-field {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
   min-width: 0;
 }
 
 .bm-field > span {
-  color: #e4e4e7;
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 700;
 }
 
 .bm-field > small {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* ==========================================
+   8. DATE AND SELECT INPUTS
+========================================== */
 
 .bm-field > input,
 .bm-field > select {
   width: 100%;
   min-width: 0;
   min-height: 44px;
+
   padding: 10px 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 9px;
-  background: #111113;
-  color: #fafafa;
-  color-scheme: dark;
-  font: inherit;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 13px;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
+
+.bm-field > input:hover,
+.bm-field > select:hover {
+  border-color: var(--color-accent);
+}
+
+.bm-field > input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ==========================================
+   9. MEASUREMENT INPUT WRAPPER
+========================================== */
 
 .bm-input-wrapper {
   display: flex;
   align-items: stretch;
+
   width: 100%;
   min-width: 0;
-  border: 1px solid #3f3f46;
-  border-radius: 9px;
-  background: #111113;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-inset);
+
   overflow: hidden;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.bm-input-wrapper:hover {
+  border-color: var(--color-accent);
 }
 
 .bm-input-wrapper input {
   flex: 1;
-  min-width: 0;
+
   width: 100%;
+  min-width: 0;
   min-height: 44px;
+
   padding: 10px 12px;
+
   border: 0;
   outline: 0;
-  background: transparent;
-  color: #fafafa;
-  font: inherit;
+
+  background-color: transparent;
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 13px;
 }
 
 .bm-input-wrapper input::placeholder {
-  color: #71717a;
+  color: var(--color-text-muted);
 }
+
+/* ==========================================
+   10. MEASUREMENT UNIT
+========================================== */
 
 .bm-unit {
   display: flex;
   align-items: center;
+
   padding: 0 12px;
-  border-left: 1px solid #303036;
-  color: #a1a1aa;
+
+  border-left: 1px solid var(--color-border);
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   font-weight: 700;
 }
 
+/* ==========================================
+   11. FORM FOCUS
+========================================== */
+
 .bm-input-wrapper:focus-within,
 .bm-field > input:focus-visible,
 .bm-field > select:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+/* ==========================================
+   12. EXISTING RECORD NOTICE
+========================================== */
 
 .bm-existing-note {
   margin: 0;
   padding: 12px 14px;
-  border: 1px solid #3f3f46;
+
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #202024;
-  color: #d4d4d8;
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   BUTTONS AND FEEDBACK
+   13. FORM ACTIONS
 ========================================== */
 
 .bm-actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
 }
+
+/* ==========================================
+   14. SHARED BUTTON STYLES
+========================================== */
 
 .bm-primary-button,
 .bm-secondary-button {
   min-height: 44px;
   padding: 11px 17px;
-  border-radius: 9px;
-  font: inherit;
+
+  border-radius: var(--radius-button);
+
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
+
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
+
+/* ==========================================
+   15. PRIMARY BUTTON
+========================================== */
 
 .bm-primary-button {
-  border: 1px solid #22c55e;
-  background: #22c55e;
-  color: #052e16;
+  border: 1px solid var(--color-action);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
 }
 
-.bm-primary-button:hover {
-  background: #4ade80;
+.bm-primary-button:hover:not(:disabled) {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
 }
+
+.bm-primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   16. SECONDARY BUTTON
+========================================== */
 
 .bm-secondary-button {
-  border: 1px solid #52525b;
-  background: #27272a;
-  color: #fafafa;
+  border: 1px solid var(--color-secondary-action-border);
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
 }
 
-.bm-secondary-button:hover {
-  border-color: #86efac;
+.bm-secondary-button:hover:not(:disabled) {
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
 }
+
+.bm-secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   17. FEEDBACK MESSAGES
+========================================== */
 
 .bm-feedback {
   margin: 0;
   padding: 11px 13px;
+
+  border: 1px solid transparent;
   border-radius: 8px;
+
   font-size: 12px;
   line-height: 1.6;
 }
 
+/* ==========================================
+   18. SUCCESS FEEDBACK
+========================================== */
+
 .bm-feedback.is-success {
-  background: #12281b;
-  color: #86efac;
-}
+  border-color: var(--color-border-strong);
 
-.bm-feedback.is-error {
-  background: #301717;
-  color: #fca5a5;
-}
-
-.bm-feedback.is-info {
-  background: #1e293b;
-  color: #bfdbfe;
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 /* ==========================================
-   MEASUREMENT SELECTOR
+   19. ERROR FEEDBACK
+========================================== */
+
+.bm-feedback.is-error {
+  border-color: var(--bm-error-border);
+
+  background-color: var(--bm-error-bg);
+  color: var(--bm-error-text);
+}
+
+/* ==========================================
+   20. INFORMATION FEEDBACK
+========================================== */
+
+.bm-feedback.is-info {
+  border-color: var(--color-border);
+
+  background-color: var(--color-sky);
+  color: var(--color-text);
+}
+
+/* ==========================================
+   21. MEASUREMENT SELECTOR
 ========================================== */
 
 .bm-chart-select {
@@ -275,242 +470,390 @@
 }
 
 /* ==========================================
-   STATISTICS
+   22. STATISTICS GRID
 ========================================== */
 
 .bm-stats-grid {
   display: grid;
+
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
+
   gap: 12px;
   margin-bottom: 18px;
 }
 
+/* ==========================================
+   23. STATISTIC CARDS
+========================================== */
+
 .bm-stat-card {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   min-width: 0;
   padding: 16px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
 }
 
 .bm-stat-card > span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 
 .bm-stat-card > strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(18px, 2.5vw, 25px);
   font-weight: 800;
+
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
 .bm-stat-card > small {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 10px;
   line-height: 1.5;
 }
 
 /* ==========================================
-   SVG CHART
+   24. SVG CHART CONTAINER
 ========================================== */
 
 .bm-chart-scroll {
   width: 100%;
   min-width: 0;
+
   overflow-x: auto;
   overflow-y: hidden;
+
   padding-bottom: 10px;
 }
 
 .bm-svg {
   display: block;
+
   width: 100%;
   height: auto;
+
   overflow: visible;
 }
+
+/* ==========================================
+   25. SVG GRID LINES
+========================================== */
+
+.bm-svg line {
+  stroke: var(--color-border-strong);
+}
+
+/* ==========================================
+   26. SVG TEXT AND AXIS LABELS
+========================================== */
+
+.bm-svg text {
+  fill: var(--color-text-secondary);
+}
+
+/* ==========================================
+   27. SVG PROGRESS LINE
+========================================== */
+
+.bm-svg polyline {
+  fill: none;
+  stroke: var(--color-accent);
+}
+
+/* ==========================================
+   28. SVG MEASUREMENT POINTS
+========================================== */
+
+.bm-svg circle {
+  fill: var(--color-accent);
+  stroke: var(--color-surface);
+
+  transition:
+    fill 180ms ease,
+    stroke 180ms ease;
+}
+
+.bm-svg circle:hover {
+  fill: var(--color-accent-hover);
+}
+
+/* ==========================================
+   29. EMPTY CHART STATE
+========================================== */
 
 .bm-chart-empty {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
   gap: 9px;
   min-height: 170px;
   padding: 20px;
-  border: 1px dashed #3f3f46;
+
+  border: 1px dashed var(--color-border-strong);
   border-radius: 10px;
+
+  background-color: var(--color-inset);
   text-align: center;
-  background: #111113;
 }
 
 .bm-chart-empty strong {
-  color: #fafafa;
+  color: var(--color-text);
   font-size: 13px;
 }
 
 .bm-chart-empty p {
   max-width: 450px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
+/* ==========================================
+   30. CHART EXPLANATION
+========================================== */
+
 .bm-chart-note {
   margin: 13px 0 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-muted);
+
   font-size: 11px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   HISTORY CARDS
+   31. HISTORY LIST
 ========================================== */
 
 .bm-history-list {
   display: flex;
   flex-direction: column;
+
   gap: 11px;
 }
+
+/* ==========================================
+   32. HISTORY CARDS
+========================================== */
 
 .bm-history-card {
   min-width: 0;
   padding: 16px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
 }
+
+/* ==========================================
+   33. HISTORY CARD HEADER
+========================================== */
 
 .bm-history-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 12px;
   margin-bottom: 14px;
 }
 
 .bm-history-top > strong {
-  color: #fafafa;
+  color: var(--color-text);
   font-size: 13px;
 }
+
+/* ==========================================
+   34. HISTORY ACTIONS
+========================================== */
 
 .bm-history-actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 8px;
 }
 
 .bm-history-actions button {
   min-height: 34px;
   padding: 7px 12px;
-  border: 1px solid #52525b;
+
+  border: 1px solid var(--color-secondary-action-border);
   border-radius: 7px;
-  background: #27272a;
-  color: #fafafa;
-  font: inherit;
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
+
+  font-family: inherit;
   font-size: 11px;
+
   cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .bm-history-actions button:hover {
-  border-color: #86efac;
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
 }
 
+/* ==========================================
+   35. DELETE ACTION
+========================================== */
+
 .bm-history-actions .bm-delete-button {
-  border-color: #783333;
-  color: #fca5a5;
+  border-color: var(--bm-error-border);
+
+  background-color: var(--bm-error-bg);
+  color: var(--bm-error-text);
 }
+
+.bm-history-actions .bm-delete-button:hover {
+  border-color: var(--bm-error-text);
+  background-color: var(--bm-error-bg);
+}
+
+/* ==========================================
+   36. HISTORY MEASUREMENT VALUES
+========================================== */
 
 .bm-history-values {
   display: flex;
   flex-wrap: wrap;
+
   gap: 9px;
 }
+
+/* ==========================================
+   37. MEASUREMENT VALUE CHIPS
+========================================== */
 
 .bm-value-chip {
   display: flex;
   flex-direction: column;
+
   gap: 6px;
   min-width: 100px;
   padding: 10px 12px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #202024;
+
+  background-color: var(--color-surface-soft);
 }
 
 .bm-value-chip > span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   font-size: 10px;
 }
 
 .bm-value-chip > strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
+/* ==========================================
+   38. EMPTY HISTORY
+========================================== */
+
 .bm-empty {
   padding: 22px;
-  border: 1px dashed #3f3f46;
+
+  border: 1px dashed var(--color-border-strong);
   border-radius: 9px;
-  background: #111113;
+
+  background-color: var(--color-inset);
 }
 
 .bm-empty strong {
-  color: #fafafa;
+  color: var(--color-text);
   font-size: 13px;
 }
 
 .bm-empty p {
   margin: 8px 0 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
+  line-height: 1.7;
 }
 
 /* ==========================================
-   GUIDANCE AND PRIVACY
+   39. MEASUREMENT GUIDANCE
 ========================================== */
 
 .bm-guidance {
   display: flex;
   flex-direction: column;
+
   gap: 13px;
 }
 
 .bm-guidance p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.8;
 }
 
 .bm-guidance strong {
-  color: #e4e4e7;
+  color: var(--color-text);
 }
+
+/* ==========================================
+   40. PRIVACY PANEL
+========================================== */
 
 .bm-privacy {
   padding: 18px 20px;
-  border-left: 3px solid #71717a;
+
+  border-left: 3px solid var(--color-border-strong);
   border-radius: 9px;
-  background: #202024;
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text);
 }
 
 .bm-privacy h2 {
   margin: 0 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 15px;
 }
 
 .bm-privacy p {
   margin: 0 0 10px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.7;
 }
@@ -520,17 +863,17 @@
 }
 
 /* ==========================================
-   ACCESSIBILITY
+   41. KEYBOARD ACCESSIBILITY
 ========================================== */
 
 .bm-page button:focus-visible,
 .bm-page a:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
 /* ==========================================
-   TABLET
+   42. TABLET
 ========================================== */
 
 @media (max-width: 750px) {
@@ -545,7 +888,7 @@
 }
 
 /* ==========================================
-   MOBILE
+   43. MOBILE
 ========================================== */
 
 @media (max-width: 600px) {
@@ -558,7 +901,9 @@
   }
 
   .bm-form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      minmax(0, 1fr);
+
     gap: 14px;
   }
 
@@ -578,6 +923,10 @@
     max-width: none;
   }
 }
+
+/* ==========================================
+   44. SMALL MOBILE
+========================================== */
 
 @media (max-width: 420px) {
   .bm-actions {
@@ -599,8 +948,24 @@
   }
 }
 
+/* ==========================================
+   45. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .bm-page * {
     scroll-behavior: auto;
+  }
+
+  .bm-page :is(
+    .bm-primary-button,
+    .bm-secondary-button,
+    .bm-history-actions button,
+    .bm-svg circle,
+    .bm-field > input,
+    .bm-field > select,
+    .bm-input-wrapper
+  ) {
+    transition: none;
   }
 }

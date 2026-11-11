@@ -1,0 +1,367 @@
+
+/* ==========================================
+   GYM TRACKER - GLOBAL POLISH
+
+   Terra Active Design System
+
+   - Global page background
+   - Welcome page
+   - Not Found page
+   - Footer consistency
+   - Dark workout card hover
+   - Light and Dark Theme
+========================================== */
+
+/* ==========================================
+   1. GLOBAL PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+/* ==========================================
+   2. WELCOME PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .welcome-section) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
+
+/* ==========================================
+   3. WELCOME HEADINGS
+========================================== */
+
+html[data-theme]
+.welcome-section h2,
+html[data-theme]
+.features-section .section-heading h2 {
+  color: var(--color-text);
+}
+
+/* ==========================================
+   4. WELCOME DESCRIPTIONS
+========================================== */
+
+html[data-theme]
+.welcome-section p,
+html[data-theme]
+.features-section .section-heading p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   5. WELCOME LABELS
+========================================== */
+
+html[data-theme]
+.welcome-section .section-label,
+html[data-theme]
+.features-section .section-label {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   6. FEATURE CARDS
+========================================== */
+
+html[data-theme]
+.features-section .feature-card {
+  border: 1px solid var(--color-border);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+/* ==========================================
+   7. FEATURE CARD COLORS
+========================================== */
+
+html[data-theme]
+.features-section
+.feature-card:nth-child(4n + 1) {
+  background-color: var(--color-mint);
+}
+
+html[data-theme]
+.features-section
+.feature-card:nth-child(4n + 2) {
+  background-color: var(--color-peach);
+}
+
+html[data-theme]
+.features-section
+.feature-card:nth-child(4n + 3) {
+  background-color: var(--color-lavender);
+}
+
+html[data-theme]
+.features-section
+.feature-card:nth-child(4n) {
+  background-color: var(--color-sky);
+}
+
+/* ==========================================
+   8. FEATURE CARD TEXT
+========================================== */
+
+html[data-theme]
+.features-section .feature-card h3 {
+  color: var(--color-text);
+}
+
+html[data-theme]
+.features-section .feature-card p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   9. FEATURE CARD HOVER
+========================================== */
+
+html[data-theme]
+.features-section .feature-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ==========================================
+   10. NOT FOUND PAGE
+========================================== */
+
+html[data-theme]
+.page-container.not-found {
+  color: var(--color-text);
+}
+
+html[data-theme]
+.not-found h1 {
+  color: var(--color-accent);
+}
+
+html[data-theme]
+.not-found h2 {
+  color: var(--color-text);
+}
+
+html[data-theme]
+.not-found p {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   11. FOOTER CONTAINER
+========================================== */
+
+html[data-theme]
+.app > .footer.gym-footer {
+  background-color: var(--color-ink);
+
+  border-top: 1px solid var(--color-border);
+
+  color: var(--color-ink-text);
+}
+
+/* ==========================================
+   12. FOOTER BRAND
+========================================== */
+
+html[data-theme]
+.app > .footer.gym-footer
+.gym-footer-brand {
+  color: var(--color-ink-text);
+}
+
+/* ==========================================
+   13. FOOTER DESCRIPTIONS
+========================================== */
+
+html[data-theme]
+.app > .footer.gym-footer p {
+  color: var(--color-ink-muted);
+}
+
+/* ==========================================
+   14. FOOTER LINKS
+========================================== */
+
+html[data-theme]
+.app > .footer.gym-footer a {
+  color: var(--color-ink-text);
+
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html[data-theme]
+.app > .footer.gym-footer a:hover {
+  color: var(--color-ink-text);
+  text-decoration-thickness: 2px;
+}
+
+/* ==========================================
+   15. FOOTER FOCUS
+========================================== */
+
+html[data-theme]
+.app > .footer.gym-footer a:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+/* ==========================================
+   16. DARK MODE - WORKOUT CARDS
+========================================== */
+
+/*
+  Light Mode already has its own
+  card styling in theme-pages.css.
+
+  These rules affect Dark Mode only.
+*/
+
+html[data-theme="dark"]
+.workouts-hub-page a.workouts-hub-card {
+  --hub-highlight: var(--color-accent);
+  --hub-glow: rgba(230, 139, 117, 0.22);
+
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--hub-highlight);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
+
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+/* ==========================================
+   17. DIFFERENT CARD ACCENTS
+========================================== */
+
+/* Today's Workout */
+
+html[data-theme="dark"]
+.workouts-hub-page
+a.workouts-hub-card:nth-child(4n + 1) {
+  --hub-highlight: #e68b75;
+  --hub-glow: rgba(230, 139, 117, 0.22);
+}
+
+/* Workout Builder */
+
+html[data-theme="dark"]
+.workouts-hub-page
+a.workouts-hub-card:nth-child(4n + 2) {
+  --hub-highlight: #b5e4c0;
+  --hub-glow: rgba(181, 228, 192, 0.2);
+}
+
+/* Recommended Plans */
+
+html[data-theme="dark"]
+.workouts-hub-page
+a.workouts-hub-card:nth-child(4n + 3) {
+  --hub-highlight: #cbb5fb;
+  --hub-glow: rgba(203, 181, 251, 0.22);
+}
+
+/* Weekly Schedule */
+
+html[data-theme="dark"]
+.workouts-hub-page
+a.workouts-hub-card:nth-child(4n) {
+  --hub-highlight: #f1d49a;
+  --hub-glow: rgba(241, 212, 154, 0.2);
+}
+
+/* ==========================================
+   18. DARK MODE - CARD HOVER
+========================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="dark"]
+  .workouts-hub-page a.workouts-hub-card:hover {
+    background-color: var(--color-card-hover);
+
+    border-top-color: var(--hub-highlight);
+    border-right-color: var(--hub-highlight);
+    border-bottom-color: var(--hub-highlight);
+
+    box-shadow:
+      0 0 0 1px var(--hub-highlight),
+      0 0 22px var(--hub-glow),
+      0 12px 30px rgba(0, 0, 0, 0.32);
+
+    transform: translateY(-2px);
+  }
+}
+
+/* ==========================================
+   19. DARK MODE - ACTION LABEL
+========================================== */
+
+html[data-theme="dark"]
+.workouts-hub-page
+.workouts-hub-card:hover
+.workouts-hub-action {
+  color: var(--color-accent-hover);
+
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================
+   20. KEYBOARD FOCUS
+========================================== */
+
+html[data-theme="dark"]
+.workouts-hub-page
+a.workouts-hub-card:focus-visible {
+  outline: 3px solid var(--hub-highlight);
+  outline-offset: 4px;
+
+  background-color: var(--color-card-hover);
+
+  box-shadow:
+    0 0 18px var(--hub-glow),
+    var(--shadow-card-hover);
+}
+
+/* ==========================================
+   21. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme]
+  .features-section .feature-card {
+    transition: none;
+  }
+
+  html[data-theme="dark"]
+  .workouts-hub-page a.workouts-hub-card {
+    transition: none;
+  }
+
+  html[data-theme="dark"]
+  .workouts-hub-page a.workouts-hub-card:hover {
+    transform: none;
+  }
+}

@@ -32,6 +32,9 @@ import "./styles/interactions.css";
 // Migrated page appearance
 import "./styles/theme-pages.css";
 
+// Final global visual compatibility
+import "./styles/global-polish.css";
+
 // ==========================================
 // APPLICATION ENTRY POINT
 // ==========================================

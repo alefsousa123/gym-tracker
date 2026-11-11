@@ -5,6 +5,8 @@ import {
   useNavigate,
 } from "react-router";
 
+import "./BackToPreviousPage.css";
+
 // ==========================================
 // REUSABLE BACK NAVIGATION
 // ==========================================
@@ -17,8 +19,10 @@ function BackToPreviousPage({
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Optional origin information supplied
-  // by the page that opened this link.
+  // ========================================
+  // OPTIONAL ORIGIN INFORMATION
+  // ========================================
+
   const origin = location.state?.from;
 
   const hasValidOrigin =
@@ -30,27 +34,48 @@ function BackToPreviousPage({
     ? origin
     : fallbackTo;
 
+  // ========================================
+  // BROWSER HISTORY
+  // ========================================
+
   const historyIndex =
-    window.history.state?.idx;
+    typeof window !== "undefined"
+      ? window.history.state?.idx
+      : null;
 
   const hasPreviousPage =
     typeof historyIndex === "number" &&
     historyIndex > 0;
 
-  const returnLabel =
-    typeof location.state?.fromLabel === "string"
-      ? location.state.fromLabel
-      : hasPreviousPage
-        ? "Previous Page"
-        : fallbackLabel;
+  // ========================================
+  // CONTEXTUAL LINK LABEL
+  // ========================================
+
+  const originLabel =
+    location.state?.fromLabel;
+
+  const hasOriginLabel =
+    typeof originLabel === "string" &&
+    originLabel.trim().length > 0;
+
+  let linkLabel;
+
+  if (hasOriginLabel) {
+    linkLabel = `Back to ${originLabel.trim()}`;
+  } else if (hasPreviousPage) {
+    linkLabel = "Back";
+  } else {
+    linkLabel = `Back to ${fallbackLabel}`;
+  }
 
   // ========================================
-  // RETURN TO PREVIOUS PAGE
+  // HANDLE BACK NAVIGATION
   // ========================================
 
   function handleBack(event) {
-    // Keep standard link behavior for
-    // opening in a new tab.
+    // Preserve native browser behavior for
+    // modified clicks and new tabs.
+
     if (
       event.ctrlKey ||
       event.metaKey ||
@@ -61,24 +86,43 @@ function BackToPreviousPage({
       return;
     }
 
-    // React Router keeps navigation history.
-    // Going back preserves the previous URL.
+    // Navigate through the application
+    // history whenever possible.
+
     if (hasPreviousPage) {
       event.preventDefault();
       navigate(-1);
     }
 
-    // Without application history, the
-    // Link uses returnTo as a safe fallback.
+    // Otherwise, the Link navigates to
+    // the configured fallback destination.
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <Link
       to={returnTo}
-      className={className}
+      className={[
+        "back-to-previous-page",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onClick={handleBack}
     >
-      ← Back to {returnLabel}
+      <span
+        className="back-to-previous-page-arrow"
+        aria-hidden="true"
+      >
+        ←
+      </span>
+
+      <span className="back-to-previous-page-label">
+        {linkLabel}
+      </span>
     </Link>
   );
 }

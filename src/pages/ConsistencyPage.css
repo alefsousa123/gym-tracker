@@ -1,7 +1,27 @@
 
 /* ==========================================
-   CONSISTENCY & STREAKS
+   CONSISTENCY & STREAKS - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Weekly training goal
+   - Progress indicators
+   - Streak statistics
+   - Eight-week activity chart
+   - Weekly breakdown
+   - Guidance and navigation
+   - Responsive layouts
 ========================================== */
+
+/* ==========================================
+   1. PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .consistency-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .consistency-page,
 .consistency-page * {
@@ -12,33 +32,48 @@
   width: 100%;
   max-width: 1050px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 26px 22px 64px;
-  color: #fafafa;
+
+  background-color: transparent;
+  color: var(--color-text);
 }
 
 /* ==========================================
-   PAGE HEADER
+   2. BACK NAVIGATION
 ========================================== */
 
-.cs-back-link {
-  display: inline-block;
+.consistency-page .cs-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
   margin-bottom: 22px;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.cs-back-link:hover {
+.consistency-page .cs-back-link:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* ==========================================
+   3. PAGE HEADER
+========================================== */
 
 .cs-page-header {
   margin-bottom: 25px;
 }
 
 .cs-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -46,7 +81,9 @@
 
 .cs-page-header h1 {
   margin: 9px 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: clamp(26px, 4vw, 36px);
   line-height: 1.25;
 }
@@ -54,365 +91,583 @@
 .cs-page-header p {
   max-width: 680px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   PANELS
+   4. MAIN PANELS
 ========================================== */
 
 .cs-panel {
   min-width: 0;
-  padding: 22px;
   margin-bottom: 18px;
-  border: 1px solid #303036;
-  border-radius: 14px;
-  background-color: #18181b;
+  padding: 22px;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
 
+/* ==========================================
+   5. CURRENT WEEK HIGHLIGHT
+========================================== */
+
 .cs-current-panel {
-  border-color: #365c43;
+  border-color: var(--color-border-strong);
+
   background: linear-gradient(
     135deg,
-    #17251b 0%,
-    #18181b 70%
+    var(--color-mint) 0%,
+    var(--color-surface) 76%
   );
 }
+
+/* ==========================================
+   6. SECTION HEADERS
+========================================== */
 
 .cs-section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
+
   gap: 14px;
   margin-bottom: 20px;
 }
 
 .cs-section-header h2 {
   margin: 5px 0 7px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 19px;
 }
 
 .cs-section-header p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   CURRENT WEEK
+   7. WEEKLY GOAL STATUS
 ========================================== */
 
 .cs-goal-status {
   display: inline-flex;
   align-items: center;
+
   padding: 7px 10px;
-  border: 1px solid #365c43;
+
+  border: 1px solid var(--color-border-strong);
   border-radius: 7px;
-  background-color: #12281b;
-  color: #86efac;
+
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+
   font-size: 11px;
   font-weight: 700;
+  line-height: 1.4;
 }
+
+/* ==========================================
+   8. CURRENT WEEK COUNT
+========================================== */
 
 .cs-current-count {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
+
   gap: 10px;
   margin-bottom: 19px;
 }
 
 .cs-current-count strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(40px, 7vw, 56px);
   font-weight: 800;
   line-height: 1;
+
   font-variant-numeric: tabular-nums;
 }
 
 .cs-current-count span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 15px;
 }
+
+/* ==========================================
+   9. WEEKLY PROGRESS BAR
+========================================== */
 
 .cs-progress-track {
   width: 100%;
   height: 10px;
+
   overflow: hidden;
+
   border-radius: 999px;
-  background-color: #303036;
+
+  background-color: var(--color-surface-soft);
 }
 
 .cs-progress-fill {
   height: 100%;
+
   border-radius: 999px;
-  background-color: #22c55e;
-  transition: width 0.2s ease;
+
+  background-color: var(--color-success-text);
+
+  transition: width 200ms ease;
 }
+
+/* ==========================================
+   10. CURRENT WEEK MESSAGE
+========================================== */
 
 .cs-current-message {
   max-width: 720px;
   margin: 14px 0 0;
-  color: #c4c4cc;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   STATISTICS
+   11. STATISTICS GRID
 ========================================== */
 
 .cs-stats-grid {
   display: grid;
+
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
+
   gap: 12px;
   margin-bottom: 18px;
 }
 
+/* ==========================================
+   12. STATISTIC CARDS
+========================================== */
+
 .cs-stat-card {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
   min-width: 0;
   padding: 17px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 11px;
-  background-color: #18181b;
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
 
+/* ==========================================
+   13. STATISTIC CARD COLORS
+========================================== */
+
+.cs-stat-card:nth-child(4n + 1) {
+  background-color: var(--color-mint);
+}
+
+.cs-stat-card:nth-child(4n + 2) {
+  background-color: var(--color-lavender);
+}
+
+.cs-stat-card:nth-child(4n + 3) {
+  background-color: var(--color-butter);
+}
+
+.cs-stat-card:nth-child(4n) {
+  background-color: var(--color-sky);
+}
+
+/* ==========================================
+   14. STATISTIC TYPOGRAPHY
+========================================== */
+
 .cs-stat-card > span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.5;
 }
 
 .cs-stat-card > strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(23px, 4vw, 30px);
   font-weight: 800;
+
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
 .cs-stat-card > small {
-  color: #71717a;
+  color: var(--color-text-muted);
+
   font-size: 10px;
   line-height: 1.5;
 }
 
 /* ==========================================
-   EIGHT-WEEK ACTIVITY CHART
+   15. EIGHT-WEEK ACTIVITY CHART
 ========================================== */
 
 .cs-chart {
   display: grid;
+
   grid-template-columns:
     repeat(8, minmax(0, 1fr));
+
   gap: 13px;
+
   min-height: 240px;
   margin-top: 16px;
 }
+
+/* ==========================================
+   16. CHART COLUMNS
+========================================== */
 
 .cs-chart-column {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+
   gap: 8px;
   min-width: 0;
 }
 
+/* ==========================================
+   17. CHART VALUES
+========================================== */
+
 .cs-chart-value {
-  color: #e4e4e7;
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 700;
+
   font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================
+   18. CHART TRACKS
+========================================== */
 
 .cs-chart-track {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
   width: 100%;
   max-width: 62px;
   height: 150px;
+
   overflow: hidden;
+
   border-radius: 8px 8px 5px 5px;
-  background-color: #27272a;
+
+  background-color: var(--color-inset);
 }
+
+/* ==========================================
+   19. DEFAULT CHART BARS
+========================================== */
 
 .cs-chart-fill {
   width: 100%;
   min-height: 0;
+
   border-radius: 7px 7px 0 0;
-  background-color: #52665a;
-  transition: height 0.2s ease;
+
+  background-color: var(--color-border-strong);
+
+  transition:
+    height 200ms ease,
+    background-color 180ms ease;
 }
+
+/* ==========================================
+   20. ACHIEVED GOAL BARS
+========================================== */
 
 .cs-chart-fill.is-achieved {
-  background-color: #22c55e;
+  background-color: var(--color-success-text);
 }
 
+/* ==========================================
+   21. CHART LABELS
+========================================== */
+
 .cs-chart-label {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 10px;
   font-weight: 600;
+
   text-align: center;
   white-space: nowrap;
 }
 
 .cs-chart-current {
-  color: #86efac;
+  color: var(--color-accent);
+
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
 }
+
+/* ==========================================
+   22. CHART EXPLANATION
+========================================== */
 
 .cs-chart-note {
   margin: 20px 0 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-muted);
+
   font-size: 11px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   WEEKLY BREAKDOWN
+   23. WEEKLY BREAKDOWN LIST
 ========================================== */
 
 .cs-week-list {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
 }
+
+/* ==========================================
+   24. WEEKLY BREAKDOWN ROWS
+========================================== */
 
 .cs-week-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 14px;
   min-width: 0;
   padding: 13px 15px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  background-color: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
 }
+
+/* ==========================================
+   25. WEEK INFORMATION
+========================================== */
 
 .cs-week-info {
   display: flex;
   flex-direction: column;
+
   gap: 6px;
   min-width: 0;
 }
 
 .cs-week-info strong {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: 12px;
   overflow-wrap: anywhere;
 }
 
 .cs-week-info span {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
-}
-
-.cs-week-status {
-  flex-shrink: 0;
-  padding: 6px 9px;
-  border-radius: 6px;
-  background-color: #27272a;
-  color: #a1a1aa;
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.cs-week-status.is-achieved {
-  background-color: #12281b;
-  color: #86efac;
-}
-
-.cs-week-status.is-current {
-  background-color: #1e293b;
-  color: #bfdbfe;
+  line-height: 1.5;
 }
 
 /* ==========================================
-   EXPLANATION
+   26. DEFAULT WEEK STATUS
+========================================== */
+
+.cs-week-status {
+  flex-shrink: 0;
+
+  padding: 6px 9px;
+
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+/* ==========================================
+   27. CURRENT WEEK STATUS
+========================================== */
+
+.cs-week-status.is-current {
+  border-color: var(--color-border-strong);
+
+  background-color: var(--color-sky);
+  color: var(--color-text);
+}
+
+/* ==========================================
+   28. ACHIEVED WEEK STATUS
+========================================== */
+
+.cs-week-status.is-achieved {
+  border-color: var(--color-border-strong);
+
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+/* ==========================================
+   29. EXPLANATION LIST
 ========================================== */
 
 .cs-explanation-list {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 }
 
 .cs-explanation-list p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.8;
 }
 
 .cs-explanation-list strong {
-  color: #e4e4e7;
+  color: var(--color-text);
 }
+
+/* ==========================================
+   30. NAVIGATION ACTIONS
+========================================== */
 
 .cs-actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
   margin-top: 22px;
 }
+
+/* ==========================================
+   31. SHARED LINK BUTTON STYLES
+========================================== */
 
 .cs-primary-link,
 .cs-secondary-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-height: 43px;
   padding: 11px 16px;
-  border-radius: 8px;
+
+  border-radius: var(--radius-button);
+
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
+
   text-align: center;
   text-decoration: none;
-}
 
-.cs-primary-link {
-  border: 1px solid #22c55e;
-  background-color: #22c55e;
-  color: #052e16;
-}
+  cursor: pointer;
 
-.cs-primary-link:hover {
-  background-color: #4ade80;
-}
-
-.cs-secondary-link {
-  border: 1px solid #52525b;
-  background-color: #27272a;
-  color: #fafafa;
-}
-
-.cs-secondary-link:hover {
-  border-color: #86efac;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 /* ==========================================
-   ACCESSIBILITY
+   32. PRIMARY LINK
+========================================== */
+
+.cs-primary-link {
+  border: 1px solid var(--color-action);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
+}
+
+.cs-primary-link:hover {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+
+  color: var(--color-action-text);
+}
+
+/* ==========================================
+   33. SECONDARY LINK
+========================================== */
+
+.cs-secondary-link {
+  border: 1px solid var(--color-secondary-action-border);
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
+}
+
+.cs-secondary-link:hover {
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
+
+  color: var(--color-secondary-action-text);
+}
+
+/* ==========================================
+   34. KEYBOARD ACCESSIBILITY
 ========================================== */
 
 .consistency-page a:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
 /* ==========================================
-   TABLET
+   35. TABLET
 ========================================== */
 
 @media (max-width: 800px) {
@@ -427,7 +682,7 @@
 }
 
 /* ==========================================
-   MOBILE
+   36. MOBILE
 ========================================== */
 
 @media (max-width: 600px) {
@@ -450,7 +705,9 @@
   .cs-chart {
     grid-template-columns:
       repeat(8, minmax(48px, 1fr));
+
     overflow-x: auto;
+
     gap: 9px;
     padding-bottom: 10px;
   }
@@ -464,6 +721,10 @@
   }
 }
 
+/* ==========================================
+   37. SMALL MOBILE
+========================================== */
+
 @media (max-width: 400px) {
   .cs-stats-grid {
     gap: 9px;
@@ -476,7 +737,12 @@
   .cs-week-row {
     align-items: flex-start;
     flex-direction: column;
+
     gap: 8px;
+  }
+
+  .cs-week-status {
+    flex-shrink: 1;
   }
 
   .cs-actions {
@@ -489,9 +755,15 @@
   }
 }
 
+/* ==========================================
+   38. REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .cs-progress-fill,
-  .cs-chart-fill {
+  .cs-chart-fill,
+  .cs-primary-link,
+  .cs-secondary-link {
     transition: none;
   }
 }

@@ -1,7 +1,25 @@
 
 /* ==========================================
-   BODY FAT ESTIMATOR
+   BODY FAT ESTIMATOR - TERRA ACTIVE
+
+   Light and Dark Theme Support
+
+   - Measurement form
+   - Results and validation
+   - Method explanation
+   - Privacy information
+   - Responsive layouts
 ========================================== */
+
+/* ==========================================
+   1. PAGE BACKGROUND
+========================================== */
+
+html[data-theme]
+.app > main:has(> .bf-page) {
+  background-color: var(--color-page);
+  color: var(--color-text);
+}
 
 .bf-page,
 .bf-page * {
@@ -9,36 +27,61 @@
 }
 
 .bf-page {
+  --bf-error-text: #a52f3c;
+  --bf-error-bg: #f4dfe1;
+  --bf-error-border: #d6a3a8;
+
   width: 100%;
   max-width: 950px;
   min-width: 0;
+
   margin: 0 auto;
   padding: 26px 22px 64px;
-  color: #fafafa;
+
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .bf-page {
+  --bf-error-text: #ffb4ba;
+  --bf-error-bg: #40282e;
+  --bf-error-border: #87515b;
 }
 
 /* ==========================================
-   HEADER
+   2. BACK NAVIGATION
 ========================================== */
 
-.bf-back-link {
-  display: inline-block;
+.bf-page .bf-back-link {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
   margin-bottom: 22px;
-  color: #4ade80;
+
+  color: var(--color-accent);
+
   font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.bf-back-link:hover {
+.bf-page .bf-back-link:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* ==========================================
+   3. PAGE HEADER
+========================================== */
 
 .bf-header {
   margin-bottom: 25px;
 }
 
 .bf-eyebrow {
-  color: #4ade80;
+  color: var(--color-accent);
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.1px;
@@ -46,31 +89,44 @@
 
 .bf-header h1 {
   margin: 8px 0 10px;
+
+  color: var(--color-text);
+
   font-size: clamp(26px, 4vw, 36px);
   line-height: 1.25;
-  color: #fafafa;
 }
 
 .bf-header p {
   max-width: 650px;
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 13px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   PANELS
+   4. MAIN PANELS
 ========================================== */
 
 .bf-panel {
   min-width: 0;
   margin-bottom: 18px;
   padding: 22px;
-  border: 1px solid #303036;
-  border-radius: 13px;
-  background: #18181b;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  box-shadow: var(--shadow-card);
 }
+
+/* ==========================================
+   5. SECTION HEADINGS
+========================================== */
 
 .bf-section-heading {
   margin-bottom: 22px;
@@ -78,279 +134,480 @@
 
 .bf-section-heading h2 {
   margin: 0 0 7px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 18px;
 }
 
 .bf-section-heading p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
 /* ==========================================
-   FORM
+   6. MEASUREMENT FORM
 ========================================== */
 
 .bf-form {
   display: flex;
   flex-direction: column;
+
   gap: 19px;
 }
 
+/* ==========================================
+   7. MEASUREMENT GRID
+========================================== */
+
 .bf-measurement-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 16px;
 }
+
+/* ==========================================
+   8. MEASUREMENT FIELDS
+========================================== */
 
 .bf-field {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
   min-width: 0;
 }
 
 .bf-field-label {
-  color: #e4e4e7;
+  color: var(--color-text);
+
   font-size: 12px;
   font-weight: 700;
 }
 
 .bf-field-description {
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.6;
 }
+
+/* ==========================================
+   9. MODEL SELECT
+========================================== */
 
 .bf-field select {
   width: 100%;
   min-width: 0;
   min-height: 45px;
+
   padding: 11px 12px;
-  border: 1px solid #3f3f46;
-  border-radius: 9px;
-  background: #111113;
-  color: #fafafa;
-  font: inherit;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
+
+.bf-field select:hover {
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   10. MEASUREMENT INPUT WRAPPER
+========================================== */
 
 .bf-input-wrapper {
   display: flex;
   align-items: stretch;
+
   width: 100%;
   min-width: 0;
-  border: 1px solid #3f3f46;
-  border-radius: 9px;
-  background: #111113;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-inset);
+
   overflow: hidden;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
+
+.bf-input-wrapper:hover {
+  border-color: var(--color-accent);
+}
+
+/* ==========================================
+   11. MEASUREMENT INPUT
+========================================== */
 
 .bf-input-wrapper input {
   flex: 1;
+
   width: 100%;
   min-width: 0;
   min-height: 44px;
+
   padding: 10px 12px;
+
   border: 0;
   outline: 0;
-  background: transparent;
-  color: #fafafa;
-  font: inherit;
+
+  background-color: transparent;
+  color: var(--color-text);
+
+  font-family: inherit;
   font-size: 13px;
 }
 
 .bf-input-wrapper input::placeholder {
-  color: #71717a;
+  color: var(--color-text-muted);
 }
+
+/* ==========================================
+   12. MEASUREMENT UNIT
+========================================== */
 
 .bf-input-unit {
   display: flex;
   align-items: center;
+
   padding: 0 13px;
-  border-left: 1px solid #303036;
-  color: #a1a1aa;
+
+  border-left: 1px solid var(--color-border);
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   font-weight: 700;
 }
 
+/* ==========================================
+   13. FORM FOCUS
+========================================== */
+
 .bf-field select:focus-visible,
 .bf-input-wrapper:focus-within {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
+/* ==========================================
+   14. MEASUREMENT GUIDANCE
+========================================== */
+
 .bf-measurement-note {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.8;
 }
 
 /* ==========================================
-   BUTTONS
+   15. FORM ACTIONS
 ========================================== */
 
 .bf-actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
 }
+
+/* ==========================================
+   16. SHARED BUTTON STYLES
+========================================== */
 
 .bf-primary-button,
 .bf-secondary-button {
   min-height: 44px;
   padding: 11px 17px;
-  border-radius: 9px;
-  font: inherit;
+
+  border-radius: var(--radius-button);
+
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
+
   cursor: pointer;
-}
 
-.bf-primary-button {
-  border: 1px solid #22c55e;
-  background: #22c55e;
-  color: #052e16;
-}
-
-.bf-primary-button:hover {
-  background: #4ade80;
-}
-
-.bf-secondary-button {
-  border: 1px solid #52525b;
-  background: #27272a;
-  color: #fafafa;
-}
-
-.bf-secondary-button:hover {
-  border-color: #a1a1aa;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 /* ==========================================
-   RESULT
+   17. PRIMARY ACTION
+========================================== */
+
+.bf-primary-button {
+  border: 1px solid var(--color-action);
+
+  background-color: var(--color-action);
+  color: var(--color-action-text);
+}
+
+.bf-primary-button:hover:not(:disabled) {
+  background-color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+
+.bf-primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   18. SECONDARY ACTION
+========================================== */
+
+.bf-secondary-button {
+  border: 1px solid var(--color-secondary-action-border);
+
+  background-color: var(--color-secondary-action-bg);
+  color: var(--color-secondary-action-text);
+}
+
+.bf-secondary-button:hover:not(:disabled) {
+  background-color: var(--color-secondary-action-hover);
+  border-color: var(--color-accent);
+}
+
+.bf-secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   19. RESULT CONTAINER
 ========================================== */
 
 .bf-result {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 13px;
   padding: 12px 8px;
+
+  color: var(--color-text);
   text-align: center;
 }
 
+/* ==========================================
+   20. RESULT LABEL
+========================================== */
+
 .bf-result-label {
-  color: #a1a1aa;
+  color: var(--color-accent);
+
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 
+/* ==========================================
+   21. RESULT VALUE
+========================================== */
+
 .bf-result-value {
-  color: #fafafa;
+  color: var(--color-text);
+
   font-size: clamp(40px, 8vw, 60px);
   font-weight: 800;
   line-height: 1.15;
+
   font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================
+   22. RESULT DESCRIPTION
+========================================== */
 
 .bf-result > p {
   max-width: 620px;
   margin: 0;
-  color: #d4d4d8;
+
+  color: var(--color-text-secondary);
+
   font-size: 12px;
   line-height: 1.7;
 }
 
+/* ==========================================
+   23. RESULT DIVIDER
+========================================== */
+
 .bf-result-divider {
   width: 100%;
   height: 1px;
+
   margin: 5px 0;
-  background: #303036;
+
+  background-color: var(--color-border);
 }
 
+/* ==========================================
+   24. RESULT DISCLAIMER
+========================================== */
+
 .bf-result .bf-result-note {
-  color: #a1a1aa;
+  color: var(--color-text-muted);
+
   font-size: 11px;
+  line-height: 1.7;
 }
+
+/* ==========================================
+   25. CALCULATION ERROR
+========================================== */
 
 .bf-error {
   padding: 15px;
-  border: 1px solid #7f1d1d;
+
+  border: 1px solid var(--bf-error-border);
   border-radius: 9px;
-  background: #291719;
+
+  background-color: var(--bf-error-bg);
+  color: var(--bf-error-text);
 }
 
 .bf-error strong {
-  color: #fecaca;
+  color: var(--bf-error-text);
+
   font-size: 13px;
 }
 
 .bf-error p {
   margin: 8px 0 0;
-  color: #fca5a5;
+
+  color: var(--bf-error-text);
+
   font-size: 12px;
   line-height: 1.6;
 }
 
 /* ==========================================
-   EXPLANATION
+   26. METHOD EXPLANATION GRID
 ========================================== */
 
 .bf-information {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
+
   gap: 12px;
 }
+
+/* ==========================================
+   27. METHOD INFORMATION CARDS
+========================================== */
 
 .bf-information article {
   min-width: 0;
   padding: 16px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  background: #111113;
+
+  background-color: var(--color-inset);
+  color: var(--color-text);
 }
+
+.bf-information article:nth-child(4n + 1) {
+  border-left: 3px solid var(--color-accent);
+}
+
+.bf-information article:nth-child(4n + 2) {
+  border-left: 3px solid var(--color-success-text);
+}
+
+.bf-information article:nth-child(4n + 3) {
+  border-left: 3px solid var(--color-border-strong);
+}
+
+.bf-information article:nth-child(4n) {
+  border-left: 3px solid var(--color-accent);
+}
+
+/* ==========================================
+   28. METHOD CARD HEADING
+========================================== */
 
 .bf-information h3 {
   margin: 0 0 9px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 13px;
   line-height: 1.5;
 }
 
+/* ==========================================
+   29. METHOD CARD TEXT
+========================================== */
+
 .bf-information p {
   margin: 0;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.8;
 }
 
 /* ==========================================
-   PRIVACY
+   30. PRIVACY PANEL
 ========================================== */
 
 .bf-privacy {
   padding: 18px 20px;
-  border: 1px solid #303036;
+
+  border: 1px solid var(--color-border);
   border-radius: 11px;
-  background: #202024;
+
+  background-color: var(--color-surface-soft);
+  color: var(--color-text);
 }
 
 .bf-privacy h2 {
   margin: 0 0 10px;
-  color: #fafafa;
+
+  color: var(--color-text);
+
   font-size: 15px;
 }
 
 .bf-privacy p {
   margin: 0 0 11px;
-  color: #a1a1aa;
+
+  color: var(--color-text-secondary);
+
   font-size: 11px;
   line-height: 1.7;
 }
@@ -359,14 +616,18 @@
   margin-bottom: 0;
 }
 
+/* ==========================================
+   31. KEYBOARD ACCESSIBILITY
+========================================== */
+
 .bf-page button:focus-visible,
 .bf-page a:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
 /* ==========================================
-   RESPONSIVE
+   32. TABLET
 ========================================== */
 
 @media (max-width: 700px) {
@@ -374,6 +635,10 @@
     gap: 13px;
   }
 }
+
+/* ==========================================
+   33. MOBILE
+========================================== */
 
 @media (max-width: 600px) {
   .bf-page {
@@ -385,13 +650,17 @@
   }
 
   .bf-measurement-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .bf-information {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ==========================================
+   34. SMALL MOBILE
+========================================== */
 
 @media (max-width: 420px) {
   .bf-actions {
@@ -405,5 +674,20 @@
 
   .bf-privacy {
     padding: 16px;
+  }
+}
+
+/* ==========================================
+   35. REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .bf-page :is(
+    .bf-primary-button,
+    .bf-secondary-button,
+    .bf-input-wrapper,
+    .bf-field select
+  ) {
+    transition: none;
   }
 }
