@@ -11,6 +11,10 @@ import ExerciseFilters from
 import { exercises } from "../data/exercises";
 
 import {
+  rankExercisesForUser,
+} from "../utils/exerciseRecommendationEngine";
+
+import {
   isExerciseAvailable,
 } from "../data/workoutPlans";
 
@@ -29,7 +33,7 @@ import "./ExercisesPage.css";
 // ==========================================
 
 const DEFAULT_FILTER = "all";
-const DEFAULT_SORT = "catalog";
+const DEFAULT_SORT = "recommended";
 const EXERCISES_PER_PAGE = 24;
 
 // ==========================================
@@ -81,6 +85,7 @@ const availabilityOptions = [
 ];
 
 const sortOptions = [
+  "recommended",
   "catalog",
   "name-asc",
   "name-desc",
@@ -506,8 +511,41 @@ function ExercisesPage() {
       );
     }
 
-    // Keep original catalog order by default.
-    // The researched ranking will come in D1-D2.
+    if (selectedSort === "recommended") {
+      return rankExercisesForUser(
+        matchingExercises,
+        {
+          profile,
+          isAvailable: (exercise) => {
+            if (!profile) return true;
+
+            if (trainingLocation === "both") {
+              return (
+                isExerciseAvailable(
+                  exercise,
+                  "gym",
+                  homeEquipment
+                ) ||
+                isExerciseAvailable(
+                  exercise,
+                  "home",
+                  homeEquipment
+                )
+              );
+            }
+
+            return isExerciseAvailable(
+              exercise,
+              trainingLocation === "gym"
+                ? "gym"
+                : "home",
+              homeEquipment
+            );
+          },
+        }
+      ).map((item) => item.exercise);
+    }
+
     return matchingExercises;
   }, [
     searchTerm,
@@ -519,6 +557,7 @@ function ExercisesPage() {
     selectedSort,
     trainingLocation,
     homeEquipment,
+    profile,
   ]);
 
   // ========================================
@@ -716,6 +755,10 @@ function ExercisesPage() {
                 )
               }
             >
+              <option value="recommended">
+                Recommended for Me
+              </option>
+
               <option value="catalog">
                 Default Catalog Order
               </option>

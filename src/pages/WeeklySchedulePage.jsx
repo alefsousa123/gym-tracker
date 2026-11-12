@@ -30,6 +30,11 @@ import {
   createWeeklyTemplate,
 } from "../data/workoutSplits";
 
+import {
+  getCompatibleScheduleSessionOptions,
+  assignCompatibleWorkoutSessions,
+} from "../utils/personalizedScheduleCompatibility";
+
 import "./WeeklySchedulePage.css";
 
 // ==========================================
@@ -186,6 +191,12 @@ function WeeklySchedulePage() {
     draft.splitId
   );
 
+  const scheduleSessionOptions =
+    getCompatibleScheduleSessionOptions(
+      draft.splitId,
+      appliedPlan
+    );
+
   const todayId = getTodayId();
 
   // ========================================
@@ -299,9 +310,10 @@ function WeeklySchedulePage() {
       return {
         ...previousDraft,
 
-        days: assignWorkoutSessions(
+        days: assignCompatibleWorkoutSessions(
           updatedDays,
           previousDraft.splitId,
+          appliedPlan,
           true
         ),
       };
@@ -335,12 +347,19 @@ function WeeklySchedulePage() {
   // ========================================
 
   function handleApplyTemplate() {
-    setDraft(
-      createWeeklyTemplate(
-        profileTrainingDays,
-        draft.splitId
-      )
+    const template = createWeeklyTemplate(
+      profileTrainingDays,
+      draft.splitId
     );
+
+    setDraft({
+      ...template,
+      days: assignCompatibleWorkoutSessions(
+        template.days,
+        template.splitId,
+        appliedPlan
+      ),
+    });
 
     setFeedback(
       "A new starting template is ready. Save to confirm it."
@@ -466,7 +485,7 @@ function WeeklySchedulePage() {
     const invalidSession = draft.days.some(
       (day) =>
         day.activity === "workout" &&
-        !selectedSplit.sessions.some(
+        !scheduleSessionOptions.some(
           (session) =>
             session.id === day.sessionId
         )
@@ -570,6 +589,16 @@ function WeeklySchedulePage() {
           <p className="schedule-split-description">
             {selectedSplit.description}
           </p>
+
+          {appliedPlan?.isPersonalized &&
+            planMatchesSplit && (
+              <p className="schedule-info-note">
+                This calendar uses your saved
+                personalized sessions. Moving a
+                workout to another day preserves
+                its exercises and training targets.
+              </p>
+            )}
 
           {draft.splitId === "abc" && (
             <p className="schedule-info-note">
@@ -762,7 +791,7 @@ function WeeklySchedulePage() {
                             )
                           }
                         >
-                          {selectedSplit.sessions.map(
+                          {scheduleSessionOptions.map(
                             (session) => (
                               <option
                                 key={session.id}

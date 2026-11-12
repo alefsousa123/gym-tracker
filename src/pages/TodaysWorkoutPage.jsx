@@ -58,7 +58,7 @@ function TodaysWorkoutPage() {
 
   const {
     activeWorkout,
-    lastWorkout,
+    todayWorkout,
     restTimer,
     timedSetTimer,
     reviewOpen,
@@ -168,6 +168,7 @@ function TodaysWorkoutPage() {
   const [durationInput, setDurationInput] = useState("");
   const [weightInput, setWeightInput] = useState("");
   const [formError, setFormError] = useState("");
+  const [saveConflict, setSaveConflict] = useState(false);
 
   const [showEarlyFinish, setShowEarlyFinish] =
     useState(false);
@@ -336,12 +337,7 @@ function TodaysWorkoutPage() {
           Number(exercise.target.sets)
     ) ?? false;
 
-  const finishedToday =
-    Boolean(lastWorkout?.finishedAt) &&
-    new Date(
-      lastWorkout.finishedAt
-    ).toDateString() ===
-      new Date().toDateString();
+  const finishedToday = Boolean(todayWorkout);
 
   // ========================================
   // SESSION ACTIONS
@@ -379,11 +375,15 @@ function TodaysWorkoutPage() {
   }
 
   function handleStart() {
-    if (!appliedPlan || !selectedSession) {
+    if (
+      !appliedPlan ||
+      !selectedSession ||
+      finishedToday
+    ) {
       return;
     }
 
-    startWorkout({
+    const started = startWorkout({
       plan: appliedPlan,
       session: selectedSession,
 
@@ -393,8 +393,11 @@ function TodaysWorkoutPage() {
           : null,
     });
 
+    if (!started) return;
+
     setFocusedExerciseId(null);
     setFormError("");
+    setSaveConflict(false);
   }
 
   function handleCompleteSet(event) {
@@ -542,8 +545,13 @@ function TodaysWorkoutPage() {
   }
 
   function handleFinish() {
-    finishWorkout();
+    if (!finishWorkout()) {
+      setSaveConflict(true);
+      setShowEarlyFinish(false);
+      return;
+    }
 
+    setSaveConflict(false);
     setShowEarlyFinish(false);
     setShowDiscard(false);
     setFocusedExerciseId(null);
@@ -605,17 +613,26 @@ function TodaysWorkoutPage() {
               </div>
 
               <h1>
-                {lastWorkout.status === "completed"
+                {todayWorkout.status === "completed"
                   ? "Workout Complete!"
                   : "Session Saved"}
               </h1>
 
               <p>
-                {lastWorkout.sessionName}
+                {todayWorkout.sessionName}
                 {" · "}
-                {lastWorkout.totalCompletedSets}
+                {todayWorkout.totalCompletedSets}
                 {" "}sets recorded
               </p>
+
+              <p className="today-small-note">
+                One workout per day. To repeat today's workout,
+                delete the saved record from Workout History first.
+              </p>
+
+              <Link to={`/progress/history/${encodeURIComponent(todayWorkout.id)}`}>
+                View Saved Workout →
+              </Link>
 
               <Link to="/">
                 Back to Home →
@@ -623,7 +640,7 @@ function TodaysWorkoutPage() {
             </section>
           )}
 
-          {!appliedPlan ? (
+          {finishedToday ? null : !appliedPlan ? (
             <section className="today-simple-card">
               <h1>No Workout Plan Yet</h1>
 
@@ -758,6 +775,24 @@ function TodaysWorkoutPage() {
 
       {activeWorkout && currentExercise && (
         <>
+          {saveConflict && (
+            <section
+              className="today-simple-card"
+              role="alert"
+            >
+              <p>
+                A workout is already saved for this training day.
+                Your active workout remains intact.
+                To save it, delete the earlier record
+                in Workout History first.
+              </p>
+
+              <Link to="/progress/history">
+                Open Workout History →
+              </Link>
+            </section>
+          )}
+
           <section className="today-active-top">
             <div className="today-active-meta">
               <span>

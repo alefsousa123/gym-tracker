@@ -296,7 +296,7 @@ function TodayWorkoutOverview() {
 
   const {
     activeWorkout,
-    lastWorkout,
+    todayWorkout,
     startWorkout,
   } = useWorkoutSession();
 
@@ -330,12 +330,7 @@ function TodayWorkoutOverview() {
   // COMPLETED WORKOUT
   // ========================================
 
-  const completedToday =
-    Boolean(lastWorkout?.finishedAt) &&
-    new Date(
-      lastWorkout.finishedAt
-    ).toDateString() ===
-      new Date().toDateString();
+  const completedToday = Boolean(todayWorkout);
 
   // ========================================
   // ACTIVE WORKOUT PROGRESS
@@ -368,13 +363,15 @@ function TodayWorkoutOverview() {
       return;
     }
 
-    startWorkout({
+    const started = startWorkout({
       plan: appliedPlan,
       session: todaySession,
       scheduledDayId: todayId,
     });
 
-    navigate("/workouts/today");
+    if (started) {
+      navigate("/workouts/today");
+    }
   }
 
   // ========================================
@@ -448,18 +445,18 @@ function TodayWorkoutOverview() {
             <div className="today-home-status is-complete">
               ✓{" "}
 
-              {lastWorkout.status === "completed"
+              {todayWorkout.status === "completed"
                 ? "Workout Completed"
                 : "Session Saved"}
             </div>
 
-            <h2>{lastWorkout.sessionName}</h2>
+            <h2>{todayWorkout.sessionName}</h2>
 
             <p>
-              {lastWorkout.totalCompletedSets}
+              {todayWorkout.totalCompletedSets}
               {" "}sets recorded today.
 
-              {lastWorkout.status === "partial"
+              {todayWorkout.status === "partial"
                 ? " This session was partially completed."
                 : " Great work showing up!"}
             </p>

@@ -23,7 +23,15 @@ import {
   buildPerformanceInsights,
 } from "../utils/performanceAnalysis";
 
+import {
+  recommendExerciseProgression,
+} from "../utils/progressionRecommendations";
+
+import ProgressionSuggestionApply from
+  "../components/workouts/ProgressionSuggestionApply";
+
 import "./TrainingInsightsPage.css";
+import "./ProgressionSuggestion.css";
 
 // ==========================================
 // FORMATTING
@@ -482,6 +490,11 @@ function TrainingInsightsPage() {
               `${selectedSession.sessionId}:` +
               insight.exerciseId;
 
+            const progression =
+              recommendExerciseProgression(
+                insight
+              );
+
             const plannedWeight =
               insight.plannedWeight === null
                 ? "Not specified"
@@ -617,6 +630,72 @@ function TrainingInsightsPage() {
                       increase. You can also
                       keep the same weight.
                     </p>
+
+                    {progression.status ===
+                      "review" &&
+                      progression.suggestedWeight !==
+                        null && (
+                      <div className="ti-suggested-load">
+                        <span className="ti-suggested-label">
+                          Suggested Next Weight
+                        </span>
+
+                        <strong className="ti-suggested-value">
+                          {formatNumber(
+                            progression.suggestedWeight
+                          )}{" "}
+                          {progression.weightUnit}
+                        </strong>
+
+                        <span className="ti-suggested-change">
+                          +{formatNumber(
+                            progression.increaseAmount
+                          )}{" "}
+                          {progression.weightUnit}
+                          {" · "}
+                          +{formatNumber(
+                            progression.increasePercent
+                          )}%
+                        </span>
+
+                        <small>
+                          Calculated suggestion only.
+                          Your plan has not changed.
+                          Check technique, effort and
+                          available equipment before
+                          choosing a new weight.
+                        </small>
+                      </div>
+                    )}
+
+                    {progression.status ===
+                      "step-unavailable" && (
+                      <p className="ti-step-warning">
+                        No suggested increase fits
+                        the configured weight step
+                        within the 5% limit.
+                        You can keep your current
+                        planned load.
+                      </p>
+                    )}
+
+                    <ProgressionSuggestionApply
+                      insight={insight}
+                      sessionId={
+                        selectedSession.sessionId
+                      }
+                      onApplied={(weight, unit) => {
+                        setFeedback({
+                          key: insightKey,
+                          type: "success",
+                          text:
+                            "Suggested planned weight updated to " +
+                            formatNumber(weight) +
+                            " " + unit +
+                            ". Completed workout records were not changed.",
+                        });
+                      }}
+                    />
 
                     <div className="ti-update-form">
                       <label

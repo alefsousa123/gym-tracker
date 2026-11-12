@@ -1,6 +1,31 @@
 
 import { exercises } from "./exercises";
 
+import {
+  assessSessionTimeBudget,
+} from "../utils/workoutTimeBudget";
+
+import {
+  createWeeklyTemplate,
+} from "./workoutSplits";
+
+import {
+  evaluateRecommendedWeek,
+} from "../utils/recommendedWeeklyAssessment";
+
+import {
+  evaluatePlanComposition,
+} from "../utils/recommendedPlanComposition";
+
+import {
+  exerciseAssessmentById,
+} from "./exerciseAssessments";
+
+import {
+  rankExercisesForUser,
+  isExerciseForPlanSlot,
+} from "../utils/exerciseRecommendationEngine";
+
 // ==========================================
 // CURATED WORKOUT TEMPLATES
 // ==========================================
@@ -470,52 +495,152 @@ export function isExerciseAvailable(
 // BUILD WORKOUT PLAN PREVIEW
 // ==========================================
 
+
 export function buildPlanPreview(
   plan,
   location,
-  homeEquipment
+  homeEquipment,
+  profile = null
 ) {
-  const exerciseById = new Map(
-    exercises.map((exercise) => [
-      exercise.id,
-      exercise,
-    ])
+  const rankedExercises = rankExercisesForUser(
+    exercises,
+    {
+      profile,
+      isAvailable: (exercise) =>
+        isExerciseAvailable(
+          exercise,
+          location,
+          homeEquipment
+        ),
+    }
   );
+
+
+  // Track repeated exercises across sessions.
+  // Repetition is allowed for progressive overload.
+  const exerciseUseCounts = new Map();
+  const variationUseCounts = new Map();
+
+  function chooseDiversifiedCandidate(
+    slot,
+    usedIds
+  ) {
+    const available = rankedExercises.filter(
+      (item) =>
+        item.eligibleForAutomaticRecommendation &&
+        !usedIds.has(item.exercise.id)
+    );
+
+    const matchingPattern = available.filter(
+      (item) =>
+        isExerciseForPlanSlot(
+          item.exercise,
+          slot.label
+        )
+    );
+
+    // Keep the curated exercise IDs as a
+    // fallback when the slot has no family match.
+    const candidates =
+      matchingPattern.length > 0
+        ? matchingPattern
+        : available.filter(
+            (item) =>
+              slot.exerciseIds.includes(
+                item.exercise.id
+              )
+          );
+
+    let best = null;
+    let bestAdjustedScore = -Infinity;
+
+    for (const candidate of candidates) {
+      const id = candidate.exercise.id;
+
+      const variationGroup =
+        exerciseAssessmentById.get(id)
+          ?.variationGroup;
+
+      // Small penalties, not exclusions.
+      // A strongly suitable exercise may still
+      // appear in more than one session.
+      const repeatedExercisePenalty =
+        (exerciseUseCounts.get(id) ?? 0) * 7;
+
+      const variationPenalty =
+        variationGroup
+          ? (variationUseCounts.get(
+              variationGroup
+            ) ?? 0) * 2
+          : 0;
+
+      const adjustedScore =
+        candidate.score -
+        repeatedExercisePenalty -
+        variationPenalty;
+
+      if (adjustedScore > bestAdjustedScore) {
+        best = candidate;
+        bestAdjustedScore = adjustedScore;
+      }
+    }
+
+    return best;
+  }
 
   let totalSlots = 0;
   let matchedSlots = 0;
+  let totalExerciseScore = 0;
 
   const sessions = plan.sessions.map((session) => {
     const suggestedExercises = [];
     const missingSlots = [];
+    const usedIds = new Set();
 
     session.slots.forEach((slot) => {
       totalSlots += 1;
 
-      const matchingExercise = slot.exerciseIds
-        .map((id) => exerciseById.get(id))
-        .find(
-          (exercise) =>
-            exercise &&
-            isExerciseAvailable(
-              exercise,
-              location,
-              homeEquipment
-            )
-        );
+      // Search all 704 exercises, but preserve
+      // the movement pattern required by this slot.
+      const fallback =
+        chooseDiversifiedCandidate(slot, usedIds);
 
-      if (matchingExercise) {
-        matchedSlots += 1;
-
-        suggestedExercises.push({
-          id: matchingExercise.id,
-          name: matchingExercise.name,
-          muscleGroup: matchingExercise.muscleGroup,
-          equipment: matchingExercise.equipment,
-        });
-      } else {
+      if (!fallback) {
         missingSlots.push(slot.label);
+        return;
       }
+
+      const chosen = fallback.exercise;
+
+      usedIds.add(chosen.id);
+
+      exerciseUseCounts.set(
+        chosen.id,
+        (exerciseUseCounts.get(chosen.id) ?? 0) + 1
+      );
+
+      const variationGroup =
+        exerciseAssessmentById.get(chosen.id)
+          ?.variationGroup;
+
+      if (variationGroup) {
+        variationUseCounts.set(
+          variationGroup,
+          (variationUseCounts.get(
+            variationGroup
+          ) ?? 0) + 1
+        );
+      }
+
+      matchedSlots += 1;
+      totalExerciseScore += fallback.score;
+
+      suggestedExercises.push({
+        id: chosen.id,
+        name: chosen.name,
+        muscleGroup: chosen.muscleGroup,
+        equipment: chosen.equipment,
+      });
     });
 
     return {
@@ -533,19 +658,20 @@ export function buildPlanPreview(
           (matchedSlots / totalSlots) * 100
         );
 
-  const hasEmptySession = sessions.some(
-    (session) =>
-      session.exercises.length === 0
-  );
-
   return {
     sessions,
     totalSlots,
     matchedSlots,
     coverage,
-    hasEmptySession,
-    isComplete:
-      matchedSlots === totalSlots,
+    averageExerciseScore:
+      matchedSlots === 0
+        ? 0
+        : totalExerciseScore / matchedSlots,
+    hasEmptySession: sessions.some(
+      (session) =>
+        session.exercises.length === 0
+    ),
+    isComplete: matchedSlots === totalSlots,
   };
 }
 
@@ -594,8 +720,31 @@ export function getRecommendedPlans(
       const preview = buildPlanPreview(
         plan,
         location,
-        homeEquipment
+        homeEquipment,
+        profile
       );
+
+      const composition =
+        evaluatePlanComposition(
+          preview,
+          profile
+        );
+
+      const weekly =
+        evaluateRecommendedWeek(
+          preview,
+          createWeeklyTemplate(
+            frequency,
+            plan.splitId
+          ),
+          profile
+        );
+
+      const readyToApply =
+        preview.isComplete &&
+        !preview.hasEmptySession &&
+        weekly.missingPatterns.length === 0 &&
+        weekly.missingSessions.length === 0;
 
       let score = 0;
 
@@ -613,14 +762,50 @@ export function getRecommendedPlans(
       // Favor plans with more available exercises.
       score += preview.coverage / 20;
 
+      // Prioritize templates with exercises
+      // that better match this user's profile.
+      score += preview.averageExerciseScore / 10;
+
+      // Composition is a secondary influence.
+      // The primary training goal still matters.
+      score += composition.score / 20;
+
+      // Evaluate actual weekly distribution
+      // of the proposed template.
+      score += weekly.score / 20;
+
+      // Missing weekly movement patterns
+      // reduce recommendation priority.
+      score -=
+        weekly.missingPatterns.length * 2;
+
+      // Analyze time without modifying
+      // the selected exercises yet.
+      const sessionTimeBudgets =
+        preview.sessions.map(
+          (session) => ({
+            sessionId: session.id,
+            ...assessSessionTimeBudget(
+              session.exercises,
+              profile
+            ),
+          })
+        );
+
       return {
         plan,
         preview,
+        composition,
+        weekly,
+        readyToApply,
+        sessionTimeBudgets,
         score,
       };
     })
     .sort(
       (first, second) =>
+        Number(second.readyToApply) -
+          Number(first.readyToApply) ||
         second.score - first.score ||
         second.preview.coverage -
           first.preview.coverage

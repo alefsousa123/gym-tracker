@@ -1,0 +1,530 @@
+import {
+  createWeeklyVolumeAllocation,
+} from "./workoutVolumeAllocation";
+
+/**
+ * D1.18 - Priority redistribution.
+ *
+ * Replaces optional slots to improve
+ * priority-muscle frequency.
+ *
+ * Original session structure is preserved.
+ * No actual exercises are selected here.
+ */
+
+const VALID_REGIONS = [
+  "chest",
+  "back",
+  "legs",
+  "glutes",
+  "shoulders",
+  "arms",
+  "abs",
+  "calves",
+];
+
+const MAJOR_REGIONS = [
+  "chest",
+  "back",
+  "legs",
+  "abs",
+];
+
+const DAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
+function getPriorities(profile) {
+  const chosen =
+    Array.isArray(profile?.musclePriorities)
+      ? profile.musclePriorities
+      : [];
+
+  return [...new Set(chosen)]
+    .filter((region) =>
+      VALID_REGIONS.includes(region)
+    )
+    .slice(0, 3);
+}
+
+function countDays(sessions, region) {
+  return sessions.filter(
+    (session) =>
+      session.slots.some(
+        (slot) => slot.region === region
+      )
+  ).length;
+}
+
+function countSlots(sessions, region) {
+  return sessions.reduce(
+    (total, session) =>
+      total +
+      session.slots.filter(
+        (slot) => slot.region === region
+      ).length,
+    0
+  );
+}
+
+function roleForRegion(region, sessionId) {
+  if (region === "abs") {
+    return "core";
+  }
+
+  if (region === "arms") {
+    return [
+      "pull",
+      "b",
+    ].includes(sessionId)
+      ? "biceps"
+      : "triceps";
+  }
+
+  return region;
+}
+
+function canTrainRegion(
+  splitId,
+  sessionId,
+  region
+) {
+  if (
+    ["abc", "full-body", "custom"].includes(
+      splitId
+    )
+  ) {
+    return true;
+  }
+
+  const lowerBody = [
+    "legs",
+    "glutes",
+    "calves",
+  ].includes(region);
+
+  if (splitId === "upper-lower") {
+    if (region === "abs") return true;
+
+    return lowerBody
+      ? sessionId === "lower"
+      : sessionId === "upper";
+  }
+
+  if (splitId === "push-pull-legs") {
+    if (region === "abs") return true;
+
+    if (lowerBody) {
+      return sessionId === "legs";
+    }
+
+    if (
+      region === "chest" ||
+      region === "shoulders"
+    ) {
+      return sessionId === "push";
+    }
+
+    if (region === "back") {
+      return sessionId === "pull";
+    }
+
+    if (region === "arms") {
+      return [
+        "push",
+        "pull",
+      ].includes(sessionId);
+    }
+  }
+
+  return false;
+}
+
+function dayDistance(first, second) {
+  const distance =
+    Math.abs(first - second);
+
+  return Math.min(
+    distance,
+    7 - distance
+  );
+}
+
+function findReplacement(
+  sessions,
+  splitId,
+  region,
+  priorities
+) {
+  const existingDays = sessions
+    .filter((session) =>
+      session.slots.some(
+        (slot) => slot.region === region
+      )
+    )
+    .map((session) => session.dayIndex);
+
+  let best = null;
+
+  sessions.forEach(
+    (session, sessionIndex) => {
+      if (
+        !canTrainRegion(
+          splitId,
+          session.sessionId,
+          region
+        )
+      ) {
+        return;
+      }
+
+      if (
+        session.slots.some(
+          (slot) =>
+            slot.region === region
+        )
+      ) {
+        return;
+      }
+
+      const distance =
+        existingDays.length === 0
+          ? 0
+          : Math.min(
+              ...existingDays.map(
+                (day) =>
+                  dayDistance(
+                    day,
+                    session.dayIndex
+                  )
+              )
+            );
+
+      const priorityRegionsInSession =
+        priorities.filter(
+          (priority) =>
+            session.slots.some(
+              (slot) =>
+                slot.region === priority
+            )
+        ).length;
+
+      session.slots.forEach(
+        (slot, slotIndex) => {
+          // Never replace structural slots.
+          if (
+            slot.reason !==
+              "session-balance"
+          ) {
+            return;
+          }
+
+          // Never remove an existing priority.
+          if (
+            priorities.includes(
+              slot.region
+            )
+          ) {
+            return;
+          }
+
+          // Preserve at least one weekly
+          // slot for important muscle regions.
+          if (
+            MAJOR_REGIONS.includes(
+              slot.region
+            ) &&
+            countSlots(
+              sessions,
+              slot.region
+            ) <= 1
+          ) {
+            return;
+          }
+
+          const repeatedInSession =
+            session.slots.filter(
+              (item) =>
+                item.region === slot.region
+            ).length > 1;
+
+          const score =
+            distance * 10 -
+            priorityRegionsInSession * 12 +
+            (repeatedInSession ? 3 : 0) +
+            (
+              countSlots(
+                sessions,
+                slot.region
+              ) > 2
+                ? 2
+                : 0
+            );
+
+          if (
+            !best ||
+            score > best.score
+          ) {
+            best = {
+              sessionIndex,
+              slotIndex,
+              score,
+            };
+          }
+        }
+      );
+    }
+  );
+
+  return best;
+}
+
+/**
+ * Returns a new allocation.
+ * Does not mutate D1.16 data.
+ */
+export function rebalancePrioritySessions(
+  profile,
+  muscleAllocation
+) {
+  if (
+    !Array.isArray(
+      muscleAllocation?.sessions
+    )
+  ) {
+    throw new TypeError(
+      "Valid muscle allocation required."
+    );
+  }
+
+  const priorities =
+    getPriorities(profile);
+
+  const sessions =
+    muscleAllocation.sessions.map(
+      (session, index) => ({
+        ...session,
+
+        dayIndex:
+          DAYS.indexOf(session.dayId) >= 0
+            ? DAYS.indexOf(session.dayId)
+            : index,
+
+        slots: session.slots.map(
+          (slot) => ({
+            ...slot,
+          })
+        ),
+      })
+    );
+
+  const targetDays =
+    Math.min(2, sessions.length);
+
+  const replacements = [];
+
+  for (const region of priorities) {
+    while (
+      countDays(sessions, region) <
+      targetDays
+    ) {
+      const candidate =
+        findReplacement(
+          sessions,
+          muscleAllocation.splitId,
+          region,
+          priorities
+        );
+
+      if (!candidate) break;
+
+      const session =
+        sessions[
+          candidate.sessionIndex
+        ];
+
+      const previous =
+        session.slots[
+          candidate.slotIndex
+        ];
+
+      const newRole =
+        roleForRegion(
+          region,
+          session.sessionId
+        );
+
+      session.slots[
+        candidate.slotIndex
+      ] = {
+        ...previous,
+
+        role: newRole,
+        region,
+
+        reason:
+          "priority-frequency",
+
+        replacedRole:
+          previous.role,
+      };
+
+      replacements.push({
+        dayId: session.dayId,
+        sessionId: session.sessionId,
+        addedRegion: region,
+        replacedRole:
+          previous.role,
+      });
+    }
+  }
+
+  const regionTrainingDays =
+    Object.fromEntries(
+      VALID_REGIONS.map(
+        (region) => [
+          region,
+          countDays(
+            sessions,
+            region
+          ),
+        ]
+      )
+    );
+
+  const weeklyRegionSlots =
+    Object.fromEntries(
+      VALID_REGIONS.map(
+        (region) => [
+          region,
+          countSlots(
+            sessions,
+            region
+          ),
+        ]
+      )
+    );
+
+  const missingMajorRegions =
+    MAJOR_REGIONS.filter(
+      (region) =>
+        regionTrainingDays[
+          region
+        ] === 0
+    );
+
+  const missedPriorities =
+    priorities.filter(
+      (region) =>
+        regionTrainingDays[
+          region
+        ] === 0
+    );
+
+  const frequencyGaps =
+    priorities.filter(
+      (region) =>
+        regionTrainingDays[
+          region
+        ] < targetDays
+    );
+
+  const warnings = [
+    ...missingMajorRegions.map(
+      (region) =>
+        "missing-weekly-region:" +
+        region
+    ),
+
+    ...frequencyGaps.map(
+      (region) =>
+        "priority-frequency-unmet:" +
+        region
+    ),
+  ];
+
+  return {
+    ...muscleAllocation,
+
+    sessions: sessions.map(
+      (session) => {
+        const cleanedSession = {
+          ...session,
+        };
+
+        delete cleanedSession.dayIndex;
+
+        return cleanedSession;
+      }
+    ),
+
+    priorities,
+    regionTrainingDays,
+    weeklyRegionSlots,
+    missingMajorRegions,
+    missedPriorities,
+    frequencyGaps,
+    replacements,
+    warnings,
+
+    status:
+      "priority-frequency-proposal",
+
+    exercisesSelected: false,
+    timeFitVerified: false,
+    weeklySetVolumeVerified: false,
+  };
+}
+
+/**
+ * Runs D1.17 volume planning after
+ * the priority redistribution.
+ */
+export function createBalancedVolumeProposal(
+  profile,
+  muscleAllocation
+) {
+  const allocation =
+    rebalancePrioritySessions(
+      profile,
+      muscleAllocation
+    );
+
+  const volume =
+    createWeeklyVolumeAllocation(
+      profile,
+      allocation
+    );
+
+  const warnings = [
+    ...new Set([
+      ...allocation.warnings,
+      ...volume.warnings,
+    ]),
+  ];
+
+  return {
+    allocation,
+    volume,
+    warnings,
+
+    readyForExerciseSelection:
+      allocation.frequencyGaps.length === 0 &&
+      allocation.missingMajorRegions.length === 0 &&
+      volume.sessions.every(
+        (session) =>
+          session.fitsEstimatedTime
+      ),
+
+    // Equipment and actual exercise choices
+    // must still be checked in D1.19.
+    exercisesSelected: false,
+    exactTimeVerified: false,
+  };
+}

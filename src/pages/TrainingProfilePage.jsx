@@ -11,7 +11,14 @@ import {
 import TrainingWeekPreview from
   "../components/workouts/TrainingWeekPreview";
 
+import {
+  trainingFocusAreas,
+  sexOptions,
+  MAX_MUSCLE_PRIORITIES,
+} from "../data/trainingFocusOptions";
+
 import "./TrainingProfilePage.css";
+import "./TrainingProfileFocus.css";
 
 // ==========================================
 // TRAINING GOALS
@@ -97,6 +104,24 @@ const sessionDurations = [30, 45, 60, 75, 90];
 
 function createFormState(profile) {
   return {
+    sex: sexOptions.some(
+      (option) => option.value === profile?.sex
+    )
+      ? profile.sex
+      : "",
+
+    musclePriorities: Array.isArray(
+      profile?.musclePriorities
+    )
+      ? [...new Set(
+          profile.musclePriorities.filter(
+            (value) =>
+              trainingFocusAreas.some(
+                (area) => area.id === value
+              )
+          )
+        )].slice(0, MAX_MUSCLE_PRIORITIES)
+      : [],
     primaryGoal:
       profile?.primaryGoal ??
       profile?.trainingGoal ??
@@ -168,6 +193,37 @@ function TrainingProfilePage() {
   }
 
   // ========================================
+  // MUSCLE FOCUS SELECTION
+  // ========================================
+
+  function toggleMusclePriority(areaId) {
+    setForm((previous) => {
+      const selected = previous.musclePriorities;
+
+      if (selected.includes(areaId)) {
+        return {
+          ...previous,
+          musclePriorities: selected.filter(
+            (id) => id !== areaId
+          ),
+        };
+      }
+
+      if (selected.length >= MAX_MUSCLE_PRIORITIES) {
+        return previous;
+      }
+
+      return {
+        ...previous,
+        musclePriorities: [...selected, areaId],
+      };
+    });
+
+    setError("");
+    setSuccess("");
+  }
+
+  // ========================================
   // SAVE TRAINING PROFILE
   // ========================================
 
@@ -226,6 +282,12 @@ function TrainingProfilePage() {
       trainingGoal: form.primaryGoal,
 
       secondaryGoal: form.secondaryGoal,
+
+      sex: form.sex,
+
+      musclePriorities: [
+        ...form.musclePriorities,
+      ],
 
       experienceLevel:
         form.experienceLevel,
@@ -686,6 +748,110 @@ function TrainingProfilePage() {
               </label>
             </div>
           </fieldset>
+
+          {/* MUSCLE FOCUS AND SEX */}
+
+          <div className="tp-focus-section">
+            <h3>Muscle Areas to Prioritize</h3>
+
+            <p className="tp-focus-description">
+              Choose up to three muscle areas to
+              prioritize, in order of importance.
+
+              These priorities will guide future
+              personalized recommendations, giving
+              your selected areas extra attention
+              without excluding other muscle groups.
+
+              You can change or remove your priorities
+              anytime. Leave all areas unselected
+              for a balanced training approach.
+
+              Changing your priorities does not
+              automatically modify your current
+              workout plan.
+            </p>
+
+            <div className="tp-focus-grid">
+              {trainingFocusAreas.map((area) => {
+                const index =
+                  form.musclePriorities.indexOf(
+                    area.id
+                  );
+
+                const selected = index !== -1;
+
+                const limitReached =
+                  form.musclePriorities.length >=
+                  MAX_MUSCLE_PRIORITIES;
+
+                return (
+                  <button
+                    key={area.id}
+                    type="button"
+                    className={
+                      selected
+                        ? "tp-focus-button is-selected"
+                        : "tp-focus-button"
+                    }
+                    aria-pressed={selected}
+                    disabled={
+                      !selected && limitReached
+                    }
+                    onClick={() =>
+                      toggleMusclePriority(area.id)
+                    }
+                  >
+                    <span
+                      className="tp-focus-index"
+                      aria-hidden="true"
+                    >
+                      {selected ? index + 1 : "+"}
+                    </span>
+
+                    <span>{area.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="tp-field tp-focus-sex-field">
+              <label htmlFor="profileSex">
+                Sex
+
+                <span className="tp-optional">
+                  Optional
+                </span>
+              </label>
+
+              <select
+                id="profileSex"
+                value={form.sex}
+                onChange={(event) =>
+                  updateField(
+                    "sex",
+                    event.target.value
+                  )
+                }
+              >
+                {sexOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+
+              <p className="tp-field-hint">
+                This information does not change
+                your exercise recommendations.
+                Demonstration model preferences
+                may be added separately in the future.
+              </p>
+            </div>
+          </div>
 
           {/* Training Preference Information */}
 

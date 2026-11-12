@@ -1,0 +1,48 @@
+/* D1.21.2: read-only progression suggestion */
+
+.ti-suggested-load {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.ti-suggested-label {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ti-suggested-value {
+  color: var(--color-text);
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+.ti-suggested-change {
+  color: var(--color-success-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ti-suggested-load small {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.ti-step-warning {
+  margin: 12px 0;
+  padding: 11px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  font-size: 12px;
+  line-height: 1.6;
+}

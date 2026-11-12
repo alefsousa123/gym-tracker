@@ -1,0 +1,87 @@
+.ti-suggestion-action {
+  margin: 14px 0;
+}
+
+.ti-suggestion-review-button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-action);
+  border-radius: 10px;
+  background: var(--color-action);
+  color: var(--color-action-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ti-suggestion-review-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ti-suggestion-confirmation {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.ti-suggestion-confirmation h3 {
+  margin: 0 0 12px;
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.ti-suggestion-confirmation p {
+  margin: 8px 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ti-suggestion-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0;
+  color: var(--color-text);
+  font-size: 12px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.ti-suggestion-check input {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.ti-suggestion-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ti-suggestion-cancel-button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ti-suggestion-error {
+  margin: 10px 0 0;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .ti-suggestion-buttons button {
+    width: 100%;
+  }
+}

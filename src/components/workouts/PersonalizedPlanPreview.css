@@ -1,0 +1,191 @@
+.personalized-plan-preview {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.personalized-plan-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.personalized-plan-heading h3 {
+  margin: 5px 0 6px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.personalized-plan-heading p {
+  max-width: 560px;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.personalized-plan-eyebrow {
+  color: var(--color-accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.personalized-plan-toggle {
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.personalized-plan-toggle:hover {
+  filter: brightness(0.92);
+}
+
+.personalized-plan-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.personalized-plan-content {
+  margin-top: 20px;
+}
+
+.personalized-plan-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.personalized-plan-metrics span {
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-page);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.personalized-plan-metrics strong {
+  color: var(--color-text);
+}
+
+.personalized-plan-sessions {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.personalized-plan-session {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-page);
+}
+
+.personalized-plan-session header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.personalized-plan-session h4 {
+  margin: 0 0 5px;
+  font-size: 14px;
+}
+
+.personalized-plan-session header p,
+.personalized-plan-session header span {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.personalized-plan-session ol {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.personalized-plan-session li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+}
+
+.personalized-plan-session li:last-child {
+  border-bottom: 0;
+}
+
+.personalized-plan-session li div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.personalized-plan-session li a {
+  color: var(--color-text);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.personalized-plan-session li a:hover {
+  color: var(--color-accent);
+}
+
+.personalized-plan-session li small {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.personalized-plan-session li > span {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.personalized-plan-warning {
+  margin: 12px 0;
+  padding: 11px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.personalized-plan-note,
+.personalized-plan-disclaimer {
+  margin: 14px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .personalized-plan-preview {
+    padding: 15px;
+  }
+
+  .personalized-plan-toggle {
+    width: 100%;
+  }
+}

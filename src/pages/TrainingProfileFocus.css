@@ -1,0 +1,96 @@
+
+/* Training Profile: optional muscle focus */
+
+.training-profile-page .tp-focus-section {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-border);
+}
+
+.training-profile-page .tp-focus-section h3 {
+  margin: 0 0 8px;
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.training-profile-page .tp-focus-description {
+  margin: 0 0 15px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.training-profile-page .tp-focus-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.training-profile-page .tp-focus-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.training-profile-page .tp-focus-index {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: var(--color-lavender);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.training-profile-page .tp-focus-button.is-selected {
+  background: var(--color-lavender);
+  border-color: var(--color-accent);
+}
+
+.training-profile-page
+.tp-focus-button.is-selected
+.tp-focus-index {
+  background: var(--color-accent);
+  color: white;
+}
+
+.training-profile-page .tp-focus-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.training-profile-page .tp-focus-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.training-profile-page .tp-focus-sex-field {
+  margin-top: 22px;
+}
+
+@media (max-width: 600px) {
+  .training-profile-page .tp-focus-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .training-profile-page .tp-focus-grid {
+    grid-template-columns: 1fr;
+  }
+}

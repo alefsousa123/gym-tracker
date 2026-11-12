@@ -12,6 +12,10 @@ import BackToPreviousPage from
 
 import { exercises } from "../data/exercises";
 
+import {
+  rankExercisesForWorkoutSession,
+} from "../utils/workoutSessionRanking";
+
 import ExerciseMotionPreview from
   "../components/exercises/ExerciseMotionPreview";
 
@@ -50,6 +54,21 @@ import {
 import {
   useWorkoutPlan,
 } from "../context/WorkoutPlanContext";
+
+import {
+  useWorkoutSession,
+} from "../context/WorkoutSessionContext";
+
+import {
+  savePersonalizedRecoverySnapshot,
+} from "../utils/personalizedApplicationSafety";
+
+import {
+  createCompatibleBuilderDraft,
+  getBuilderPlanSignature,
+  isValidPersonalizedBuilderDraft,
+  getBuilderCompatibilityError,
+} from "../utils/workoutBuilderPersonalizedAdapter";
 
 import "./WorkoutBuilderPage.css";
 
@@ -101,8 +120,17 @@ function isValidStoredBuilderState(value) {
 
   if (
     !split ||
-    draft.sessions.length !==
-      split.sessions.length
+    (
+      draft.isPersonalized === true
+        ? (
+            value.mode !== "current" ||
+            !isValidPersonalizedBuilderDraft(
+              draft
+            )
+          )
+        : draft.sessions.length !==
+            split.sessions.length
+    )
   ) {
     return false;
   }
@@ -112,8 +140,14 @@ function isValidStoredBuilderState(value) {
       return (
         session &&
         typeof session === "object" &&
-        session.id ===
-          split.sessions[index].id &&
+        (
+          draft.isPersonalized === true
+            ? session.id.startsWith(
+                "personalized-"
+              )
+            : session.id ===
+                split.sessions[index].id
+        ) &&
         typeof session.name === "string" &&
         Array.isArray(session.exerciseIds) &&
         session.exerciseIds.every(
@@ -145,7 +179,7 @@ function isValidStoredBuilderState(value) {
 // READ SAVED DRAFT FROM SESSION STORAGE
 // ==========================================
 
-function readSavedBuilderState() {
+function readSavedBuilderState(appliedPlan) {
   if (typeof window === "undefined") {
     return null;
   }
@@ -164,6 +198,18 @@ function readSavedBuilderState() {
       JSON.parse(savedValue);
 
     if (!isValidStoredBuilderState(parsedValue)) {
+      return null;
+    }
+
+    const savedSignature =
+      parsedValue.draft.sourcePlanSignature;
+
+    if (
+      parsedValue.mode === "current" &&
+      savedSignature &&
+      savedSignature !==
+        getBuilderPlanSignature(appliedPlan)
+    ) {
       return null;
     }
 
@@ -253,63 +299,10 @@ function createNewDraft(
 // ==========================================
 
 function createDraftFromPlan(plan, profile) {
-  const split = getSplitById(
-    plan.splitId
+  return createCompatibleBuilderDraft(
+    plan,
+    profile
   );
-
-  return {
-    name: plan.name,
-    splitId: split.id,
-    location: plan.location ?? "home",
-
-    weightUnit:
-      plan.weightUnit ??
-      profile?.weightUnit ??
-      "kg",
-
-    sessions: split.sessions.map((session) => {
-      const existingSession =
-        plan.sessions.find(
-          (item) =>
-            item.id === session.id
-        );
-
-      const exerciseIds = [
-        ...new Set(
-          existingSession?.exerciseIds ?? []
-        ),
-      ];
-
-      const exerciseTargets =
-        Object.fromEntries(
-          exerciseIds.map((exerciseId) => [
-            exerciseId,
-
-            normalizeExerciseTarget(
-              exerciseId,
-              existingSession?.exerciseTargets?.[
-                exerciseId
-              ]
-            ),
-          ])
-        );
-
-      return {
-        id: session.id,
-
-        name:
-          existingSession?.name ??
-          session.label,
-
-        exerciseIds,
-        exerciseTargets,
-
-        missingSlots: [
-          ...(existingSession?.missingSlots ?? []),
-        ],
-      };
-    }),
-  };
 }
 
 // ==========================================
@@ -337,12 +330,17 @@ function WorkoutBuilderPage() {
     applyWorkoutPlan,
   } = useWorkoutPlan();
 
+  const { activeWorkout } =
+    useWorkoutSession();
+
   // ========================================
   // LOAD INITIAL SAVED STATE
   // ========================================
 
   const [savedBuilderState] = useState(
-    readSavedBuilderState
+    () => readSavedBuilderState(
+      appliedPlan
+    )
   );
 
   // ========================================
@@ -531,16 +529,15 @@ function WorkoutBuilderPage() {
   // FILTER EXERCISE LIBRARY
   // ========================================
 
+
   const filteredExercises =
-    availableExercises
-      .filter((exercise) => {
+    rankExercisesForWorkoutSession(
+      availableExercises.filter((exercise) => {
         const matchesSearch =
           exercise.name
             .toLowerCase()
             .includes(
-              search
-                .trim()
-                .toLowerCase()
+              search.trim().toLowerCase()
             );
 
         const matchesMuscle =
@@ -548,16 +545,15 @@ function WorkoutBuilderPage() {
           exercise.muscleGroup ===
             effectiveMuscleFilter;
 
-        return (
-          matchesSearch &&
-          matchesMuscle
-        );
-      })
-      .sort((first, second) =>
-        first.name.localeCompare(
-          second.name
-        )
-      );
+        return matchesSearch && matchesMuscle;
+      }),
+      {
+        profile,
+        sessionId: selectedSession?.id,
+        addedIds:
+          selectedSession?.exerciseIds ?? [],
+      }
+    ).map((item) => item.exercise);
 
   // ========================================
   // PLAN SUMMARY
@@ -571,10 +567,23 @@ function WorkoutBuilderPage() {
       0
     );
 
+  const draftSessionIds = new Set(
+    draft.sessions.map(
+      (session) => session.id
+    )
+  );
+
   const requiresScheduleUpdate =
     !weeklySchedule ||
     weeklySchedule.splitId !==
-      draft.splitId;
+      draft.splitId ||
+    weeklySchedule.days.some(
+      (day) =>
+        day.activity === "workout" &&
+        !draftSessionIds.has(
+          day.sessionId
+        )
+    );
 
   const hadMissingTemplateSlots =
     mode === "current" &&
@@ -657,6 +666,8 @@ function WorkoutBuilderPage() {
       ...previousDraft,
       splitId: pendingSplit,
       sessions,
+      isPersonalized: false,
+      sourcePlanSignature: null,
     }));
 
     setActiveSessionId(
@@ -894,6 +905,29 @@ function WorkoutBuilderPage() {
   // ========================================
 
   function getValidationError() {
+    if (activeWorkout) {
+      return {
+        message:
+          "Finish or discard the active workout before saving a new plan.",
+        sessionId: null,
+      };
+    }
+
+    const compatibilityError =
+      getBuilderCompatibilityError(
+        draft,
+        mode,
+        appliedPlan,
+        weeklySchedule
+      );
+
+    if (compatibilityError) {
+      return {
+        message: compatibilityError,
+        sessionId: null,
+      };
+    }
+
     if (!draft.name.trim()) {
       return {
         message:
@@ -1045,6 +1079,15 @@ function WorkoutBuilderPage() {
           id: session.id,
           name: session.name,
 
+          ...(draft.isPersonalized
+            ? {
+                plannedDayId:
+                  session.plannedDayId,
+                originalSessionType:
+                  session.originalSessionType,
+              }
+            : {}),
+
           exerciseIds: [
             ...session.exerciseIds,
           ],
@@ -1077,14 +1120,56 @@ function WorkoutBuilderPage() {
 
       coverage: null,
 
+      ...(draft.isPersonalized
+        ? {
+            isPersonalized: true,
+            generatorVersion:
+              "D1.20.5",
+          }
+        : {}),
+
       sessions: savedSessions,
     };
+
+    // Preserve the previous setup before
+    // replacing an existing applied plan.
+    if (appliedPlan) {
+      try {
+        savePersonalizedRecoverySnapshot(
+          window.localStorage,
+          {
+            appliedPlan,
+            weeklySchedule,
+          }
+        );
+      } catch (backupError) {
+        setError(
+          "Unable to create a recovery copy: " +
+          backupError.message
+        );
+
+        setShowSaveConfirmation(false);
+        return;
+      }
+    }
 
     // Save the applied plan.
 
     applyWorkoutPlan(
       updatedPlan
     );
+
+    // Refresh the draft's source signature
+    // after a successful customization.
+    if (mode === "current") {
+      setDraft((previousDraft) => ({
+        ...previousDraft,
+        sourcePlanSignature:
+          getBuilderPlanSignature(
+            updatedPlan
+          ),
+      }));
+    }
 
     // Update the weekly schedule if needed.
 
@@ -1394,6 +1479,17 @@ function WorkoutBuilderPage() {
           are not converted automatically
           when profile preferences change.
         </p>
+
+        {draft.isPersonalized && (
+          <p className="builder-information">
+            You are editing individual
+            personalized sessions. Their
+            day-specific exercises and targets
+            will be preserved when saving.
+            Changing the split converts this
+            draft to a traditional structure.
+          </p>
+        )}
 
         {/* SPLIT CHANGE CONFIRMATION */}
 

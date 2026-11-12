@@ -121,6 +121,39 @@ function loadInitialHistory() {
   }
 }
 
+function localDay(value) {
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) return null;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function workoutDay(workout) {
+  if (
+    typeof workout?.trainingDate === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(workout.trainingDate)
+  ) {
+    return workout.trainingDate;
+  }
+
+  return localDay(
+    workout?.startedAt ?? workout?.finishedAt
+  );
+}
+
+function findDailyWorkout(history, day) {
+  if (!day || !Array.isArray(history)) return null;
+
+  return history.find(
+    (workout) => workoutDay(workout) === day
+  ) ?? null;
+}
+
 export function WorkoutSessionProvider({
   children,
 }) {
@@ -154,6 +187,38 @@ export function WorkoutSessionProvider({
   // Existing pages can keep using lastWorkout
   const lastWorkout =
     sortedWorkoutHistory[0] ?? null;
+
+  const [dayKey, setDayKey] = useState(
+    () => localDay(new Date())
+  );
+
+  useEffect(() => {
+    const refresh = () =>
+      setDayKey(localDay(new Date()));
+
+    const interval = window.setInterval(refresh, 60000);
+
+    window.addEventListener("focus", refresh);
+
+    document.addEventListener(
+      "visibilitychange",
+      refresh
+    );
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener(
+        "visibilitychange",
+        refresh
+      );
+    };
+  }, []);
+
+  const todayWorkout = findDailyWorkout(
+    sortedWorkoutHistory,
+    dayKey
+  );
 
   const [restTimer, setRestTimer] =
     usePersistentState(
@@ -279,7 +344,17 @@ export function WorkoutSessionProvider({
       !plan ||
       !session?.exerciseIds?.length
     ) {
-      return;
+      return false;
+    }
+
+    const startedAt = new Date();
+    const trainingDate = localDay(startedAt);
+
+    if (
+      !trainingDate ||
+      findDailyWorkout(workoutHistory, trainingDate)
+    ) {
+      return false;
     }
 
     const workoutExercises =
@@ -297,7 +372,8 @@ export function WorkoutSessionProvider({
 
     setActiveWorkout({
       id: `workout-${Date.now()}`,
-      startedAt: new Date().toISOString(),
+      startedAt: startedAt.toISOString(),
+      trainingDate,
 
       planName: plan.name,
       sessionId: session.id,
@@ -312,6 +388,8 @@ export function WorkoutSessionProvider({
 
     setRestTimer(emptyRestTimer);
     setTimedSetTimer(emptyTimedTimer);
+
+    return true;
   }
 
   // ========================================
@@ -692,8 +770,15 @@ export function WorkoutSessionProvider({
   }
 
   function finishWorkout() {
-    if (!activeWorkout) {
-      return;
+    if (!activeWorkout) return false;
+
+    const trainingDate = workoutDay(activeWorkout);
+
+    if (
+      trainingDate &&
+      findDailyWorkout(workoutHistory, trainingDate)
+    ) {
+      return false;
     }
 
     const totalCompletedSets =
@@ -704,7 +789,7 @@ export function WorkoutSessionProvider({
       );
 
     if (totalCompletedSets === 0) {
-      return;
+      return false;
     }
 
     const fullyCompleted =
@@ -733,7 +818,11 @@ export function WorkoutSessionProvider({
     setWorkoutHistory((previousHistory) => {
       const alreadySaved = previousHistory.some(
         (workout) =>
-          workout.id === completedWorkout.id
+          workout.id === completedWorkout.id ||
+          (
+            trainingDate &&
+            workoutDay(workout) === trainingDate
+          )
       );
 
       if (alreadySaved) {
@@ -751,6 +840,8 @@ export function WorkoutSessionProvider({
     setTimedSetTimer(emptyTimedTimer);
 
     checkForTrainingReview(finishedAt);
+
+    return true;
   }
 
   function discardWorkout() {
@@ -820,6 +911,7 @@ export function WorkoutSessionProvider({
           sortedWorkoutHistory,
 
         lastWorkout,
+        todayWorkout,
 
         restTimer,
         timedSetTimer,
