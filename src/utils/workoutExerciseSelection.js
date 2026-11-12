@@ -1,3 +1,6 @@
+import {
+  CURATED_RECOMMENDATION_TAG,
+} from "../data/exerciseRecommendationTags";
 import { exercises } from "../data/exercises";
 
 import {
@@ -138,33 +141,256 @@ export function supportsExerciseSlot(
   );
 }
 
+
+export function getDefaultRolePriority(exercise, role) {
+  if (!exercise?.id) return 0;
+
+  const family =
+    getSelectionMovementFamily(exercise);
+
+  const variation =
+    getSelectionVariationKey(exercise);
+
+  const name = String(exercise.name ?? "");
+  const id = exercise.id;
+
+  // Programming preference, not an efficacy grade.
+  // Higher tiers are considered before lower tiers.
+  // Scores still decide among exercises in a tier.
+
+  if (role === "chest") {
+    if (/svend|squeeze[- ]press|pullover/i.test(name)) {
+      return 0;
+    }
+
+    if (/diamond|close[- ]grip/i.test(name)) {
+      return 1;
+    }
+
+    const conventionalPress =
+      variation.startsWith("bench-press") ||
+      variation === "push-up" ||
+      variation === "floor-press" ||
+      [
+        "bench-press",
+        "dumbbell-chest-press",
+        "push-up",
+      ].includes(id);
+
+    const conventionalFly =
+      variation === "chest-fly";
+
+    if (conventionalPress || conventionalFly) {
+      return 3;
+    }
+
+    if (
+      family === "horizontal-push" ||
+      family === "chest-isolation"
+    ) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  if (role === "back") {
+    if (
+      variation === "pullover" ||
+      family === "pull-accessory" ||
+      /pullover/i.test(name)
+    ) {
+      return 0;
+    }
+
+    if (
+      family === "horizontal-pull" ||
+      family === "vertical-pull"
+    ) {
+      return 3;
+    }
+
+    return 1;
+  }
+
+  // No change to other muscle groups.
+  return 2;
+}
+
+
+const WEEKDAYS_FOR_SIMILARITY = Object.freeze([
+  'monday', 'tuesday', 'wednesday', 'thursday',
+  'friday', 'saturday', 'sunday',
+]);
+
+// Compare meaningful exercise variations,
+// not entire muscle groups.
+export function getNearDuplicateKey(exercise) {
+  if (!exercise?.id) return 'unknown';
+
+  const name = String(
+    exercise.name ?? ''
+  ).toLowerCase();
+
+  const family =
+    getSelectionMovementFamily(exercise);
+
+  const variation = variationKey(exercise);
+
+  // Seated and standing calf exercises
+  // have different emphases.
+  if (family === 'calf') {
+    return /seated|bent.knee/.test(name)
+      ? 'calf-raise-seated'
+      : 'calf-raise-standing';
+  }
+
+  // Avoid stacking very similar
+  // hip-flexion core movements.
+  if (
+    family.startsWith('core-') &&
+    (
+      /\b(?:leg|knee) raise\b/.test(name) ||
+      /toes.to.bar/.test(name)
+    )
+  ) {
+    return 'core-leg-knee-raise';
+  }
+
+  if (
+    family === 'core-stability' &&
+    /plank/.test(name)
+  ) {
+    return /side|lateral/.test(name)
+      ? 'side-plank'
+      : 'front-plank';
+  }
+
+  // Supported and unsupported horizontal
+  // rows can serve distinct functions.
+  if (
+    family === 'horizontal-pull' &&
+    /row|bench.?pull/.test(name)
+  ) {
+    return /seated|supported|bench.?pull/.test(name)
+      ? 'supported-horizontal-row'
+      : 'unsupported-horizontal-row';
+  }
+
+  if (family === 'vertical-pull') {
+    if (/pull.?down/.test(name)) {
+      return 'vertical-pulldown';
+    }
+
+    if (/pull.?up|chin.?up/.test(name)) {
+      return 'vertical-pullup';
+    }
+  }
+
+  if (/glute.?bridge/.test(name)) {
+    return 'glute-bridge';
+  }
+
+  if (/hip.?thrust/.test(name)) {
+    return 'hip-thrust';
+  }
+
+  if (
+    family === 'hip-hinge' &&
+    /romanian|stiff.?leg/.test(name)
+  ) {
+    return 'romanian-hip-hinge';
+  }
+
+  // Existing keys already distinguish
+  // flat, incline and decline bench press.
+  return variation;
+}
+
+// This penalty affects only workout selection.
+// It does not change the exercise's base score.
+// Maximum additional penalty: 50 points.
+export function getSelectionRepeatPenalty(
+  exercise,
+  sameSessionKeys = new Set(),
+  previousDayIds = new Set(),
+  previousDayKeys = new Set()
+) {
+  const key = getNearDuplicateKey(exercise);
+
+  return (
+    sameSessionKeys.has(key) ||
+    previousDayIds.has(exercise.id) ||
+    previousDayKeys.has(key)
+  ) ? 50 : 0;
+}
+
 function adjustedRankingScore(
   item,
   usedInWeek,
   usedVariations,
   sessionVariations,
   slotRole,
-  usedSessionFamilies
+  usedSessionFamilies,
+  sameSessionSimilarityKeys,
+  previousDayIds,
+  previousDayKeys
 ) {
   const exercise = item.exercise;
-  const variation =
-    variationKey(exercise);
 
-  const family =
-    getSelectionMovementFamily(
-      exercise
-    );
+  const variation = variationKey(exercise);
+
+  const family = getSelectionMovementFamily(exercise);
+
+  const name = String(exercise.name ?? "");
+
+  const staticHold =
+    /\b(?:hold|isometric|iso)\b/i.test(name);
+
+  const standardCoreHold =
+    slotRole === "core" &&
+    family === "core-stability" &&
+    /\bplank\b/i.test(name);
+
+  // Prefer dynamic movements when available.
+  // Holds remain eligible as fallbacks.
+  const holdPenalty =
+    staticHold && !standardCoreHold
+      ? 34
+      : 0;
+
+  // Close-grip presses are often more
+  // triceps-biased than standard chest presses.
+  const chestVariationPenalty =
+    slotRole === "chest" &&
+    /close[- ]grip/i.test(name)
+      ? 14
+      : 0;
+
+  // Accessories remain eligible but should not
+  // displace standard pulling patterns without reason.
+  const accessoryBackPenalty =
+    slotRole === "back" &&
+    family === "pull-accessory"
+      ? 25
+      : 0;
 
   return (
     item.score +
-    roleMatchPreference(
-      exercise,
-      slotRole
-    ) -
+    roleMatchPreference(exercise, slotRole) -
     (usedInWeek.get(exercise.id) ?? 0) * 14 -
     (usedVariations.get(variation) ?? 0) * 4 -
     (sessionVariations.get(variation) ?? 0) * 18 -
-    (usedSessionFamilies.get(family) ?? 0) * 6
+    (usedSessionFamilies.get(family) ?? 0) * 6 -
+    holdPenalty -
+    chestVariationPenalty -
+    accessoryBackPenalty -
+    getSelectionRepeatPenalty(
+      exercise,
+      sameSessionSimilarityKeys,
+      previousDayIds,
+      previousDayKeys
+    )
   );
 }
 
@@ -255,14 +481,34 @@ export function createSelectedWorkoutProposal(
   const usedInWeek = new Map();
   const usedVariations = new Map();
   const warnings = [];
+  const selectedByCalendarDay = new Map();
 
   const sessions = volume.sessions.map(
     (session) => {
+      const currentIndex =
+        WEEKDAYS_FOR_SIMILARITY.indexOf(
+          session.dayId
+        );
+
+      const previousDayId =
+        currentIndex < 0
+          ? null
+          : WEEKDAYS_FOR_SIMILARITY[
+              (currentIndex + 6) % 7
+            ];
+
+      const previousDay =
+        selectedByCalendarDay.get(previousDayId) ?? {
+          ids: new Set(),
+          keys: new Set(),
+        };
+
       const selected = [];
       const missingSlots = [];
 
       const usedInSession = new Set();
       const sessionVariations = new Map();
+      const sameSessionSimilarityKeys = new Set();
       const usedSessionFamilies = new Map();
 
       let exerciseSeconds = 0;
@@ -285,13 +531,30 @@ export function createSelectedWorkoutProposal(
               )
           )
           .sort((first, second) =>
+            Number(second.exercise.recommendationTags?.includes(
+              CURATED_RECOMMENDATION_TAG
+            )) -
+            Number(first.exercise.recommendationTags?.includes(
+              CURATED_RECOMMENDATION_TAG
+            )) ||
+            getDefaultRolePriority(
+              second.exercise,
+              slot.role
+            ) -
+            getDefaultRolePriority(
+              first.exercise,
+              slot.role
+            ) ||
             adjustedRankingScore(
               second,
               usedInWeek,
               usedVariations,
               sessionVariations,
               slot.role,
-              usedSessionFamilies
+              usedSessionFamilies,
+              sameSessionSimilarityKeys,
+              previousDay.ids,
+              previousDay.keys
             ) -
             adjustedRankingScore(
               first,
@@ -299,7 +562,10 @@ export function createSelectedWorkoutProposal(
               usedVariations,
               sessionVariations,
               slot.role,
-              usedSessionFamilies
+              usedSessionFamilies,
+              sameSessionSimilarityKeys,
+              previousDay.ids,
+              previousDay.keys
             ) ||
             first.exercise.name.localeCompare(
               second.exercise.name
@@ -398,6 +664,10 @@ export function createSelectedWorkoutProposal(
 
         usedInSession.add(exercise.id);
 
+        sameSessionSimilarityKeys.add(
+          getNearDuplicateKey(exercise)
+        );
+
         usedInWeek.set(
           exercise.id,
           (usedInWeek.get(exercise.id) ?? 0) + 1
@@ -461,6 +731,16 @@ export function createSelectedWorkoutProposal(
           ...slot,
         });
       }
+
+      selectedByCalendarDay.set(
+        session.dayId,
+        {
+          ids: new Set(usedInSession),
+          keys: new Set(
+            sameSessionSimilarityKeys
+          ),
+        }
+      );
 
       return {
         dayId: session.dayId,

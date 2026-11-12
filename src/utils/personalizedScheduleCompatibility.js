@@ -17,7 +17,7 @@ function getPersonalizedSessions(
   appliedPlan
 ) {
   if (
-    appliedPlan?.isPersonalized !== true ||
+    !appliedPlan || (appliedPlan?.isPersonalized !== true && splitId !== 'custom') ||
     appliedPlan.splitId !== splitId ||
     !Array.isArray(appliedPlan.sessions) ||
     appliedPlan.sessions.length === 0

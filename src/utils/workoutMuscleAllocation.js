@@ -108,7 +108,14 @@ function getPriorities(profile) {
     .slice(0, 3);
 }
 
-function getBaseRoles(sessionId, dayIndex) {
+function getBaseRoles(sessionId, dayIndex, targetCount) {
+  // D2.3M: Calves replace the default core
+  // slot on longer PPL leg days.
+  if (
+    sessionId === "legs" && targetCount >= 4
+  ) {
+    return ["legs", "glutes", "calves"];
+  }
   if (
     sessionId === "full-body" ||
     sessionId === "custom"
@@ -155,17 +162,74 @@ function chooseExtraRole({
   slots,
   priorities,
   weeklyRoleCounts,
+  sessionId,
+  targetCount,
 }) {
   let bestRole = null;
   let bestScore = -Infinity;
 
   for (const role of pool) {
-    const current =
-      countInSession(slots, role);
+    const current = countInSession(slots, role);
+    // D2.3N-FIX: Weekly role budgeting.
+    const region = toRegion(role);
+    const regionCaps = {
+      chest: 6, back: 6, legs: 6, glutes: 5,
+      shoulders: 4, arms: 8, abs: 2, calves: 4,
+    };
+    const isAbsPriority = priorities.includes("abs");
+    const coreWeekCap = isAbsPriority ? 4 : 2;
 
-    // No role should occupy more than
-    // three slots in the same session.
-    if (current >= 3) continue;
+    // Preserve the core slot needed by Pull and ABC-B.
+    // Avoid additional core on priority A/Legs days.
+    if (role === "core" && (
+      current >= 1 ||
+      (weeklyRoleCounts.core ?? 0) >= coreWeekCap ||
+      (isAbsPriority && ["a", "legs"].includes(sessionId))
+    )) continue;
+
+    const weeklyRegionSlots = Object.entries(weeklyRoleCounts)
+      .reduce((sum, [existingRole, count]) =>
+        sum + (toRegion(existingRole) === region ? count : 0), 0);
+
+    const cap = region === "abs" && isAbsPriority
+      ? coreWeekCap : (regionCaps[region] ?? 5);
+
+    // Penalize only when exceeding the preferred cap.
+    // This remains a preference, except for core.
+    const overCap = Math.max(0, weeklyRegionSlots + 1 - cap);
+    const weeklyRegionPenalty = overCap * 30;
+    const sessionRegionPenalty = 0;
+
+    // D2.3M: Applies only to nonpriority core.
+    if (
+      role === "core" &&
+      !priorities.includes("abs")
+    ) {
+      if (
+        targetCount >= 4 &&
+        ["a", "push", "c", "upper", "legs"]
+          .includes(sessionId)
+      ) {
+        continue;
+      }
+
+      const maxCoreSlots =
+        targetCount >= 7 ? 2 : 1;
+
+      if (current >= maxCoreSlots) {
+        continue;
+      }
+    }
+
+    // Preserve balanced default sessions.
+    // Extra arm-isolation slots are limited
+    // to two per session. Manual editing remains free.
+    const maxSlots =
+      role === "biceps" || role === "triceps"
+        ? 2
+        : 3;
+
+    if (current >= maxSlots) continue;
 
     const weeklyCount =
       weeklyRoleCounts[role] ?? 0;
@@ -189,12 +253,9 @@ function chooseExtraRole({
       current * 6 +
       weeklyCount * 1.5;
 
-    const score =
-      priorityPoints +
-      firstInSession +
-      firstInWeek +
-      coverageBonus -
-      repetitionPenalty;
+    const score = priorityPoints + firstInSession +
+      firstInWeek + coverageBonus - repetitionPenalty -
+      weeklyRegionPenalty - sessionRegionPenalty;
 
     if (score > bestScore) {
       bestScore = score;
@@ -227,7 +288,7 @@ function createSessionSlots({
   }
 
   const base =
-    getBaseRoles(sessionId, dayIndex);
+    getBaseRoles(sessionId, dayIndex, targetCount);
 
   for (const role of base.slice(
     0,
@@ -243,7 +304,10 @@ function createSessionSlots({
     (
       sessionId === "full-body" ||
       sessionId === "custom" ||
-      sessionId === "c"
+      (
+        sessionId === "c" &&
+        priorities.includes("abs")
+      )
     ) &&
     !slots.some(
       (slot) => slot.role === "core"
@@ -260,6 +324,8 @@ function createSessionSlots({
       slots,
       priorities,
       weeklyRoleCounts,
+      sessionId,
+      targetCount,
     });
 
     if (!role) break;

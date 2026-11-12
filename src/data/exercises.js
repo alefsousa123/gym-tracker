@@ -1,4 +1,8 @@
 import repdbExercises from "./repdb.catalog.generated.json";
+import {
+  CURATED_EXERCISE_IDS,
+  CURATED_RECOMMENDATION_TAG,
+} from "./exerciseRecommendationTags";
 
 // ==========================================
 // ORIGINAL GYM TRACKER EXERCISES
@@ -203,7 +207,17 @@ const additionalExercises = repdbExercises.filter(
 export const exercises = [
   ...originalExercises,
   ...additionalExercises,
-].sort((first, second) =>
+].map((exercise) => ({
+  ...exercise,
+  recommendationTags: [
+    ...(Array.isArray(exercise.recommendationTags)
+      ? exercise.recommendationTags
+      : []),
+    ...(CURATED_EXERCISE_IDS.has(exercise.id)
+      ? [CURATED_RECOMMENDATION_TAG]
+      : []),
+  ],
+})).sort((first, second) =>
   first.name.localeCompare(second.name, "en", {
     sensitivity: "base",
   })

@@ -23,6 +23,7 @@ export function getBuilderPlanSignature(plan) {
     isPersonalized:
       plan.isPersonalized === true,
 
+    customDayAssignments: plan.customDayAssignments,
     sessions: plan.sessions.map(
       (session) => ({
         id: session.id,
@@ -63,7 +64,9 @@ export function createCompatibleBuilderDraft(
   const sourceSessions =
     personalized
       ? plan.sessions
-      : split.sessions.map(
+      : split.id === 'custom' && Array.isArray(plan.sessions) && plan.sessions.length > 0
+        ? plan.sessions
+        : split.sessions.map(
           (definition) => (
             plan.sessions.find(
               (session) =>
@@ -94,6 +97,11 @@ export function createCompatibleBuilderDraft(
 
     sourcePlanSignature:
       getBuilderPlanSignature(plan),
+
+    ...(split.id === 'custom' && !personalized ? {
+      customDayAssignments: {...(plan.customDayAssignments ?? {})},
+      customAssignmentsTouched: true,
+    } : {}),
 
 
     sessions: sourceSessions.map(

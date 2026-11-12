@@ -1224,3 +1224,112 @@ html[data-theme="dark"]
     transition: none;
   }
 }
+
+
+/* D2.3Q — Rolling schedule controls; Terra Active tokens */
+.schedule-rolling-mode-buttons { display:flex; flex-wrap:wrap; gap:10px; }
+.schedule-builder[data-mode="rolling"] > .schedule-panel:not(.schedule-mode-panel):not(.schedule-rolling-panel) { display:none; }
+.schedule-rolling-panel h3 { color:var(--color-text); margin:22px 0 10px; font-size:15px; }
+.schedule-rolling-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.schedule-rolling-fields label { display:flex; flex-direction:column; gap:7px; color:var(--color-text); font-size:12px; font-weight:650; }
+.schedule-rolling-fields input,
+.schedule-rolling-order-row select { width:100%; min-width:0; min-height:43px; padding:8px 11px; border:1px solid var(--color-border-strong); border-radius:9px; background:var(--color-inset); color:var(--color-text); font:inherit; }
+.schedule-rolling-fields input:focus-visible,
+.schedule-rolling-order-row select:focus-visible { outline:2px solid var(--color-focus); outline-offset:2px; }
+.schedule-rolling-order { display:grid; gap:9px; margin:12px 0; }
+.schedule-rolling-order-row { display:grid; grid-template-columns:72px minmax(0,1fr) auto; align-items:center; gap:10px; border:1px solid var(--color-border); border-radius:11px; background:var(--color-inset); padding:10px; }
+.schedule-rolling-order-row > span { color:var(--color-text-secondary); font-size:12px; font-weight:700; }
+.schedule-rolling-preview { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:9px; margin:12px 0 20px; }
+.schedule-rolling-day { display:flex; flex-direction:column; gap:8px; min-height:82px; padding:12px 9px; border-radius:11px; border:1px solid var(--color-border); background:var(--color-inset); overflow-wrap:anywhere; }
+.schedule-rolling-day.is-workout { border-color:var(--color-success-text); background:var(--color-mint); }
+.schedule-rolling-day time { font-size:11px; color:var(--color-text-secondary); }
+.schedule-rolling-day strong { font-size:12px; line-height:1.4; color:var(--color-text); }
+@media (max-width:850px) { .schedule-rolling-preview { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:650px) { .schedule-rolling-fields { grid-template-columns:1fr; } .schedule-rolling-preview { grid-template-columns:repeat(2,minmax(0,1fr)); } .schedule-rolling-order-row { grid-template-columns:1fr; } .schedule-rolling-mode-buttons > button { flex:1 1 180px; } }
+
+/* D2.3Q1 — Same compact day tiles for fixed and rolling schedules. */
+.schedule-fixed-preview-heading,
+.schedule-fixed-editor-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:18px 0 10px;
+}
+.schedule-fixed-preview-heading h3,
+.schedule-fixed-editor-heading h3 {
+  margin:0 0 5px;
+  color:var(--color-text);
+  font-size:15px;
+  line-height:1.35;
+}
+.schedule-fixed-preview-heading p,
+.schedule-fixed-editor-heading p {
+  margin:0;
+  color:var(--color-text-secondary);
+  font-size:12px;
+  line-height:1.6;
+}
+.schedule-fixed-preview-heading > span {
+  padding:6px 10px;
+  border:1px solid var(--color-border);
+  border-radius:999px;
+  background:var(--color-inset);
+  color:var(--color-text-secondary);
+  font-size:11px;
+  font-weight:650;
+}
+/* Reuses D2.3Q .schedule-rolling-preview and .schedule-rolling-day. */
+.schedule-fixed-preview .schedule-fixed-day {
+  position:relative;
+  width:100%;
+  font-family:inherit;
+  text-align:left;
+  cursor:pointer;
+  transition:border-color 150ms ease,box-shadow 150ms ease,transform 150ms ease;
+}
+.schedule-fixed-preview .schedule-fixed-day:hover {
+  border-color:var(--color-accent);
+  transform:translateY(-1px);
+}
+.schedule-fixed-preview .schedule-fixed-day:focus-visible {
+  outline:3px solid var(--color-focus);
+  outline-offset:3px;
+}
+.schedule-fixed-preview .schedule-fixed-day.is-selected {
+  border-color:var(--color-accent);
+  box-shadow:0 0 0 2px var(--color-accent);
+}
+.schedule-fixed-preview .schedule-fixed-day.is-active-recovery {
+  border-color:var(--color-border-strong);
+  background:var(--color-surface-soft);
+}
+.schedule-fixed-today {
+  align-self:flex-start;
+  border-radius:999px;
+  background:var(--color-surface);
+  color:var(--color-accent);
+  padding:3px 7px;
+  font-weight:700;
+  font-size:10px;
+  line-height:1.3;
+}
+.schedule-fixed-editor-heading {
+  padding-top:14px;
+  border-top:1px solid var(--color-border);
+}
+.schedule-fixed-editor-grid {
+  grid-template-columns:minmax(0,1fr);
+}
+.schedule-fixed-editor-grid > .schedule-day-card[data-selected-fixed="false"] {
+  display:none;
+}
+.schedule-fixed-editor-grid > .schedule-day-card[data-selected-fixed="true"] {
+  width:100%;
+  max-width:100%;
+}
+@media (prefers-reduced-motion:reduce) {
+  .schedule-fixed-preview .schedule-fixed-day {transition:none;}
+  .schedule-fixed-preview .schedule-fixed-day:hover {transform:none;}
+}

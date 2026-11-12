@@ -38,11 +38,12 @@ export function WeeklyScheduleProvider({
     }
 
     setWeeklySchedule({
-      splitId: schedule.splitId,
-
-      days: schedule.days.map((day) => ({
-        ...day,
-      })),
+      ...schedule,
+      days: schedule.days.map(day => ({ ...day })),
+      ...(schedule.rolling ? { rolling: {
+        ...schedule.rolling,
+        sessionIds: [...schedule.rolling.sessionIds],
+      }} : {}),
     });
   }
 

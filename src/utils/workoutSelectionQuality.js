@@ -19,11 +19,24 @@ const BEGINNER_TECHNICAL_EXCLUSIONS = new Set([
   "thruster",
 ]);
 
+const NONDEFAULT_TECHNICAL_EXERCISES = new Set([
+  "kettlebell-windmills",
+  "kettlebell-turkish-get-ups",
+  "jefferson-curl",
+  "thruster",
+]);
+
 export function isAppropriateForAutomaticSelection(
   exercise,
   profile
 ) {
   if (!exercise?.id) return false;
+
+  // These remain available for manual selection.
+  // They are not standard automatic workout choices.
+  if (NONDEFAULT_TECHNICAL_EXERCISES.has(exercise.id)) {
+    return false;
+  }
 
   if (
     profile?.experienceLevel === "beginner" &&
@@ -56,6 +69,27 @@ export function getSelectionVariationKey(
   exercise
 ) {
   const id = exercise.id;
+
+  // Different pressing angles can be useful
+  // inside the same workout. Keep ordinary
+  // flat variations grouped together.
+  if (
+    exercise.variationGroup === "bench-press" ||
+    id === "bench-press" ||
+    id === "dumbbell-chest-press"
+  ) {
+    const name = String(exercise.name ?? "");
+
+    if (/\bincline\b/i.test(name)) {
+      return "bench-press-incline";
+    }
+
+    if (/\bdecline\b/i.test(name)) {
+      return "bench-press-decline";
+    }
+
+    return "bench-press-flat";
+  }
 
   if (
     /(?:^|-)barbell-curl(?:$|-)/.test(id) ||

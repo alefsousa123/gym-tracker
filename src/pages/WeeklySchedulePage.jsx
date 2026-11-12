@@ -26,7 +26,6 @@ import {
   daysOfWeek,
   workoutSplits,
   getSplitById,
-  assignWorkoutSessions,
   createWeeklyTemplate,
 } from "../data/workoutSplits";
 
@@ -35,6 +34,8 @@ import {
   assignCompatibleWorkoutSessions,
 } from "../utils/personalizedScheduleCompatibility";
 
+import { createDefaultRollingCycle, getRollingConfigurationError, getRollingScheduleDay, localDateKey } from '../utils/rollingTrainingCycle';
+import { prepareRollingScheduleSave } from '../utils/rollingTrainingIntegration';
 import "./WeeklySchedulePage.css";
 
 // ==========================================
@@ -86,10 +87,12 @@ function getDayLabel(dayId) {
 
 function copySchedule(schedule) {
   return {
-    splitId: schedule.splitId,
-    days: schedule.days.map(
-      (day) => ({ ...day })
-    ),
+    ...schedule,
+    days: schedule.days.map(day => ({ ...day })),
+    ...(schedule.rolling ? { rolling: {
+      ...schedule.rolling,
+      sessionIds: [...schedule.rolling.sessionIds],
+    }} : {}),
   };
 }
 
@@ -166,6 +169,7 @@ function WeeklySchedulePage() {
     );
   });
 
+  const [selectedFixedDayId, setSelectedFixedDayId] = useState(getTodayId());
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] =
     useState("info");
@@ -196,6 +200,101 @@ function WeeklySchedulePage() {
       draft.splitId,
       appliedPlan
     );
+
+
+  // D2.3Q: The original seven-day schedule remains editable.
+  const isRolling = draft.mode === 'rolling';
+  const rollingConfig = draft.rolling ?? createDefaultRollingCycle(appliedPlan);
+  const rollingPreview = Array.from({ length: 14 }, (_, index) => {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    const start = new Date(rollingConfig.startDate + 'T12:00:00');
+    if (!Number.isNaN(start.getTime()) && start > date) {
+      date.setTime(start.getTime());
+    }
+    date.setDate(date.getDate() + index);
+    const result = getRollingScheduleDay({ ...draft, mode: 'rolling', rolling: rollingConfig }, date);
+    const session = appliedPlan?.sessions.find(item => item.id === result?.sessionId);
+    return {
+      date: localDateKey(date),
+      label: new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).format(date),
+      activity: result?.activity ?? 'not-started',
+      sessionName: session?.name ?? 'Session unavailable',
+    };
+  });
+
+  function enableFixed() {
+    setDraft(previous => ({ ...previous, mode: 'fixed' }));
+    setFeedback('');
+    setShowRestoreConfirmation(false);
+  }
+
+  function enableRolling() {
+    if (!appliedPlan) return;
+    setDraft(previous => {
+      const validIds = new Set(appliedPlan.sessions.map(item => item.id));
+      const previousIds = previous.rolling?.sessionIds;
+      const rolling = Array.isArray(previousIds) && previousIds.length &&
+        previousIds.every(id => validIds.has(id))
+          ? previous.rolling
+          : createDefaultRollingCycle(appliedPlan);
+      return { ...previous, mode: 'rolling', splitId: appliedPlan.splitId, rolling };
+    });
+    setFeedback('');
+    setShowRestoreConfirmation(false);
+  }
+
+  function updateRolling(changes) {
+    setDraft(previous => ({
+      ...previous,
+      rolling: { ...(previous.rolling ?? createDefaultRollingCycle(appliedPlan)), ...changes },
+    }));
+    setFeedback('');
+  }
+
+  function updateRollingStep(index, id) {
+    const ids = [...rollingConfig.sessionIds];
+    ids[index] = id;
+    updateRolling({ sessionIds: ids });
+  }
+
+  function removeRollingStep(index) {
+    updateRolling({ sessionIds: rollingConfig.sessionIds.filter((_, position) => position !== index) });
+  }
+
+  function addRollingStep() {
+    if (!appliedPlan?.sessions.length || rollingConfig.sessionIds.length >= 14) return;
+    const next = appliedPlan.sessions[rollingConfig.sessionIds.length % appliedPlan.sessions.length];
+    updateRolling({ sessionIds: [...rollingConfig.sessionIds, next.id] });
+  }
+
+  // D2.3Q1: Compact fixed-week preview. Two calendar weeks, one shared weekday editor.
+  // Both weeks reflect draft changes immediately; neither advances the workout rotation.
+  const fixedTodayKey = localDateKey(new Date());
+  const fixedWeekStart = new Date();
+  fixedWeekStart.setHours(12, 0, 0, 0);
+  fixedWeekStart.setDate(fixedWeekStart.getDate() - (fixedWeekStart.getDay() + 6) % 7);
+  const fixedPreview = Array.from({ length: 14 }, (_, index) => {
+    const date = new Date(fixedWeekStart);
+    date.setDate(fixedWeekStart.getDate() + index);
+    const weekDay = daysOfWeek[index % daysOfWeek.length];
+    const day = draft.days.find(item => item.dayId === weekDay.id);
+    const session = scheduleSessionOptions.find(item => item.id === day?.sessionId);
+    return {
+      date: localDateKey(date),
+      dayId: weekDay.id,
+      weekday: weekDay.label,
+      label: new Intl.DateTimeFormat('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric',
+      }).format(date),
+      activity: day?.activity ?? 'rest',
+      title: day?.activity === 'workout'
+        ? (session?.label ?? 'Choose Session')
+        : day?.activity === 'active-recovery'
+          ? 'Active Recovery'
+          : 'Rest Day',
+    };
+  });
 
   const todayId = getTodayId();
 
@@ -281,9 +380,10 @@ function WeeklySchedulePage() {
     setDraft((previousDraft) => ({
       splitId: newSplitId,
 
-      days: assignWorkoutSessions(
+      days: assignCompatibleWorkoutSessions(
         previousDraft.days,
-        newSplitId
+        newSplitId,
+        appliedPlan
       ),
     }));
 
@@ -464,6 +564,22 @@ function WeeklySchedulePage() {
   function handleSubmit(event) {
     event.preventDefault();
 
+    if (isRolling) {
+      const problem = getRollingConfigurationError(draft, appliedPlan);
+      if (problem) {
+        setFeedback(problem);
+        setFeedbackType('error');
+        return;
+      }
+      const nextSchedule = prepareRollingScheduleSave(weeklySchedule, draft);
+      saveWeeklySchedule(nextSchedule);
+      setDraft(nextSchedule);
+      setShowRestoreConfirmation(false);
+      setFeedback('Rolling training cycle saved. It continues across weeks.');
+      setFeedbackType('success');
+      return;
+    }
+
     if (workoutCount === 0) {
       setFeedback(
         "Select at least one workout day before saving."
@@ -542,8 +658,88 @@ function WeeklySchedulePage() {
 
       <form
         className="schedule-builder"
+        data-mode={isRolling ? 'rolling' : 'fixed'}
         onSubmit={handleSubmit}
       >
+
+        
+        {/* D2.3Q — Scheduling modes */}
+        <section className="schedule-panel schedule-mode-panel">
+          <div className="schedule-section-heading">
+            <div>
+              <h2>Scheduling Mode</h2>
+              <p>Use fixed weekdays or a continuous training and rest rotation.</p>
+            </div>
+          </div>
+          <div className="schedule-rolling-mode-buttons">
+            <button type="button" className={!isRolling ? 'schedule-save-button' : 'schedule-template-button'} onClick={enableFixed}>Fixed Weekly Schedule</button>
+            <button type="button" className={isRolling ? 'schedule-save-button' : 'schedule-template-button'} disabled={!appliedPlan} onClick={enableRolling}>Rolling Training Cycle</button>
+          </div>
+          {!appliedPlan && <p className="schedule-info-note">Save a workout plan before enabling a rolling cycle.</p>}
+          {isRolling && <p className="schedule-info-note">Rolling cycles continue across weeks. The existing weekly streak statistics will be adapted in D2.3R.</p>}
+        </section>
+
+        {isRolling && (
+          <section className="schedule-panel schedule-rolling-panel">
+            <div className="schedule-section-heading">
+              <div>
+                <span className="schedule-section-eyebrow">ROLLING CYCLE</span>
+                <h2>Training and Recovery Rotation</h2>
+                <p>Each training day advances to the next session; rest days do not advance the session order.</p>
+              </div>
+            </div>
+            <div className="schedule-rolling-fields">
+              <label>Cycle Start Date
+                <input type="date" value={rollingConfig.startDate} onChange={event => updateRolling({startDate: event.target.value})}/>
+              </label>
+              <label>Consecutive Training Days
+                <input type="number" min="1" max="7" value={rollingConfig.trainingDays} onChange={event => updateRolling({trainingDays: Number(event.target.value)})}/>
+              </label>
+              <label>Consecutive Rest Days
+                <input type="number" min="1" max="7" value={rollingConfig.restDays} onChange={event => updateRolling({restDays: Number(event.target.value)})}/>
+              </label>
+            </div>
+            <h3>Workout Rotation Order</h3>
+            <p className="schedule-split-description">Use A–B–C–D–E in order, or change each step. The order continues after every rest day.</p>
+            <div className="schedule-rolling-order">
+              {rollingConfig.sessionIds.map((sessionId, index) => (
+                <div className="schedule-rolling-order-row" key={index}>
+                  <span>Step {index + 1}</span>
+                  <select aria-label={'Rotation step ' + (index + 1)} value={sessionId} onChange={event => updateRollingStep(index, event.target.value)}>
+                    {(appliedPlan?.sessions ?? []).map(session => <option key={session.id} value={session.id}>{session.name}</option>)}
+                  </select>
+                  <button type="button" className="schedule-template-button" disabled={rollingConfig.sessionIds.length <= 1} onClick={() => removeRollingStep(index)}>Remove</button>
+                </div>
+              ))}
+            </div>
+            <button type="button" className="schedule-template-button" disabled={rollingConfig.sessionIds.length >= 14} onClick={addRollingStep}>+ Add Rotation Step</button>
+            <h3>Next 14 Days</h3>
+            <div className="schedule-rolling-preview">
+              {rollingPreview.map(day => (
+                <div className={'schedule-rolling-day is-' + (day.activity === 'workout' ? 'workout' : 'rest')} key={day.date}>
+                  <time dateTime={day.date}>{day.label}</time>
+                  <strong>{day.activity === 'workout' ? day.sessionName : day.activity === 'rest' ? 'Rest Day' : 'Before Start'}</strong>
+                </div>
+              ))}
+            </div>
+            <div className="schedule-save-actions">
+              <button type="submit" className="schedule-save-button">Save Rolling Cycle</button>
+              <button type="button" className="schedule-template-button" disabled={!hasUnsavedChanges} onClick={() => setShowRestoreConfirmation(true)}>Restore Saved Schedule</button>
+            </div>
+            {showRestoreConfirmation && (
+              <div className="schedule-plan-notice">
+                <strong>Discard unsaved changes?</strong>
+                <p>This restores the last saved configuration.</p>
+                <div className="schedule-save-actions">
+                  <button type="button" className="schedule-template-button" onClick={handleRestoreSchedule}>Confirm Restore</button>
+                  <button type="button" className="schedule-template-button" onClick={() => setShowRestoreConfirmation(false)}>Keep Editing</button>
+                </div>
+              </div>
+            )}
+            {feedback && <p className={'schedule-feedback is-' + feedbackType} role={feedbackType === 'error' ? 'alert' : 'status'}>{feedback}</p>}
+            <p className="schedule-save-state">{isSaved ? 'All changes are saved.' : 'Save to apply this cycle.'}</p>
+          </section>
+        )}
 
         {/* ==================================
             STEP 01 - WORKOUT SPLIT
@@ -680,7 +876,45 @@ function WeeklySchedulePage() {
             </span>
           </div>
 
-          <div className="schedule-week-grid">
+          {/* D2.3Q1: Match the rolling cycle's compact day tiles. */}
+          <div className="schedule-fixed-preview-heading">
+            <div>
+              <h3>Your Fixed Weekly Pattern</h3>
+              <p>Preview the current and next week. Tap a day to change its activity or workout session.</p>
+            </div>
+            <span>Repeats each week</span>
+          </div>
+
+          <div className="schedule-rolling-preview schedule-fixed-preview" role="group" aria-label="Fixed weekly schedule for two weeks">
+            {fixedPreview.map(day => (
+              <button
+                key={day.date}
+                type="button"
+                className={
+                  'schedule-rolling-day schedule-fixed-day is-' + day.activity +
+                  (day.dayId === selectedFixedDayId ? ' is-selected' : '') +
+                  (day.date === fixedTodayKey ? ' is-today' : '')
+                }
+                onClick={() => setSelectedFixedDayId(day.dayId)}
+                aria-pressed={day.dayId === selectedFixedDayId}
+                aria-label={'Edit ' + day.weekday + ', ' + day.title}
+              >
+                <time dateTime={day.date}>{day.label}</time>
+                <strong>{day.title}</strong>
+                {day.date === fixedTodayKey && <span className="schedule-fixed-today">Today</span>}
+              </button>
+            ))}
+          </div>
+
+          <div className="schedule-fixed-editor-heading">
+            <div>
+              <span className="schedule-section-eyebrow">EDIT SELECTED DAY</span>
+              <h3>{daysOfWeek.find(day => day.id === selectedFixedDayId)?.label ?? 'Select a day'}</h3>
+            </div>
+            <p>Changes update both weeks above. Save your schedule when finished.</p>
+          </div>
+
+          <div className="schedule-week-grid schedule-fixed-editor-grid">
             {daysOfWeek.map((weekDay) => {
               const day = draft.days.find(
                 (item) =>
@@ -715,6 +949,7 @@ function WeeklySchedulePage() {
               return (
                 <article
                   key={weekDay.id}
+                  data-selected-fixed={weekDay.id === selectedFixedDayId}
                   className={
                     `schedule-day-card is-${day.activity} ${
                       isToday ? "is-today" : ""

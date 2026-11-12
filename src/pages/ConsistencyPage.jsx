@@ -22,6 +22,7 @@ import {
   getConsistencyStats,
 } from "../utils/consistencyMetrics";
 
+import { getRollingAdherenceStats } from '../utils/rollingTrainingIntegration';
 import "./ConsistencyPage.css";
 
 // ==========================================
@@ -119,6 +120,57 @@ function ConsistencyPage() {
     goalIsSet
       ? `${stats.recentGoalWeeks}/${stats.recentWeekCount}`
       : "—";
+
+
+  const rollingStats = useMemo(
+    () => getRollingAdherenceStats(workoutHistory, weeklySchedule),
+    [workoutHistory, weeklySchedule]
+  );
+
+  if (weeklySchedule?.mode === 'rolling') {
+    return (
+      <main className="consistency-page">
+        <BackToPreviousPage fallbackTo="/workouts" fallbackLabel="Workouts" className="cs-back-link" />
+        <header className="cs-page-header">
+          <span className="cs-eyebrow">TRAINING PROGRESS</span>
+          <h1>Consistency &amp; Streaks</h1>
+          <p>Your rolling cycle is measured by scheduled workout opportunities, not by fixed calendar weeks.</p>
+        </header>
+        {!rollingStats ? (
+          <section className="cs-panel"><p>The rolling cycle needs a valid configuration.</p><Link to="/workouts/schedule">Review Your Schedule</Link></section>
+        ) : (
+          <>
+            <section className="cs-panel">
+              <div className="cs-section-header"><div><span className="cs-eyebrow">ROLLING TRAINING CYCLE</span><h2>Training &amp; Recovery</h2></div></div>
+              <p>{rollingStats.trainingDays} training days + {rollingStats.restDays} rest days, continuously repeated.</p>
+              <p className="cs-rolling-note">Tracking begins {rollingStats.trackingStartDate}. Rest days never break your rolling streak. A planned workout counts when at least one set is recorded.</p>
+            </section>
+            <section className="cs-rolling-stats" aria-label="Rolling training statistics">
+              <div className="cs-stat-card"><span>Current Rolling Streak</span><strong>{rollingStats.currentStreak}</strong><small>Consecutive completed planned workouts</small></div>
+              <div className="cs-stat-card"><span>Best Rolling Streak</span><strong>{rollingStats.bestStreak}</strong><small>Longest sequence of completed planned workouts</small></div>
+              <div className="cs-stat-card"><span>Completed Planned Days</span><strong>{rollingStats.completedPlanned}</strong><small>Scheduled dates with a recorded set</small></div>
+              <div className="cs-stat-card"><span>Missed Planned Days</span><strong>{rollingStats.missedPlanned}</strong><small>Past planned training dates not completed</small></div>
+            </section>
+            <section className="cs-panel">
+              <div className="cs-section-header"><div><span className="cs-eyebrow">LAST 14 DAYS</span><h2>Your Cycle Timeline</h2></div></div>
+              <div className="cs-rolling-calendar">
+                {rollingStats.last14.map(day => (
+                  <div key={day.date} className={'cs-rolling-day is-' + day.status} title={day.date + ': ' + day.status.replace('-', ' ')}>
+                    <time dateTime={day.date}>{day.date.slice(5)}</time>
+                    <strong>{day.status === 'completed' ? 'Done' : day.status === 'rest' ? 'Rest' : day.status === 'missed' ? 'Missed' : day.status === 'upcoming' ? 'Today' : '—'}</strong>
+                  </div>
+                ))}
+              </div>
+              <p className="cs-rolling-note">Today is not counted as missed until it finishes. Workouts on optional rest days stay in Workout History, but do not advance your planned rotation.</p>
+              {rollingStats.nextWorkout && <p className="cs-rolling-next"><strong>Next planned workout:</strong> {rollingStats.nextWorkout.date}</p>}
+              <p className="cs-rolling-note">Changing the cycle's structure starts a new tracking window. Older completed workouts remain in your history.</p>
+              <Link to="/workouts/schedule">Review Rolling Schedule →</Link>
+            </section>
+          </>
+        )}
+      </main>
+    );
+  }
 
   return (
     <main className="consistency-page">

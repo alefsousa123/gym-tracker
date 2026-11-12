@@ -16,6 +16,8 @@ import { useWorkoutPlan } from "../context/WorkoutPlanContext";
 import { useWeeklySchedule } from "../context/WeeklyScheduleContext";
 import { useWorkoutSession } from "../context/WorkoutSessionContext";
 
+import { getScheduleDayForDate } from '../utils/rollingTrainingCycle';
+import { localDateKey } from '../utils/rollingTrainingCycle';
 import "./TodaysWorkoutPage.css";
 
 // ==========================================
@@ -88,11 +90,19 @@ function TodaysWorkoutPage() {
   // TODAY'S SCHEDULE
   // ========================================
 
+  // D2.3R — Re-evaluate the rolling day when the app remains open past midnight.
+  const [calendarDayKey, setCalendarDayKey] = useState(() => localDateKey());
+  useEffect(() => {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const delay = Math.max(100, tomorrow.getTime() - now.getTime() + 150);
+    const timer = window.setTimeout(() => setCalendarDayKey(localDateKey()), delay);
+    return () => window.clearTimeout(timer);
+  }, [calendarDayKey]);
+
   const todayId = getTodayId();
 
-  const todaySchedule = weeklySchedule?.days.find(
-    (day) => day.dayId === todayId
-  );
+  const todaySchedule = getScheduleDayForDate(weeklySchedule, new Date(calendarDayKey + 'T12:00:00'));
 
   const scheduleMatches =
     Boolean(appliedPlan && weeklySchedule) &&
@@ -107,12 +117,16 @@ function TodaysWorkoutPage() {
         )
       : null;
 
-  const [selectedSessionId, setSelectedSessionId] =
-    useState(
-      scheduledSession?.id ??
-      appliedPlan?.sessions[0]?.id ??
-      ""
-    );
+  // A manual choice lasts only while the same plan and scheduled day remain current.
+  // Deriving this avoids a stale selection after a rolling cycle advances.
+  const preferredSessionId = scheduledSession?.id ?? appliedPlan?.sessions[0]?.id ?? '';
+  const [selectionOverride, setSelectionOverride] = useState(null);
+  const selectedSessionId = selectionOverride?.plan === appliedPlan &&
+    selectionOverride?.scheduledId === preferredSessionId &&
+    selectionOverride?.dayKey === calendarDayKey &&
+    appliedPlan?.sessions.some(session => session.id === selectionOverride.id)
+      ? selectionOverride.id
+      : preferredSessionId;
 
   const selectedSession =
     appliedPlan?.sessions.find(
@@ -680,9 +694,12 @@ function TodaysWorkoutPage() {
                   id="todaySession"
                   value={selectedSession?.id ?? ""}
                   onChange={(event) =>
-                    setSelectedSessionId(
-                      event.target.value
-                    )
+                    setSelectionOverride({
+                      plan: appliedPlan,
+                      scheduledId: preferredSessionId,
+                      dayKey: calendarDayKey,
+                      id: event.target.value,
+                    })
                   }
                 >
                   {appliedPlan.sessions.map(
@@ -698,9 +715,17 @@ function TodaysWorkoutPage() {
                 </select>
               </div>
 
+              {weeklySchedule?.mode === 'rolling' && (
+                  <p className="today-small-note">
+                    Rolling cycle: {weeklySchedule.rolling.trainingDays} training days,
+                    {' '}{weeklySchedule.rolling.restDays} rest days.
+                    {todaySchedule?.activity === 'workout' ? ' Today follows the selected rotation.' :
+                      todaySchedule?.activity === 'not-started' ? ' The cycle has not started yet.' : ' Today is a scheduled rest day.'}
+                  </p>
+                )}
+
               {scheduleMatches &&
-                todaySchedule?.activity !==
-                  "workout" && (
+                todaySchedule?.activity !== "workout" && (
                   <p className="today-small-note">
                     Today is a scheduled rest or
                     recovery day. Starting a

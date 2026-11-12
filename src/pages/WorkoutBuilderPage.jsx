@@ -77,6 +77,7 @@ import {
   updateExerciseEntryTarget,
 } from "../utils/workoutExerciseEntries";
 
+import { reconcileRollingScheduleForPlan } from '../utils/rollingTrainingIntegration';
 import "./WorkoutBuilderPage.css";
 
 // ==========================================
@@ -135,8 +136,9 @@ function isValidStoredBuilderState(value) {
               draft
             )
           )
-        : draft.sessions.length !==
-            split.sessions.length
+        : (draft.splitId === 'custom'
+          ? draft.sessions.length < 1 || draft.sessions.length > 7
+          : draft.sessions.length !== split.sessions.length)
     )
   ) {
     return false;
@@ -152,8 +154,11 @@ function isValidStoredBuilderState(value) {
             ? session.id.startsWith(
                 "personalized-"
               )
-            : session.id ===
-                split.sessions[index].id
+            : (draft.splitId === 'custom'
+              ? typeof session.id === 'string' &&
+                /^custom(?:-[a-g])?$/.test(session.id) &&
+                draft.sessions.findIndex((s) => s.id === session.id) === index
+              : session.id === split.sessions[index].id)
         ) &&
         typeof session.name === "string" &&
         Array.isArray(session.exerciseIds) &&
@@ -256,7 +261,30 @@ function clearSavedBuilderState() {
 // CREATE EMPTY SESSIONS
 // ==========================================
 
+
+// D2.3O: Dynamic named custom workout sessions (A-G).
+const CUSTOM_SESSION_LETTERS = 'ABCDEFG';
+function createCustomWorkoutSession(index) {
+  const letter = CUSTOM_SESSION_LETTERS[index];
+  if (!letter) throw new RangeError('Maximum seven custom sessions.');
+  return {
+    id: index === 0 ? 'custom' : 'custom-' + letter.toLowerCase(),
+    name: 'Workout ' + letter,
+    exerciseIds: [],
+    exerciseTargets: {},
+    missingSlots: [],
+  };
+}
+function suggestedCustomAssignments(days, sessions) {
+  const active = days.filter((day) => day.activity === 'workout');
+  return Object.fromEntries(active.map((day, index) => [
+    day.dayId,
+    sessions[index % sessions.length].id,
+  ]));
+}
+
 function createEmptySessions(splitId) {
+  if (splitId === 'custom') return [createCustomWorkoutSession(0)];
   return getSplitById(splitId).sessions.map(
     (session) => ({
       id: session.id,
@@ -298,6 +326,13 @@ function createNewDraft(
 
     sessions:
       createEmptySessions(splitId),
+    ...(splitId === 'custom' ? {
+      customDayAssignments: suggestedCustomAssignments(
+        createWeeklyTemplate(preferredDays, 'custom').days,
+        createEmptySessions('custom')
+      ),
+      customAssignmentsTouched: false,
+    } : {}),
   };
 }
 
@@ -587,8 +622,10 @@ function WorkoutBuilderPage() {
     weeklySchedule.days.some(
       (day) =>
         day.activity === "workout" &&
-        !draftSessionIds.has(
-          day.sessionId
+        (
+          !draftSessionIds.has(day.sessionId) ||
+          (draft.splitId === 'custom' && !draft.isPersonalized &&
+            (draft.customDayAssignments?.[day.dayId] ?? draft.sessions[0]?.id) !== day.sessionId)
         )
     );
 
@@ -675,6 +712,16 @@ function WorkoutBuilderPage() {
       sessions,
       isPersonalized: false,
       sourcePlanSignature: null,
+      ...(pendingSplit === 'custom' ? {
+        customAssignmentsTouched: false,
+        customDayAssignments: suggestedCustomAssignments(
+          createWeeklyTemplate(Number(profile?.trainingDaysPerWeek ?? 3), 'custom').days,
+          sessions
+        ),
+      } : {
+        customAssignmentsTouched: undefined,
+        customDayAssignments: undefined,
+      }),
     }));
 
     setActiveSessionId(
@@ -696,6 +743,88 @@ function WorkoutBuilderPage() {
       [field]: value,
     }));
 
+    clearMessages();
+  }
+
+
+  // D2.3O: Session definitions belong to this plan,
+  // not to the global list of workout split templates.
+  const customScheduleDays = draft.splitId === 'custom'
+    ? (weeklySchedule?.splitId === 'custom'
+        ? weeklySchedule.days
+        : createWeeklyTemplate(
+            Number(profile?.trainingDaysPerWeek ?? 3), 'custom'
+          ).days).filter((day) => day.activity === 'workout')
+    : [];
+
+  function addCustomWorkout() {
+    if (draft.splitId !== 'custom' || draft.isPersonalized) return;
+    if (draft.sessions.length >= 7) return;
+    const availableIndex = [...CUSTOM_SESSION_LETTERS].findIndex(
+      (_, index) => !draft.sessions.some(
+        (s) => s.id === createCustomWorkoutSession(index).id
+      )
+    );
+    if (availableIndex < 0) return;
+    const next = createCustomWorkoutSession(availableIndex);
+    setDraft((previous) => {
+      const sessions = [...previous.sessions, next];
+      return {
+        ...previous,
+        sessions,
+        customDayAssignments: previous.customAssignmentsTouched
+          ? { ...previous.customDayAssignments }
+          : suggestedCustomAssignments(customScheduleDays, sessions),
+      };
+    });
+    setActiveSessionId(next.id);
+    clearMessages();
+  }
+
+  function renameCustomWorkout(sessionId, name) {
+    setDraft((previous) => ({
+      ...previous,
+      sessions: previous.sessions.map((s) =>
+        s.id === sessionId ? { ...s, name } : s
+      ),
+    }));
+    clearMessages();
+  }
+
+  function removeCustomWorkout(sessionId) {
+    if (draft.splitId !== 'custom' || draft.isPersonalized || draft.sessions.length <= 1) return;
+    const session = draft.sessions.find((s) => s.id === sessionId);
+    if (getExerciseEntries(session).length > 0 && !window.confirm(
+      'Remove ' + session.name + ' and its exercises from this draft?'
+    )) return;
+    const sessions = draft.sessions.filter((s) => s.id !== sessionId);
+    const fallbackId = sessions[0].id;
+    setDraft((previous) => ({
+      ...previous,
+      sessions,
+      customDayAssignments: previous.customAssignmentsTouched
+        ? Object.fromEntries(customScheduleDays.map((day) => [
+            day.dayId,
+            previous.customDayAssignments?.[day.dayId] === sessionId
+              ? fallbackId
+              : (previous.customDayAssignments?.[day.dayId] ?? fallbackId),
+          ]))
+        : suggestedCustomAssignments(customScheduleDays, sessions),
+    }));
+    if (activeSessionId === sessionId) setActiveSessionId(fallbackId);
+    clearMessages();
+  }
+
+  function assignCustomWorkoutToDay(dayId, sessionId) {
+    if (!draft.sessions.some((session) => session.id === sessionId)) return;
+    setDraft((previous) => ({
+      ...previous,
+      customAssignmentsTouched: true,
+      customDayAssignments: {
+        ...previous.customDayAssignments,
+        [dayId]: sessionId,
+      },
+    }));
     clearMessages();
   }
 
@@ -828,6 +957,14 @@ function WorkoutBuilderPage() {
           "Please enter a name for your workout plan.",
         sessionId: null,
       };
+    }
+
+    if (draft.splitId === 'custom' && !draft.isPersonalized) {
+      if (draft.sessions.length < 1 || draft.sessions.length > 7 ||
+          new Set(draft.sessions.map((s) => s.id)).size !== draft.sessions.length ||
+          draft.sessions.some((s) => !s.name.trim())) {
+        return {message: 'Give each custom workout a name and use between one and seven sessions.', sessionId: null};
+      }
     }
 
     for (const session of draft.sessions) {
@@ -1026,6 +1163,9 @@ function WorkoutBuilderPage() {
         : {}),
 
       sessions: savedSessions,
+      ...(draft.splitId === 'custom' && !draft.isPersonalized ? {
+        customDayAssignments: {...draft.customDayAssignments},
+      } : {}),
     };
 
     // Preserve the previous setup before
@@ -1070,16 +1210,39 @@ function WorkoutBuilderPage() {
 
     // Update the weekly schedule if needed.
 
-    if (requiresScheduleUpdate) {
-      saveWeeklySchedule(
-        createWeeklyTemplate(
-          Number(
-            profile?.trainingDaysPerWeek ??
-              3
-          ),
-          draft.splitId
-        )
-      );
+    if (weeklySchedule?.mode === 'rolling') {
+      const nextFixedDays = createWeeklyTemplate(
+        Number(profile?.trainingDaysPerWeek ?? 3), updatedPlan.splitId
+      ).days;
+      saveWeeklySchedule(reconcileRollingScheduleForPlan(
+        weeklySchedule, updatedPlan, nextFixedDays
+      ));
+    } else if (requiresScheduleUpdate) {
+      const baseSchedule = weeklySchedule?.splitId === draft.splitId
+        ? weeklySchedule
+        : createWeeklyTemplate(Number(profile?.trainingDaysPerWeek ?? 3), draft.splitId);
+      if (draft.splitId === 'custom' && !draft.isPersonalized) {
+        const validIds = new Set(savedSessions.map((s) => s.id));
+        let nextIndex = 0;
+        saveWeeklySchedule({
+          splitId: 'custom',
+          days: baseSchedule.days.map((day) => {
+            if (day.activity !== 'workout') return {...day, sessionId: null};
+            const requested = draft.customDayAssignments?.[day.dayId];
+            const sessionId = validIds.has(requested)
+              ? requested
+              : validIds.has(day.sessionId)
+                ? day.sessionId
+                : savedSessions[nextIndex % savedSessions.length].id;
+            nextIndex++;
+            return {...day, sessionId};
+          }),
+        });
+      } else {
+        saveWeeklySchedule(createWeeklyTemplate(
+          Number(profile?.trainingDaysPerWeek ?? 3), draft.splitId
+        ));
+      }
     }
 
     // The draft is no longer needed
@@ -1295,16 +1458,12 @@ function WorkoutBuilderPage() {
 
             <select
               id="builderSplit"
-              value={draft.splitId}
+              value={pendingSplit ?? draft.splitId}
               onChange={(event) => {
-                if (
-                  event.target.value !==
-                  draft.splitId
-                ) {
-                  setPendingSplit(
-                    event.target.value
-                  );
-                }
+                setPendingSplit(
+                  event.target.value === draft.splitId
+                    ? null : event.target.value
+                );
               }}
             >
               {workoutSplits.map(
@@ -1474,6 +1633,98 @@ function WorkoutBuilderPage() {
               and configure individual targets.
             </p>
           </div>
+
+
+          {draft.splitId === 'custom' && !draft.isPersonalized && (
+            <section className="builder-custom-editor" aria-label="Custom workout setup">
+              <div className="builder-custom-topline">
+                <div className="builder-custom-heading">
+                  <span className="builder-custom-kicker">BUILD YOUR OWN SPLIT</span>
+                  <h3>Custom Workout Sessions</h3>
+                  <p>Create independent workouts and assign them to the days you train.</p>
+                </div>
+                <span className="builder-custom-total" aria-label={draft.sessions.length + ' of 7 workouts'}>
+                  {draft.sessions.length} / 7
+                </span>
+              </div>
+
+              <div className="builder-custom-session-list">
+                {draft.sessions.map((session, index) => (
+                  <div className="builder-custom-session-row" key={session.id}>
+                    <span className="builder-custom-letter" aria-hidden="true">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <div className="builder-custom-name-field">
+                      <label htmlFor={'custom-name-' + session.id}>Workout name</label>
+                      <input
+                        id={'custom-name-' + session.id}
+                        type="text"
+                        value={session.name}
+                        maxLength={60}
+                        onChange={(event) => renameCustomWorkout(session.id, event.target.value)}
+                      />
+                      <span className="builder-custom-subtext">
+                        {getExerciseEntries(session).length} exercise entries
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="builder-custom-remove"
+                      disabled={draft.sessions.length <= 1}
+                      aria-label={'Remove ' + (session.name || 'workout')}
+                      onClick={() => removeCustomWorkout(session.id)}
+                    >Remove</button>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="builder-custom-add"
+                disabled={draft.sessions.length >= 7}
+                onClick={addCustomWorkout}
+              >
+                <span aria-hidden="true">+</span>
+                Add Custom Workout
+              </button>
+
+              <div className="builder-custom-separator" />
+
+              <div className="builder-custom-heading builder-custom-heading--days">
+                <span className="builder-custom-kicker">WEEKLY ROTATION</span>
+                <h3>Assign Workouts to Training Days</h3>
+                <p>Choose which session belongs to each scheduled workout day.</p>
+              </div>
+
+              <div className="builder-custom-day-grid">
+                {customScheduleDays.map((day) => (
+                  <div className="builder-custom-day-item" key={day.dayId}>
+                    <label htmlFor={'custom-day-' + day.dayId}>
+                      {day.dayId[0].toUpperCase() + day.dayId.slice(1)}
+                    </label>
+                    <select
+                      id={'custom-day-' + day.dayId}
+                      value={draft.sessions.some((s) => s.id === draft.customDayAssignments?.[day.dayId])
+                        ? draft.customDayAssignments[day.dayId]
+                        : draft.sessions[0].id}
+                      onChange={(event) => assignCustomWorkoutToDay(day.dayId, event.target.value)}
+                    >
+                      {draft.sessions.map((session) => (
+                        <option key={session.id} value={session.id}>
+                          {session.name || session.id}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              <p className="builder-custom-help">
+                Save your plan to apply this rotation. To change workout and rest days,
+                open Weekly Schedule.
+              </p>
+            </section>
+          )}
 
           {/* SESSION TABS */}
 

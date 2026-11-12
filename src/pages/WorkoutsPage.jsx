@@ -248,7 +248,13 @@ function WorkoutsPage() {
       <section className="workouts-hub-summary">
         <h2>Current Weekly Schedule</h2>
 
-        {hasSchedule ? (
+        {hasSchedule ? weeklySchedule.mode === 'rolling' ? (
+            <p>
+              {splitName}{' · '}
+              {weeklySchedule.rolling.trainingDays} training days +{' '}
+              {weeklySchedule.rolling.restDays} rest days (continuous rotation)
+            </p>
+          ) : (
           <p>
             {splitName}
             {" · "}

@@ -20,6 +20,7 @@ import {
   getConsistencyStats,
 } from "../utils/consistencyMetrics";
 
+import { getRollingAdherenceStats } from '../utils/rollingTrainingIntegration';
 import "./DashboardOverview.css";
 
 // Format the date of a completed workout.
@@ -68,8 +69,9 @@ function DashboardPage() {
     weeklyGoal
   );
 
-  const recentWorkouts =
-    workoutHistory.slice(0, 3);
+  const rollingStats = getRollingAdherenceStats(workoutHistory, weeklySchedule);
+
+  const recentWorkouts = workoutHistory.slice(0, 3);
 
   const activeSets =
     activeWorkout
@@ -111,21 +113,19 @@ function DashboardPage() {
         aria-label="Training overview"
       >
         <article className="gd-stat-card">
-          <span>Weekly Goal</span>
+          <span>{rollingStats ? 'Rolling Adherence' : 'Weekly Goal'}</span>
 
           <strong>
-            {weeklyGoal !== null
-              ? `${consistency.currentWeek.days}/${weeklyGoal}`
-              : "—"}
+            {rollingStats ? `${rollingStats.completedPlanned}/${rollingStats.completedPlanned + rollingStats.missedPlanned}`
+              : weeklyGoal !== null ? `${consistency.currentWeek.days}/${weeklyGoal}` : '—'}
           </strong>
 
           <small>
-            {weeklyGoal !== null
-              ? "Training days this week"
-              : "Set a weekly goal"}
+            {rollingStats ? 'Completed / completed-or-missed planned days'
+              : weeklyGoal !== null ? 'Training days this week' : 'Set a weekly goal'}
           </small>
 
-          {weeklyGoal !== null && (
+          {!rollingStats && weeklyGoal !== null && (
             <div
               className="gd-progress-track"
               role="progressbar"
@@ -148,18 +148,15 @@ function DashboardPage() {
         </article>
 
         <article className="gd-stat-card">
-          <span>Weekly Streak</span>
+          <span>{rollingStats ? 'Rolling Streak' : 'Weekly Streak'}</span>
 
           <strong>
-            {weeklyGoal !== null
-              ? consistency.currentStreak
-              : "—"}
+            {rollingStats ? rollingStats.currentStreak : weeklyGoal !== null ? consistency.currentStreak : '—'}
           </strong>
 
           <small>
-            {weeklyGoal !== null
-              ? "Consecutive weeks on target"
-              : "Goal not configured"}
+            {rollingStats ? 'Consecutive planned workouts completed'
+              : weeklyGoal !== null ? 'Consecutive weeks on target' : 'Goal not configured'}
           </small>
         </article>
 

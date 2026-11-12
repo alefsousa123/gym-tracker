@@ -324,6 +324,16 @@ export function isExerciseAvailable(
     return false;
   }
 
+  // Band-assisted pull-ups also require a pull-up bar.
+  // The catalog currently lists only resistance bands.
+  if (
+    location === "home" &&
+    exercise.id === "band-assisted-pull-ups" &&
+    !homeEquipment.includes("Pull-Up Bar")
+  ) {
+    return false;
+  }
+
   // Gym workouts assume gym equipment is available.
   // A detailed gym inventory can be added later.
   if (location === "gym") {
