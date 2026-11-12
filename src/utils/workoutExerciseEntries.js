@@ -329,3 +329,19 @@ export function updateExerciseEntryTarget(
     )
   );
 }
+
+
+// ==========================================
+// U1.5A - ACTIVE WORKOUT ENTRY IDENTITY
+// ==========================================
+
+// New workouts use entryId.
+// Workouts saved before U1.5 use exerciseId.
+
+export function getWorkoutExerciseKey(exercise) {
+  return (
+    exercise?.entryId ??
+    exercise?.exerciseId ??
+    null
+  );
+}

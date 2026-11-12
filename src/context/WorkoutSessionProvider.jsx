@@ -7,6 +7,11 @@ import {
 } from "../utils/workoutTargets";
 
 import {
+  getExerciseEntries,
+  getWorkoutExerciseKey,
+} from "../utils/workoutExerciseEntries";
+
+import {
   usePersistentState,
 } from "../hooks/usePersistentState";
 
@@ -357,18 +362,22 @@ export function WorkoutSessionProvider({
       return false;
     }
 
+
     const workoutExercises =
-      session.exerciseIds.map((exerciseId) => ({
-        exerciseId,
+      getExerciseEntries(session).map(
+        (entry) => ({
+          entryId: entry.entryId,
+          exerciseId: entry.exerciseId,
 
-        target: normalizeExerciseTarget(
-          exerciseId,
-          session.exerciseTargets?.[exerciseId]
-        ),
+          target: normalizeExerciseTarget(
+            entry.exerciseId,
+            entry.target
+          ),
 
-        completedSets: [],
-        skipped: false,
-      }));
+          completedSets: [],
+          skipped: false,
+        })
+      );
 
     setActiveWorkout({
       id: `workout-${Date.now()}`,
@@ -396,7 +405,7 @@ export function WorkoutSessionProvider({
   // RECORD A SET
   // ========================================
 
-  function recordSet(exerciseId, setData) {
+  function recordSet(entryId, setData) {
     setActiveWorkout((previousWorkout) => {
       if (!previousWorkout) {
         return previousWorkout;
@@ -408,7 +417,7 @@ export function WorkoutSessionProvider({
         exercises: previousWorkout.exercises.map(
           (exercise) => {
             if (
-              exercise.exerciseId !== exerciseId ||
+              getWorkoutExerciseKey(exercise) !== entryId ||
               exercise.skipped ||
               exercise.completedSets.length >=
                 Number(exercise.target.sets)
@@ -449,13 +458,13 @@ export function WorkoutSessionProvider({
     });
 
     setTimedSetTimer((current) =>
-      current.exerciseId === exerciseId
+      current.exerciseId === entryId
         ? emptyTimedTimer
         : current
     );
   }
 
-  function undoLastSet(exerciseId) {
+  function undoLastSet(entryId) {
     setActiveWorkout((previousWorkout) => {
       if (!previousWorkout) {
         return previousWorkout;
@@ -466,7 +475,7 @@ export function WorkoutSessionProvider({
 
         exercises: previousWorkout.exercises.map(
           (exercise) =>
-            exercise.exerciseId === exerciseId
+            getWorkoutExerciseKey(exercise) === entryId
               ? {
                   ...exercise,
 
@@ -484,7 +493,7 @@ export function WorkoutSessionProvider({
     });
   }
 
-  function toggleSkipExercise(exerciseId) {
+  function toggleSkipExercise(entryId) {
     setActiveWorkout((previousWorkout) => {
       if (!previousWorkout) {
         return previousWorkout;
@@ -495,7 +504,7 @@ export function WorkoutSessionProvider({
 
         exercises: previousWorkout.exercises.map(
           (exercise) =>
-            exercise.exerciseId === exerciseId
+            getWorkoutExerciseKey(exercise) === entryId
               ? {
                   ...exercise,
                   skipped: !exercise.skipped,
@@ -506,7 +515,7 @@ export function WorkoutSessionProvider({
     });
 
     setTimedSetTimer((current) =>
-      current.exerciseId === exerciseId
+      current.exerciseId === entryId
         ? emptyTimedTimer
         : current
     );

@@ -6,6 +6,10 @@ import {
   recommendExerciseProgression,
 } from "./progressionRecommendations";
 
+import {
+  getExerciseEntries,
+} from "./workoutExerciseEntries";
+
 /**
  * D1.21.3
  *
@@ -20,6 +24,7 @@ export function reviewSuggestedProgression({
   workoutHistory,
   sessionId,
   exerciseId,
+  entryId = null,
   activeWorkout = null,
   expectedToken = null,
 }) {
@@ -53,14 +58,40 @@ export function reviewSuggestedProgression({
       (item) => item.id === sessionId
     );
 
-  if (
-    !session ||
-    !session.exerciseIds?.includes(
-      exerciseId
-    )
-  ) {
+
+  if (!session) {
     return rejected(
       "This exercise is not in the current plan."
+    );
+  }
+
+  const matches =
+    getExerciseEntries(session).filter(
+      (entry) =>
+        entry.exerciseId === exerciseId
+    );
+
+  // A catalog ID is allowed only when it
+  // identifies exactly one occurrence.
+  // Otherwise, require an exact entry ID.
+
+  const selectedEntry =
+    entryId === null
+      ? (
+          matches.length === 1
+            ? matches[0]
+            : null
+        )
+      : matches.find(
+          (entry) =>
+            entry.entryId === entryId
+        );
+
+  if (!selectedEntry) {
+    return rejected(
+      matches.length > 1
+        ? "Select the specific exercise occurrence before reviewing its planned load."
+        : "This exercise occurrence is not in the current plan."
     );
   }
 
@@ -75,7 +106,7 @@ export function reviewSuggestedProgression({
       )
       ?.exercises.find(
         (item) =>
-          item.exerciseId === exerciseId
+          item.entryId === selectedEntry.entryId
       );
 
   if (!insight) {
@@ -129,6 +160,7 @@ export function reviewSuggestedProgression({
 
     sessionId,
     exerciseId,
+    entryId: selectedEntry.entryId,
 
     target: insight.target,
     recent: insight.recent,

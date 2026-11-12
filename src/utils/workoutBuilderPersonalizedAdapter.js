@@ -3,8 +3,9 @@ import {
 } from "../data/workoutSplits";
 
 import {
-  normalizeExerciseTarget,
-} from "./workoutTargets";
+  getExerciseEntries,
+  saveExerciseEntriesToSession,
+} from "./workoutExerciseEntries";
 
 /**
  * A signature identifies the plan from which
@@ -30,6 +31,15 @@ export function getBuilderPlanSignature(plan) {
         exerciseTargets:
           session.exerciseTargets,
         missingSlots: session.missingSlots,
+
+        ...(Array.isArray(
+          session.exerciseEntries
+        )
+          ? {
+              exerciseEntries:
+                session.exerciseEntries,
+            }
+          : {}),
       })
     ),
   });
@@ -85,51 +95,33 @@ export function createCompatibleBuilderDraft(
     sourcePlanSignature:
       getBuilderPlanSignature(plan),
 
+
     sessions: sourceSessions.map(
-      (session) => {
-        const exerciseIds = [
-          ...new Set(
-            session.exerciseIds ?? []
-          ),
-        ];
+      (session) =>
+        saveExerciseEntriesToSession(
+          {
+            id: session.id,
+            name: session.name,
 
-        const exerciseTargets =
-          Object.fromEntries(
-            exerciseIds.map(
-              (exerciseId) => [
-                exerciseId,
+            missingSlots: [
+              ...(session.missingSlots ?? []),
+            ],
 
-                normalizeExerciseTarget(
-                  exerciseId,
-                  session.exerciseTargets?.[
-                    exerciseId
-                  ]
-                ),
-              ]
-            )
-          );
+            ...(personalized
+              ? {
+                  plannedDayId:
+                    session.plannedDayId,
 
-        return {
-          id: session.id,
-          name: session.name,
-          exerciseIds,
-          exerciseTargets,
+                  originalSessionType:
+                    session.originalSessionType,
+                }
+              : {}),
+          },
 
-          missingSlots: [
-            ...(session.missingSlots ?? []),
-          ],
-
-          ...(personalized
-            ? {
-                plannedDayId:
-                  session.plannedDayId,
-                originalSessionType:
-                  session.originalSessionType,
-              }
-            : {}),
-        };
-      }
+          getExerciseEntries(session)
+        )
     ),
+
   };
 }
 

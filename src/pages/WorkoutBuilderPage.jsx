@@ -34,8 +34,6 @@ import {
 } from "../data/workoutSplits";
 
 import {
-  createDefaultExerciseTarget,
-  normalizeExerciseTarget,
   validateExerciseTarget,
 } from "../utils/workoutTargets";
 
@@ -69,6 +67,15 @@ import {
   isValidPersonalizedBuilderDraft,
   getBuilderCompatibilityError,
 } from "../utils/workoutBuilderPersonalizedAdapter";
+
+import {
+  getExerciseEntries,
+  saveExerciseEntriesToSession,
+  appendExerciseEntry,
+  removeExerciseEntry,
+  moveExerciseEntry,
+  updateExerciseEntryTarget,
+} from "../utils/workoutExerciseEntries";
 
 import "./WorkoutBuilderPage.css";
 
@@ -696,205 +703,92 @@ function WorkoutBuilderPage() {
   // ADD AN EXERCISE
   // ========================================
 
+
+  // U1.4 - INDEPENDENT BUILDER ENTRIES
+
   function addExercise(exerciseId) {
     if (
       !selectedSession ||
-      !availableExerciseIds.has(exerciseId) ||
-      selectedSession.exerciseIds.includes(
-        exerciseId
-      )
+      !availableExerciseIds.has(exerciseId)
     ) {
       return;
     }
 
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-
-      sessions:
-        previousDraft.sessions.map(
-          (session) => {
-            if (
-              session.id !== activeSessionId
-            ) {
-              return session;
-            }
-
-            return {
-              ...session,
-
-              exerciseIds: [
-                ...session.exerciseIds,
-                exerciseId,
-              ],
-
-              exerciseTargets: {
-                ...session.exerciseTargets,
-
-                [exerciseId]:
-                  createDefaultExerciseTarget(
-                    exerciseId
-                  ),
-              },
-            };
-          }
-        ),
+    setDraft((previous) => ({
+      ...previous,
+      sessions: previous.sessions.map(
+        (session) =>
+          session.id === activeSessionId
+            ? appendExerciseEntry(
+                session,
+                exerciseId
+              )
+            : session
+      ),
     }));
 
     clearMessages();
   }
-
-  // ========================================
-  // REMOVE AN EXERCISE
-  // ========================================
 
   function removeExercise(
     sessionId,
-    exerciseId
+    entryId
   ) {
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-
-      sessions:
-        previousDraft.sessions.map(
-          (session) => {
-            if (
-              session.id !== sessionId
-            ) {
-              return session;
-            }
-
-            const nextTargets = {
-              ...session.exerciseTargets,
-            };
-
-            delete nextTargets[
-              exerciseId
-            ];
-
-            return {
-              ...session,
-
-              exerciseIds:
-                session.exerciseIds.filter(
-                  (id) =>
-                    id !== exerciseId
-                ),
-
-              exerciseTargets:
-                nextTargets,
-            };
-          }
-        ),
+    setDraft((previous) => ({
+      ...previous,
+      sessions: previous.sessions.map(
+        (session) =>
+          session.id === sessionId
+            ? removeExerciseEntry(
+                session,
+                entryId
+              )
+            : session
+      ),
     }));
 
     clearMessages();
   }
-
-  // ========================================
-  // MOVE EXERCISE POSITION
-  // ========================================
 
   function moveExercise(
     sessionId,
-    exerciseId,
+    entryId,
     direction
   ) {
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-
-      sessions:
-        previousDraft.sessions.map(
-          (session) => {
-            if (
-              session.id !== sessionId
-            ) {
-              return session;
-            }
-
-            const exerciseIds = [
-              ...session.exerciseIds,
-            ];
-
-            const currentIndex =
-              exerciseIds.indexOf(
-                exerciseId
-              );
-
-            const nextIndex =
-              currentIndex +
-              direction;
-
-            if (
-              currentIndex < 0 ||
-              nextIndex < 0 ||
-              nextIndex >=
-                exerciseIds.length
-            ) {
-              return session;
-            }
-
-            [
-              exerciseIds[currentIndex],
-              exerciseIds[nextIndex],
-            ] = [
-              exerciseIds[nextIndex],
-              exerciseIds[currentIndex],
-            ];
-
-            return {
-              ...session,
-              exerciseIds,
-            };
-          }
-        ),
+    setDraft((previous) => ({
+      ...previous,
+      sessions: previous.sessions.map(
+        (session) =>
+          session.id === sessionId
+            ? moveExerciseEntry(
+                session,
+                entryId,
+                direction
+              )
+            : session
+      ),
     }));
 
     clearMessages();
   }
 
-  // ========================================
-  // UPDATE EXERCISE TARGET
-  // ========================================
-
   function updateExerciseTarget(
     sessionId,
-    exerciseId,
+    entryId,
     changes
   ) {
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-
-      sessions:
-        previousDraft.sessions.map(
-          (session) => {
-            if (
-              session.id !== sessionId
-            ) {
-              return session;
-            }
-
-            const previousTarget =
-              normalizeExerciseTarget(
-                exerciseId,
-                session.exerciseTargets?.[
-                  exerciseId
-                ]
-              );
-
-            return {
-              ...session,
-
-              exerciseTargets: {
-                ...session.exerciseTargets,
-
-                [exerciseId]: {
-                  ...previousTarget,
-                  ...changes,
-                },
-              },
-            };
-          }
-        ),
+    setDraft((previous) => ({
+      ...previous,
+      sessions: previous.sessions.map(
+        (session) =>
+          session.id === sessionId
+            ? updateExerciseEntryTarget(
+                session,
+                entryId,
+                changes
+              )
+            : session
+      ),
     }));
 
     clearMessages();
@@ -937,8 +831,11 @@ function WorkoutBuilderPage() {
     }
 
     for (const session of draft.sessions) {
+      const entries =
+        getExerciseEntries(session);
+
       if (
-        session.exerciseIds.length === 0
+        entries.length === 0
       ) {
         return {
           message:
@@ -947,10 +844,8 @@ function WorkoutBuilderPage() {
         };
       }
 
-      for (
-        const exerciseId of
-        session.exerciseIds
-      ) {
+      for (const entry of entries) {
+        const exerciseId = entry.exerciseId;
         const exercise = exercises.find(
           (item) =>
             item.id === exerciseId
@@ -971,9 +866,7 @@ function WorkoutBuilderPage() {
         const result =
           validateExerciseTarget(
             exerciseId,
-            session.exerciseTargets?.[
-              exerciseId
-            ]
+            entry.target
           );
 
         if (result.error) {
@@ -1053,51 +946,55 @@ function WorkoutBuilderPage() {
 
     // Normalize the targets before saving.
 
+
+    // Validate and preserve every occurrence.
+
     const savedSessions =
       draft.sessions.map((session) => {
-        const exerciseTargets =
-          Object.fromEntries(
-            session.exerciseIds.map(
-              (exerciseId) => {
-                const result =
-                  validateExerciseTarget(
-                    exerciseId,
-                    session.exerciseTargets[
-                      exerciseId
-                    ]
-                  );
+        const entries =
+          getExerciseEntries(session).map(
+            (entry) => {
+              const result =
+                validateExerciseTarget(
+                  entry.exerciseId,
+                  entry.target
+                );
 
-                return [
-                  exerciseId,
-                  result.value,
-                ];
+              if (result.error) {
+                throw new Error(
+                  result.error
+                );
               }
-            )
+
+              return {
+                ...entry,
+                target: result.value,
+              };
+            }
           );
 
-        return {
-          id: session.id,
-          name: session.name,
+        return saveExerciseEntriesToSession(
+          {
+            id: session.id,
+            name: session.name,
 
-          ...(draft.isPersonalized
-            ? {
-                plannedDayId:
-                  session.plannedDayId,
-                originalSessionType:
-                  session.originalSessionType,
-              }
-            : {}),
+            ...(draft.isPersonalized
+              ? {
+                  plannedDayId:
+                    session.plannedDayId,
 
-          exerciseIds: [
-            ...session.exerciseIds,
-          ],
+                  originalSessionType:
+                    session.originalSessionType,
+                }
+              : {}),
 
-          exerciseTargets,
+            missingSlots: [
+              ...(session.missingSlots ?? []),
+            ],
+          },
 
-          missingSlots: [
-            ...session.missingSlots,
-          ],
-        };
+          entries
+        );
       });
 
     // Build the final saved plan.
@@ -1648,8 +1545,10 @@ function WorkoutBuilderPage() {
 
                   {/* SELECTED EXERCISES */}
 
-                  {selectedSession.exerciseIds.map(
-                    (exerciseId, index) => {
+                  {getExerciseEntries(selectedSession).map(
+                    (entry, index) => {
+                      const exerciseId = entry.exerciseId;
+                      const entryId = entry.entryId;
                       const exercise =
                         exercises.find(
                           (item) =>
@@ -1662,19 +1561,12 @@ function WorkoutBuilderPage() {
                           exerciseId
                         );
 
-                      const target =
-                        normalizeExerciseTarget(
-                          exerciseId,
-                          selectedSession
-                            .exerciseTargets?.[
-                              exerciseId
-                            ]
-                        );
+                      const target = entry.target;
 
                       return (
                         <div
                           className="builder-selected-item"
-                          key={exerciseId}
+                          key={entryId}
                         >
 
                           {/* EXERCISE CARD */}
@@ -1731,7 +1623,7 @@ function WorkoutBuilderPage() {
                                 onClick={() =>
                                   moveExercise(
                                     selectedSession.id,
-                                    exerciseId,
+                                    entryId,
                                     -1
                                   )
                                 }
@@ -1755,7 +1647,7 @@ function WorkoutBuilderPage() {
                                 onClick={() =>
                                   moveExercise(
                                     selectedSession.id,
-                                    exerciseId,
+                                    entryId,
                                     1
                                   )
                                 }
@@ -1775,7 +1667,7 @@ function WorkoutBuilderPage() {
                                 onClick={() =>
                                   removeExercise(
                                     selectedSession.id,
-                                    exerciseId
+                                    entryId
                                   )
                                 }
                               >
@@ -1798,7 +1690,7 @@ function WorkoutBuilderPage() {
                             onChange={(changes) =>
                               updateExerciseTarget(
                                 selectedSession.id,
-                                exerciseId,
+                                entryId,
                                 changes
                               )
                             }
@@ -1906,10 +1798,15 @@ function WorkoutBuilderPage() {
             ) : (
               filteredExercises.map(
                 (exercise) => {
-                  const isAdded =
-                    selectedSession?.exerciseIds.includes(
-                      exercise.id
-                    ) ?? false;
+                  const alreadyAddedCount =
+                    selectedSession
+                      ? getExerciseEntries(
+                          selectedSession
+                        ).filter(
+                          (entry) =>
+                            entry.exerciseId === exercise.id
+                        ).length
+                      : 0;
 
                   return (
                     <div
@@ -1959,15 +1856,15 @@ function WorkoutBuilderPage() {
 
                       <button
                         type="button"
-                        disabled={isAdded}
+                        disabled={!selectedSession}
                         onClick={() =>
                           addExercise(
                             exercise.id
                           )
                         }
                       >
-                        {isAdded
-                          ? "Added"
+                        {alreadyAddedCount > 0
+                          ? "+ Add Again"
                           : "+ Add"}
                       </button>
                     </div>

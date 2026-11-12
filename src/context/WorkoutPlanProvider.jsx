@@ -9,8 +9,10 @@ import {
 } from "../hooks/usePersistentState";
 
 import {
-  normalizeExerciseTarget,
-} from "../utils/workoutTargets";
+  getExerciseEntries,
+  saveExerciseEntriesToSession,
+  updateExerciseEntryTarget,
+} from "../utils/workoutExerciseEntries";
 
 const STORAGE_KEY =
   "gym-tracker:applied-plan:v1";
@@ -55,41 +57,22 @@ export function WorkoutPlanProvider({
       profile?.weightUnit ??
       "kg";
 
-    const sessions = planData.sessions.map(
-      (session) => {
-        const exerciseIds = [
-          ...session.exerciseIds,
-        ];
 
-        const exerciseTargets =
-          Object.fromEntries(
-            exerciseIds.map(
-              (exerciseId) => [
-                exerciseId,
+    // U1.5B - OCCURRENCE-AWARE PLAN
 
-                normalizeExerciseTarget(
-                  exerciseId,
-                  session.exerciseTargets?.[
-                    exerciseId
-                  ]
-                ),
-              ]
-            )
-          );
-
-        return {
-          ...session,
-
-          exerciseIds,
+    const sessions =
+      planData.sessions.map(
+        (session) => ({
+          ...saveExerciseEntriesToSession(
+            session,
+            getExerciseEntries(session)
+          ),
 
           missingSlots: [
             ...(session.missingSlots ?? []),
           ],
-
-          exerciseTargets,
-        };
-      }
-    );
+        })
+      );
 
     setAppliedPlan({
       ...planData,
@@ -102,9 +85,10 @@ export function WorkoutPlanProvider({
   // MANUAL EXERCISE WEIGHT UPDATE
   // ========================================
 
+
   function updateExerciseWeight(
     sessionId,
-    exerciseId,
+    exerciseReference,
     nextWeight
   ) {
     const weight = Number(nextWeight);
@@ -116,16 +100,48 @@ export function WorkoutPlanProvider({
       return false;
     }
 
-    const sessionExists =
-      appliedPlan?.sessions.some(
+    const selectedSession =
+      appliedPlan?.sessions.find(
         (session) =>
-          session.id === sessionId &&
-          session.exerciseIds.includes(
-            exerciseId
-          )
+          session.id === sessionId
       );
 
-    if (!sessionExists) {
+    if (!selectedSession) {
+      return false;
+    }
+
+    const entries =
+      getExerciseEntries(selectedSession);
+
+    const exactEntry = entries.find(
+      (entry) =>
+        entry.entryId === exerciseReference
+    );
+
+    const matchingExercises =
+      entries.filter(
+        (entry) =>
+          entry.exerciseId ===
+          exerciseReference
+      );
+
+    // Entry ID selects one occurrence.
+    //
+    // A catalog exercise ID remains supported
+    // when it identifies exactly one entry.
+    //
+    // If duplicates exist, a catalog ID alone
+    // is ambiguous, so do not change weights.
+
+    const selectedEntry =
+      exactEntry ??
+      (
+        matchingExercises.length === 1
+          ? matchingExercises[0]
+          : null
+      );
+
+    if (!selectedEntry) {
       return false;
     }
 
@@ -134,39 +150,20 @@ export function WorkoutPlanProvider({
         return previousPlan;
       }
 
-      const sessions =
-        previousPlan.sessions.map(
-          (session) => {
-            if (session.id !== sessionId) {
-              return session;
-            }
-
-            const currentTarget =
-              normalizeExerciseTarget(
-                exerciseId,
-                session.exerciseTargets?.[
-                  exerciseId
-                ]
-              );
-
-            return {
-              ...session,
-
-              exerciseTargets: {
-                ...session.exerciseTargets,
-
-                [exerciseId]: {
-                  ...currentTarget,
-                  weight,
-                },
-              },
-            };
-          }
-        );
-
       return {
         ...previousPlan,
-        sessions,
+
+        sessions:
+          previousPlan.sessions.map(
+            (session) =>
+              session.id === sessionId
+                ? updateExerciseEntryTarget(
+                    session,
+                    selectedEntry.entryId,
+                    { weight }
+                  )
+                : session
+          ),
       };
     });
 

@@ -214,9 +214,79 @@ export function buildTrainingChartData(
     }
   }
 
+
+  // ========================================
+  // U1.7A - GROUP REPEATED ENTRIES
+  // ========================================
+  //
+  // One chart record per workout, exercise
+  // and loading convention.
+  //
+  // Multiple occurrences contribute their
+  // actual sets, reps and load-volume.
+  //
+  // They do not create extra workout
+  // sessions on the chart.
+
+  const combinedRecordsBySession = new Map();
+
+  for (const record of records) {
+    const key = JSON.stringify([
+      record.workoutId,
+      record.finishedAt,
+      record.exerciseId,
+      record.variantKey,
+    ]);
+
+    const previous =
+      combinedRecordsBySession.get(key);
+
+    if (!previous) {
+      combinedRecordsBySession.set(
+        key,
+        { ...record }
+      );
+
+      continue;
+    }
+
+    previous.setCount +=
+      record.setCount;
+
+    previous.weightedSetCount +=
+      record.weightedSetCount;
+
+    previous.totalReps +=
+      record.totalReps;
+
+    previous.maxWeight =
+      previous.maxWeight === null
+        ? record.maxWeight
+        : record.maxWeight === null
+          ? previous.maxWeight
+          : Math.max(
+              previous.maxWeight,
+              record.maxWeight
+            );
+
+    previous.loadVolume =
+      previous.loadVolume === null &&
+      record.loadVolume === null
+        ? null
+        : (
+            previous.loadVolume ?? 0
+          ) + (
+            record.loadVolume ?? 0
+          );
+  }
+
+  const combinedRecords = Array.from(
+    combinedRecordsBySession.values()
+  );
+
   // Oldest sessions first: this is
   // the correct order for a timeline.
-  records.sort(
+  combinedRecords.sort(
     (first, second) =>
       Date.parse(first.finishedAt) -
       Date.parse(second.finishedAt)
@@ -224,7 +294,7 @@ export function buildTrainingChartData(
 
   const exerciseMap = new Map();
 
-  for (const record of records) {
+  for (const record of combinedRecords) {
     exerciseMap.set(
       record.exerciseId,
       record.exerciseName
@@ -243,7 +313,7 @@ export function buildTrainingChartData(
   );
 
   return {
-    records,
+    records: combinedRecords,
     exerciseOptions,
   };
 }

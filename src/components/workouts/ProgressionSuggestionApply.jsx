@@ -66,6 +66,7 @@ export default function ProgressionSuggestionApply({
         workoutHistory,
         sessionId,
         exerciseId: insight.exerciseId,
+        entryId: insight.entryId,
         activeWorkout,
       });
 
@@ -98,6 +99,7 @@ export default function ProgressionSuggestionApply({
         workoutHistory,
         sessionId,
         exerciseId: insight.exerciseId,
+        entryId: insight.entryId,
         activeWorkout,
         expectedToken: pendingToken,
       });
@@ -111,7 +113,7 @@ export default function ProgressionSuggestionApply({
 
     const applied = updateExerciseWeight(
       sessionId,
-      insight.exerciseId,
+      insight.entryId ?? insight.exerciseId,
       result.suggestedWeight
     );
 

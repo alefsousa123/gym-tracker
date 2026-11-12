@@ -40,6 +40,9 @@ export function recommendExerciseProgression(
   const baseResult = {
     exerciseId:
       insight?.exerciseId ?? null,
+
+    entryId:
+      insight?.entryId ?? null,
     weightUnit: unit,
     currentWeight:
       Number.isFinite(baseline) &&

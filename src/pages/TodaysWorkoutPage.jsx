@@ -4,7 +4,10 @@ import { Link } from "react-router";
 
 import { exercises } from "../data/exercises";
 import { daysOfWeek } from "../data/workoutSplits";
-import { normalizeExerciseTarget } from "../utils/workoutTargets";
+import {
+  getExerciseEntries,
+  getWorkoutExerciseKey,
+} from "../utils/workoutExerciseEntries";
 
 import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
 import TimedSetTimer from "../components/workouts/TimedSetTimer";
@@ -126,7 +129,7 @@ function TodaysWorkoutPage() {
   const currentExercise =
     activeWorkout?.exercises.find(
       (exercise) =>
-        exercise.exerciseId === focusedExerciseId
+        getWorkoutExerciseKey(exercise) === focusedExerciseId
     ) ??
     activeWorkout?.exercises.find(
       (exercise) =>
@@ -156,8 +159,8 @@ function TodaysWorkoutPage() {
   const currentIndex =
     activeWorkout?.exercises.findIndex(
       (exercise) =>
-        exercise.exerciseId ===
-        currentExercise?.exerciseId
+        getWorkoutExerciseKey(exercise) ===
+        getWorkoutExerciseKey(currentExercise)
     ) ?? -1;
 
   // ========================================
@@ -192,7 +195,7 @@ function TodaysWorkoutPage() {
   const formKey = currentExercise
     ? [
         activeWorkout?.id,
-        currentExercise.exerciseId,
+        getWorkoutExerciseKey(currentExercise),
         completedForExercise,
       ].join(":")
     : null;
@@ -293,7 +296,7 @@ function TodaysWorkoutPage() {
     ) &&
     timedSetTimer.workoutId === activeWorkout.id &&
     timedSetTimer.exerciseId ===
-      currentExercise.exerciseId &&
+      getWorkoutExerciseKey(currentExercise) &&
     timedSetTimer.setNumber ===
       completedForExercise + 1;
 
@@ -351,7 +354,7 @@ function TodaysWorkoutPage() {
     const currentPosition =
       activeWorkout.exercises.findIndex(
         (exercise) =>
-          exercise.exerciseId === currentId
+          getWorkoutExerciseKey(exercise) === currentId
       );
 
     const ordered = [
@@ -481,7 +484,7 @@ function TodaysWorkoutPage() {
     }
 
     recordSet(
-      currentExercise.exerciseId,
+      getWorkoutExerciseKey(currentExercise),
       {
         reps,
         durationSeconds,
@@ -502,11 +505,11 @@ function TodaysWorkoutPage() {
     clearRestTimer();
 
     const next = findNextExercise(
-      currentExercise.exerciseId
+      getWorkoutExerciseKey(currentExercise)
     );
 
     if (next) {
-      setFocusedExerciseId(next.exerciseId);
+      setFocusedExerciseId(getWorkoutExerciseKey(next));
     }
   }
 
@@ -515,7 +518,7 @@ function TodaysWorkoutPage() {
       return;
     }
 
-    undoLastSet(currentExercise.exerciseId);
+    undoLastSet(getWorkoutExerciseKey(currentExercise));
     clearRestTimer();
     setFormError("");
   }
@@ -530,17 +533,17 @@ function TodaysWorkoutPage() {
     const next = wasSkipped
       ? null
       : findNextExercise(
-          currentExercise.exerciseId
+          getWorkoutExerciseKey(currentExercise)
         );
 
     toggleSkipExercise(
-      currentExercise.exerciseId
+      getWorkoutExerciseKey(currentExercise)
     );
 
     clearRestTimer();
 
     if (next) {
-      setFocusedExerciseId(next.exerciseId);
+      setFocusedExerciseId(getWorkoutExerciseKey(next));
     }
   }
 
@@ -708,21 +711,23 @@ function TodaysWorkoutPage() {
               {/* Exercises before starting */}
 
               <div className="today-start-list">
-                {selectedSession?.exerciseIds.map(
-                  (exerciseId, index) => {
+                
+{selectedSession &&
+                  getExerciseEntries(
+                    selectedSession
+                  ).map((entry, index) => {
+                    const exerciseId =
+                      entry.exerciseId;
+
                     const exercise =
                       findExercise(exerciseId);
 
                     const exerciseTarget =
-                      normalizeExerciseTarget(
-                        exerciseId,
-                        selectedSession
-                          .exerciseTargets?.[exerciseId]
-                      );
+                      entry.target;
 
                     return (
                       <div
-                        key={exerciseId}
+                        key={entry.entryId}
                         className="today-start-item"
                       >
                         <span className="today-start-number">
@@ -869,7 +874,7 @@ function TodaysWorkoutPage() {
 
                       return (
                         <div
-                          key={exercise.exerciseId}
+                          key={getWorkoutExerciseKey(exercise)}
                           className="today-option-group"
                         >
                           <div className="today-review-exercise-heading">
@@ -899,12 +904,10 @@ function TodaysWorkoutPage() {
                               className="today-secondary-button"
                               onClick={() => {
                                 toggleSkipExercise(
-                                  exercise.exerciseId
+                                  getWorkoutExerciseKey(exercise)
                                 );
 
-                                setFocusedExerciseId(
-                                  exercise.exerciseId
-                                );
+                                setFocusedExerciseId(getWorkoutExerciseKey(exercise));
                               }}
                             >
                               Restore Exercise
@@ -917,12 +920,10 @@ function TodaysWorkoutPage() {
                                 className="today-secondary-button"
                                 onClick={() => {
                                   undoLastSet(
-                                    exercise.exerciseId
+                                    getWorkoutExerciseKey(exercise)
                                   );
 
-                                  setFocusedExerciseId(
-                                    exercise.exerciseId
-                                  );
+                                  setFocusedExerciseId(getWorkoutExerciseKey(exercise));
                                 }}
                               >
                                 Undo Last Set
@@ -1017,7 +1018,7 @@ function TodaysWorkoutPage() {
                 <TimedSetTimer
                   workoutId={activeWorkout.id}
                   exerciseId={
-                    currentExercise.exerciseId
+                    getWorkoutExerciseKey(currentExercise)
                   }
                   setNumber={
                     completedForExercise + 1
@@ -1140,13 +1141,11 @@ function TodaysWorkoutPage() {
                     className="today-main-button"
                     onClick={() => {
                       const next = findNextExercise(
-                        currentExercise.exerciseId
+                        getWorkoutExerciseKey(currentExercise)
                       );
 
                       if (next) {
-                        setFocusedExerciseId(
-                          next.exerciseId
-                        );
+                        setFocusedExerciseId(getWorkoutExerciseKey(next));
                       }
                     }}
                   >
@@ -1178,13 +1177,13 @@ function TodaysWorkoutPage() {
                             exercise.exerciseId;
 
                           const isSelected =
-                            currentExercise.exerciseId ===
-                            exercise.exerciseId;
+                            getWorkoutExerciseKey(currentExercise) ===
+                             getWorkoutExerciseKey(exercise);
 
                           return (
                             <button
                               type="button"
-                              key={exercise.exerciseId}
+                              key={getWorkoutExerciseKey(exercise)}
                               className={
                                 isSelected
                                   ? "selected"
@@ -1192,9 +1191,7 @@ function TodaysWorkoutPage() {
                               }
                               aria-pressed={isSelected}
                               onClick={() => {
-                                setFocusedExerciseId(
-                                  exercise.exerciseId
-                                );
+                                setFocusedExerciseId(getWorkoutExerciseKey(exercise));
 
                                 clearRestTimer();
                               }}

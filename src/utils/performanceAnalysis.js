@@ -1,7 +1,7 @@
 
 import {
-  normalizeExerciseTarget,
-} from "./workoutTargets";
+  getExerciseEntries,
+} from "./workoutExerciseEntries";
 
 // ==========================================
 // HELPERS
@@ -36,13 +36,35 @@ function getSets(record) {
 function createSessionResult(
   workout,
   exerciseId,
+  entryId,
   target,
-  weightUnit
+  weightUnit,
+  allowLegacyFallback
 ) {
-  const record = workout.exercises?.find(
-    (item) =>
-      item.exerciseId === exerciseId
-  );
+
+  // Match the exact occurrence first.
+  // Legacy fallback is safe only when the
+  // current plan has one such exercise.
+
+  const candidates =
+    Array.isArray(workout.exercises)
+      ? workout.exercises.filter(
+          (item) =>
+            item.exerciseId === exerciseId
+        )
+      : [];
+
+  const record =
+    candidates.find(
+      (item) => item.entryId === entryId
+    ) ??
+    (
+      allowLegacyFallback &&
+      candidates.length === 1 &&
+      !candidates[0].entryId
+        ? candidates[0]
+        : null
+    );
 
   if (!record) {
     return null;
@@ -153,33 +175,46 @@ export function buildPerformanceInsights(
       // This page evaluates repetition-based
       // training only. Timed exercises remain
       // available in Workout History.
-      const repetitionExercises = (
-        session.exerciseIds ?? []
-      ).filter((exerciseId) => {
-        const target =
-          normalizeExerciseTarget(
-            exerciseId,
-            session.exerciseTargets?.[
-              exerciseId
-            ]
-          );
 
-        return target.targetType === "reps";
-      });
+      const entries =
+        getExerciseEntries(session);
+
+      const occurrenceCounts = new Map();
+
+      for (const entry of entries) {
+        occurrenceCounts.set(
+          entry.exerciseId,
+          (
+            occurrenceCounts.get(
+              entry.exerciseId
+            ) ?? 0
+          ) + 1
+        );
+      }
+
+      const repetitionExercises =
+        entries.filter(
+          (entry) =>
+            entry.target.targetType === "reps"
+        );
 
       return {
         sessionId: session.id,
         sessionName: session.name,
 
+
         exercises: repetitionExercises.map(
-          (exerciseId) => {
-            const target =
-              normalizeExerciseTarget(
-                exerciseId,
-                session.exerciseTargets?.[
-                  exerciseId
-                ]
-              );
+          (entry) => {
+            const {
+              entryId,
+              exerciseId,
+              target,
+            } = entry;
+
+            const allowLegacyFallback =
+              occurrenceCounts.get(
+                exerciseId
+              ) === 1;
 
             const recent = history
               .filter(
@@ -191,8 +226,10 @@ export function buildPerformanceInsights(
                   createSessionResult(
                     workout,
                     exerciseId,
+                    entryId,
                     target,
-                    weightUnit
+                    weightUnit,
+                    allowLegacyFallback
                   )
               )
               .filter(Boolean)
@@ -233,6 +270,7 @@ export function buildPerformanceInsights(
               !alreadyAdjusted;
 
             return {
+              entryId,
               exerciseId,
               target,
               recent,

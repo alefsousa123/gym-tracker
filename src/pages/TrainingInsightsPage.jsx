@@ -223,7 +223,7 @@ function TrainingInsightsPage() {
   function handleApplyWeight(insight) {
     const insightKey =
       `${selectedSession.sessionId}:` +
-      insight.exerciseId;
+      (insight.entryId ?? insight.exerciseId);
 
     const input = String(
       draftWeights[insightKey] ?? ""
@@ -298,7 +298,7 @@ function TrainingInsightsPage() {
 
     const updated = updateExerciseWeight(
       selectedSession.sessionId,
-      insight.exerciseId,
+      insight.entryId ?? insight.exerciseId,
       newWeight
     );
 
@@ -488,7 +488,7 @@ function TrainingInsightsPage() {
           (insight, index) => {
             const insightKey =
               `${selectedSession.sessionId}:` +
-              insight.exerciseId;
+              (insight.entryId ?? insight.exerciseId);
 
             const progression =
               recommendExerciseProgression(
