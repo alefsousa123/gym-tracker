@@ -222,3 +222,57 @@ export const exercises = [
     sensitivity: "base",
   })
 );
+
+
+// D2.3S EQUIPMENT OVERRIDES V2
+// Apply corrected equipment requirements after
+// the complete catalog has been constructed.
+// Preserve exercise IDs and the source dataset.
+
+const equipmentOverridesD23S = {
+  // D2.3S EQUIPMENT CORRECTIONS V3
+  "dumbbell-row": ["Dumbbells", "Bench"],
+  "back-extension": ["Back Extension Machine"],
+
+  "chest-supported-db-row": [
+    "Dumbbells",
+    "Incline Bench"
+  ],
+  "chest-supported-kettlebell-row": [
+    "Kettlebells",
+    "Incline Bench"
+  ],
+  "single-arm-chest-supported-dumbbell-row": [
+    "Dumbbells",
+    "Incline Bench"
+  ],
+  "chest-supported-dumbbell-shrug": [
+    "Dumbbells",
+    "Incline Bench"
+  ],
+  "bench-pull": [
+    "Barbell",
+    "Bench"
+  ],
+  "dumbbell-bench-pull": [
+    "Dumbbells",
+    "Bench"
+  ],
+  "hyperextension-hold-bench": [
+    "Back Extension Machine"
+  ]
+};
+
+for (let index = 0; index < exercises.length; index++) {
+  const exercise = exercises[index];
+
+  const equipment =
+    equipmentOverridesD23S[exercise.id];
+
+  if (equipment) {
+    exercises[index] = {
+      ...exercise,
+      equipment: [...equipment],
+    };
+  }
+}

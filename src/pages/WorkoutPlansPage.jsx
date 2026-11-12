@@ -41,6 +41,10 @@ import {
 } from "../utils/workoutExerciseSelection";
 
 import {
+  createEquipmentAdaptedProposal,
+} from "../utils/equipmentAdaptationProposal";
+
+import {
   preparePersonalizedActivation,
   savePersonalizedRecoverySnapshot,
 } from "../utils/personalizedApplicationSafety";
@@ -199,6 +203,12 @@ function PlanExerciseRow({ selectedExercise }) {
             {selectedExercise.sets ?? "Planned"}
             {" "}sets
           </span>
+          {selectedExercise.adaptedFromRole && (
+            <span className="plans-adapted-role-note">
+              Adapted from {selectedExercise.adaptedFromRole}:
+              now trains {selectedExercise.role} instead
+            </span>
+          )}
         </div>
 
         <span
@@ -243,6 +253,10 @@ function WorkoutPlansPage() {
   const [feedback, setFeedback] =
     useState("");
 
+  // D2.3T v3 EQUIPMENT ADAPTED: exact-preview consent.
+  const [acknowledgedSignature, setAcknowledgedSignature] =
+    useState(null);
+
   const [error, setError] =
     useState("");
 
@@ -259,6 +273,10 @@ function WorkoutPlansPage() {
     locationParam === "home"
       ? locationParam
       : defaultLocation;
+
+  const adaptToEquipment =
+    trainingLocation === "home" &&
+    searchParams.get("adapt") === "1";
 
   const frequency = Number(
     profile?.trainingDaysPerWeek ?? 0
@@ -329,7 +347,9 @@ function WorkoutPlansPage() {
 
     try {
       const proposal =
-        createSelectedWorkoutProposal(
+        (adaptToEquipment
+          ? createEquipmentAdaptedProposal
+          : createSelectedWorkoutProposal)(
           profile,
           {
             splitId: selectedPlan.id,
@@ -367,9 +387,14 @@ function WorkoutPlansPage() {
     pendingSignature !== null &&
     pendingSignature === signature;
 
+  const needsCoverageAcknowledgement =
+    Boolean(proposal?.adaptationChanges?.length);
+
   const canApply =
     Boolean(proposal?.completeSelection) &&
-    !activeWorkout;
+    !activeWorkout &&
+    (!needsCoverageAcknowledgement ||
+      acknowledgedSignature === signature);
 
   const selectedCount =
     proposal?.selectedCount ?? 0;
@@ -434,6 +459,8 @@ function WorkoutPlansPage() {
         splitId: selectedPlan.id,
         location: trainingLocation,
         activeWorkout,
+        acceptCoverageLimitations:
+          acknowledgedSignature === signature,
       });
 
       setPendingSignature(signature);
@@ -474,6 +501,8 @@ function WorkoutPlansPage() {
           splitId: selectedPlan.id,
           location: trainingLocation,
           activeWorkout,
+          acceptCoverageLimitations:
+            acknowledgedSignature === signature,
         });
 
       // Never replace the current plan without
@@ -492,7 +521,9 @@ function WorkoutPlansPage() {
           "personalized-" + selectedPlan.id,
         name:
           selectedPlan.name +
-          " (Personalized)",
+          (proposal.adaptationChanges?.length
+            ? " (Equipment-Adapted)"
+            : " (Personalized)"),
         isPersonalized: true,
       };
 
@@ -747,6 +778,32 @@ function WorkoutPlansPage() {
 
           {selectedPlan && (
             <section className="plans-preview-panel">
+              {trainingLocation === "home" && (
+                <div className="plans-equipment-adaptation-control">
+                  <strong>Equipment Fit</strong>
+                  <p>
+                    The original recommendation keeps its muscle targets.
+                    The optional alternative can fill unavailable slots
+                    with different movements. These are NOT equivalent
+                    replacements for missing back or biceps training.
+                  </p>
+                  <button
+                    type="button"
+                    className="plans-adapt-toggle"
+                    aria-pressed={adaptToEquipment}
+                    onClick={() => {
+                      setAcknowledgedSignature(null);
+                      updateParams({
+                        adapt: adaptToEquipment ? null : "1",
+                      });
+                    }}
+                  >
+                    {adaptToEquipment
+                      ? "Show Original Recommendation"
+                      : "Preview Equipment-Adapted Alternative"}
+                  </button>
+                </div>
+              )}
               <div className="plans-section-heading">
                 <div>
                   <span className="plans-eyebrow">
@@ -783,6 +840,36 @@ function WorkoutPlansPage() {
 
               {proposal && (
                 <>
+                  {proposal.adaptationChanges?.length > 0 && (
+                    <div className="plans-coverage-warning" role="status">
+                      <strong>Equipment-Adapted: Changed Muscle Coverage</strong>
+                      <p>
+                        Some exercise slots were changed to movements
+                        that fit your equipment. They do not replace
+                        the intended benefits of unavailable pulling
+                        or biceps exercises.
+                      </p>
+                      <p>
+                        Requested slots changed or still missing:
+                        {" "}{proposal.uncoveredRoles.join(", ")}.
+                      </p>
+                      <label className="plans-adapt-consent">
+                        <input
+                          type="checkbox"
+                          checked={acknowledgedSignature === signature}
+                          onChange={(event) => {
+                            setPendingSignature(null);
+                            setAcknowledgedSignature(
+                              event.target.checked ? signature : null
+                            );
+                          }}
+                        />
+                        I understand that the alternative changes the
+                        muscle groups trained, and I want to review it.
+                      </label>
+                    </div>
+                  )}
+
                   {!proposal.completeSelection && (
                     <div className="plans-coverage-warning">
                       <strong>

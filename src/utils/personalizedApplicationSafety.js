@@ -20,6 +20,7 @@ export function preparePersonalizedActivation({
   splitId,
   location,
   activeWorkout = null,
+  acceptCoverageLimitations = false,
 }) {
   if (activeWorkout) {
     throw new Error(
@@ -36,6 +37,17 @@ export function preparePersonalizedActivation({
   if (!proposal.completeSelection) {
     throw new Error(
       "The personalized draft is incomplete."
+    );
+  }
+
+  // D2.3T v3 EQUIPMENT ADAPTED: explicit consent.
+  if (
+    proposal.adaptedToEquipment === true &&
+    proposal.adaptationChanges?.length > 0 &&
+    !acceptCoverageLimitations
+  ) {
+    throw new Error(
+      "Confirm the changed muscle coverage before applying this alternative."
     );
   }
 

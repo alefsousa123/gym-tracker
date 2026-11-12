@@ -1003,3 +1003,51 @@ html[data-theme="dark"]
     transition: none;
   }
 }
+
+/* D2.3T v3 EQUIPMENT ADAPTED */
+.plans-equipment-adaptation-control {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.plans-equipment-adaptation-control p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.plans-adapt-toggle {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plans-adapt-toggle:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.plans-adapt-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.plans-adapt-consent input {
+  flex-shrink: 0;
+  margin-top: 4px;
+  accent-color: var(--color-accent);
+}
+.plans-adapted-role-note {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.5;
+}

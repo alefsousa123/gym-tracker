@@ -78,6 +78,11 @@ import {
 } from "../utils/workoutExerciseEntries";
 
 import { reconcileRollingScheduleForPlan } from '../utils/rollingTrainingIntegration';
+import {
+  exerciseMuscleFilterOptions,
+  matchesPrimaryMuscleFilter,
+} from "../utils/exerciseMuscleFilters";
+
 import "./WorkoutBuilderPage.css";
 
 // ==========================================
@@ -456,6 +461,8 @@ function WorkoutBuilderPage() {
       "all"
   );
 
+  const [showUnavailable, setShowUnavailable] = useState(false);
+
   // ========================================
   // TEMPORARY CONFIRMATION STATE
   // ========================================
@@ -553,13 +560,7 @@ function WorkoutBuilderPage() {
   // MUSCLE GROUP OPTIONS
   // ========================================
 
-  const muscleGroups = [
-    ...new Set(
-      availableExercises.map(
-        (exercise) => exercise.muscleGroup
-      )
-    ),
-  ].sort();
+  const muscleGroups = exerciseMuscleFilterOptions;
 
   const effectiveMuscleFilter =
     muscleFilter === "all" ||
@@ -572,30 +573,18 @@ function WorkoutBuilderPage() {
   // ========================================
 
 
-  const filteredExercises =
-    rankExercisesForWorkoutSession(
-      availableExercises.filter((exercise) => {
-        const matchesSearch =
-          exercise.name
-            .toLowerCase()
-            .includes(
-              search.trim().toLowerCase()
-            );
-
-        const matchesMuscle =
-          effectiveMuscleFilter === "all" ||
-          exercise.muscleGroup ===
-            effectiveMuscleFilter;
-
-        return matchesSearch && matchesMuscle;
-      }),
-      {
-        profile,
-        sessionId: selectedSession?.id,
-        addedIds:
-          selectedSession?.exerciseIds ?? [],
-      }
-    ).map((item) => item.exercise);
+  const filteredExercises = rankExercisesForWorkoutSession(
+    (showUnavailable ? exercises : availableExercises).filter((exercise) =>
+      exercise.name.toLowerCase().includes(search.trim().toLowerCase()) &&
+      matchesPrimaryMuscleFilter(exercise, effectiveMuscleFilter)
+    ),
+    {
+      profile,
+      sessionId: selectedSession?.id,
+      addedIds: selectedSession?.exerciseIds ?? [],
+      isAvailable: (exercise) => availableExerciseIds.has(exercise.id),
+    }
+  ).map((item) => item.exercise);
 
   // ========================================
   // PLAN SUMMARY
@@ -2030,6 +2019,15 @@ function WorkoutBuilderPage() {
                 )}
               </select>
             </div>
+
+            <label className="builder-show-unavailable">
+              <input
+                type="checkbox"
+                checked={showUnavailable}
+                onChange={(event) => setShowUnavailable(event.target.checked)}
+              />
+              Show unavailable exercises (view only)
+            </label>
           </div>
 
           {/* LIBRARY RESULTS */}
@@ -2058,6 +2056,8 @@ function WorkoutBuilderPage() {
                             entry.exerciseId === exercise.id
                         ).length
                       : 0;
+
+                  const availableHere = availableExerciseIds.has(exercise.id);
 
                   return (
                     <div
@@ -2092,6 +2092,12 @@ function WorkoutBuilderPage() {
                             : "Bodyweight"}
                         </span>
 
+                        {!availableHere && (
+                          <span className="builder-unavailable-hint">
+                            Requires different training location or equipment
+                          </span>
+                        )}
+
                         <Link
                           to={`/exercises/${exercise.id}`}
                           state={{
@@ -2107,16 +2113,15 @@ function WorkoutBuilderPage() {
 
                       <button
                         type="button"
-                        disabled={!selectedSession}
-                        onClick={() =>
-                          addExercise(
-                            exercise.id
-                          )
-                        }
+                        disabled={!selectedSession || !availableHere}
+                        title={availableHere ? "Add to this session" : "Requires a different location or home equipment"}
+                        onClick={() => addExercise(exercise.id)}
                       >
-                        {alreadyAddedCount > 0
-                          ? "+ Add Again"
-                          : "+ Add"}
+                        {!availableHere
+                          ? "Unavailable"
+                          : alreadyAddedCount > 0
+                            ? "+ Add Again"
+                            : "+ Add"}
                       </button>
                     </div>
                   );

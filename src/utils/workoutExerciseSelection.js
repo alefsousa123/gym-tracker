@@ -97,11 +97,25 @@ export function supportsExerciseSlot(
   }
 
   if (role === "triceps") {
+    // D2.3S BODYWEIGHT TRICEPS SUPPORT
+    // These catalog entries explicitly identify
+    // the triceps as a primary working muscle.
+    const bodyweightTriceps = [
+      "close-grip-push-ups",
+      "diamond-push-ups",
+      "crab-dips",
+      "reverse-plank-dips",
+    ].includes(exercise.id);
+
     return (
-      family === "elbow-extension" &&
-      anatomical.includes("triceps")
+      anatomical.includes("triceps") &&
+      (
+        family === "elbow-extension" ||
+        bodyweightTriceps
+      )
     );
   }
+
 
   if (role === "calves") {
     return (

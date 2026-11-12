@@ -26,6 +26,11 @@ import {
   useTrainingProfile,
 } from "../context/TrainingProfileContext";
 
+import {
+  exerciseMuscleFilterOptions,
+  matchesPrimaryMuscleFilter,
+} from "../utils/exerciseMuscleFilters";
+
 import "./ExercisesPage.css";
 
 // ==========================================
@@ -40,15 +45,7 @@ const EXERCISES_PER_PAGE = 24;
 // AVAILABLE MUSCLE GROUPS
 // ==========================================
 
-const muscleGroups = [
-  ...new Set(
-    exercises
-      .map((exercise) => exercise.muscleGroup)
-      .filter(Boolean)
-  ),
-].sort((first, second) =>
-  first.localeCompare(second)
-);
+const muscleGroups = exerciseMuscleFilterOptions;
 
 // ==========================================
 // AVAILABLE EQUIPMENT
@@ -426,9 +423,7 @@ function ExercisesPage() {
         // MUSCLE GROUP
         // ----------------------------------
 
-        const matchesMuscle =
-          selectedMuscle === DEFAULT_FILTER ||
-          exercise.muscleGroup === selectedMuscle;
+        const matchesMuscle = matchesPrimaryMuscleFilter(exercise, selectedMuscle);
 
         // ----------------------------------
         // TRAINING LOCATION

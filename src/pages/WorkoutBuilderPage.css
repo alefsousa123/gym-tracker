@@ -1312,3 +1312,27 @@ html[data-theme="dark"] .workout-builder-page .builder-custom-day-item select {
     transition: none;
   }
 }
+
+/* D2.3S: Discovery of exercises outside selected equipment/location. */
+.builder-show-unavailable {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.builder-show-unavailable input {
+  width: auto;
+  min-width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+.builder-unavailable-hint {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  opacity: 0.9;
+}

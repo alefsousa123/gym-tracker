@@ -378,13 +378,23 @@ export function isExerciseAvailable(
       benchEquipmentNames.includes(item)
   );
 
+  // Push-ups and supported planks use a bench
+  // as an elevated surface, not as an
+  // adjustable weight-training bench.
+  const isBenchSupportedBodyweightExercise =
+    /\b(?:push[- ]?ups?|plank hold)\b/i.test(
+      exercise.name
+    );
+
   const requiresIncline =
     requiresBench &&
-    /\bincline\b/i.test(exercise.name);
+    /\bincline\b/i.test(exercise.name) &&
+    !isBenchSupportedBodyweightExercise;
 
   const requiresDecline =
     requiresBench &&
-    /\bdecline\b/i.test(exercise.name);
+    /\bdecline\b/i.test(exercise.name) &&
+    !isBenchSupportedBodyweightExercise;
 
   // ========================================
   // INCLINE BENCH VALIDATION
