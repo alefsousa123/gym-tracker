@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:a1": "node tests/audits/A1_full_terminal_audit.mjs",
+    "test:a2": "node tests/audits/A2_deep_audit.mjs",
+    "test": "npm run test:a1 && npm run test:a2",
+    "check:all": "npm run test"
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -23,6 +27,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "playwright": "^1.65.1",
     "vite": "^8.3.6"
   }
 }
