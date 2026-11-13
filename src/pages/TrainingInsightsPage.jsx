@@ -10,6 +10,7 @@ import BackToPreviousPage from
   "../components/navigation/BackToPreviousPage";
 
 import { exercises } from "../data/exercises";
+import { formatDurationLabel } from "../utils/workoutDuration";
 
 import {
   useWorkoutPlan,
@@ -524,7 +525,7 @@ function TrainingInsightsPage() {
                       {" "}sets ·{" "}
                       {insight.target.targetType ===
                       "duration"
-                        ? `${insight.target.durationSeconds} seconds`
+                        ? formatDurationLabel(insight.target.durationSeconds)
                         : `${insight.target.minReps}–${insight.target.maxReps} reps`}
                     </p>
                   </div>

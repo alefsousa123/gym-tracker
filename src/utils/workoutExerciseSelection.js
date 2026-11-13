@@ -738,6 +738,8 @@ export function createSelectedWorkoutProposal(
 
           targetType:
             choice.estimate.targetType,
+          durationSeconds:
+            choice.estimate.durationSeconds,
         });
 
         usedInSession.add(exercise.id);

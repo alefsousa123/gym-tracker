@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import { exercises } from "../data/exercises";
+import { formatDurationLabel } from "../utils/workoutDuration";
 
 import {
   loadMeasurementOptions,
@@ -136,7 +137,7 @@ function formatSetResult(set) {
   if (set.targetType === "duration") {
     return set.durationSeconds == null
       ? "Not recorded"
-      : `${set.durationSeconds} sec`;
+      : formatDurationLabel(set.durationSeconds);
   }
 
   return set.reps == null

@@ -11,9 +11,7 @@ const compoundExerciseIds = new Set([
   "dumbbell-shoulder-press",
 ]);
 
-const timedExerciseIds = new Set([
-  "plank",
-]);
+import { getDefaultTargetType, getDefaultDurationSeconds } from "../data/exerciseTimingDefaults";
 
 export const loadMeasurementOptions = [
   {
@@ -65,7 +63,7 @@ function getDefaultLoadMeasurement(exerciseId) {
 
 // Editable starting values, not mandatory prescriptions
 export function createDefaultExerciseTarget(exerciseId) {
-  const isTimed = timedExerciseIds.has(exerciseId);
+  const isTimed = getDefaultTargetType(exerciseId) === "duration";
 
   const restSeconds = isTimed
     ? 60
@@ -78,7 +76,7 @@ export function createDefaultExerciseTarget(exerciseId) {
     targetType: isTimed ? "duration" : "reps",
     minReps: 8,
     maxReps: 12,
-    durationSeconds: 30,
+    durationSeconds: getDefaultDurationSeconds(exerciseId),
     restSeconds,
     weight: "",
     loadMeasurement:
@@ -91,9 +89,16 @@ export function normalizeExerciseTarget(
   exerciseId,
   existingTarget = null
 ) {
+  const legacyExplicitReps =
+    existingTarget != null &&
+    existingTarget.targetType == null &&
+    (Object.hasOwn(existingTarget, "minReps") ||
+      Object.hasOwn(existingTarget, "maxReps"));
+
   return {
     ...createDefaultExerciseTarget(exerciseId),
     ...(existingTarget ?? {}),
+    ...(legacyExplicitReps ? { targetType: "reps" } : {}),
   };
 }
 

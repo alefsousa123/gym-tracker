@@ -3,6 +3,9 @@ import {
   loadMeasurementOptions,
 } from "../../utils/workoutTargets";
 
+import DurationMinutesSecondsInput from "./DurationMinutesSecondsInput";
+import { formatDurationLabel } from "../../utils/workoutDuration";
+
 import "./ExerciseTargetsEditor.css";
 
 function ExerciseTargetsEditor({
@@ -14,7 +17,7 @@ function ExerciseTargetsEditor({
   const isTimed = target.targetType === "duration";
 
   const targetSummary = isTimed
-    ? `${target.durationSeconds} sec`
+    ? formatDurationLabel(target.durationSeconds)
     : `${target.minReps}–${target.maxReps} reps`;
 
   const weightSummary =
@@ -28,7 +31,7 @@ function ExerciseTargetsEditor({
     <details className="exercise-targets-editor">
       <summary className="exercise-targets-summary">
         <span className="exercise-targets-summary-title">
-          Configure Sets, Reps & Weight
+          Configure Sets, Reps, Time & Weight
         </span>
 
         <span className="exercise-targets-summary-values">
@@ -89,22 +92,13 @@ function ExerciseTargetsEditor({
 
           {isTimed ? (
             <div className="exercise-targets-field">
-              <label>
-                Duration (seconds)
-                <input
-                  type="number"
-                  min="1"
-                  max="3600"
-                  step="1"
-                  value={target.durationSeconds}
-                  onChange={(event) =>
-                    onChange({
-                      durationSeconds:
-                        event.target.value,
-                    })
-                  }
-                />
-              </label>
+              <DurationMinutesSecondsInput
+                label="Planned Duration"
+                value={target.durationSeconds}
+                onChange={(durationSeconds) =>
+                  onChange({ durationSeconds })
+                }
+              />
             </div>
           ) : (
             <>

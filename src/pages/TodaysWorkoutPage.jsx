@@ -11,6 +11,8 @@ import {
 
 import ExerciseMotionPreview from "../components/exercises/ExerciseMotionPreview";
 import TimedSetTimer from "../components/workouts/TimedSetTimer";
+import DurationMinutesSecondsInput from "../components/workouts/DurationMinutesSecondsInput";
+import { formatDurationLabel } from "../utils/workoutDuration";
 
 import { useWorkoutPlan } from "../context/WorkoutPlanContext";
 import { useWeeklySchedule } from "../context/WeeklyScheduleContext";
@@ -32,7 +34,7 @@ function findExercise(exerciseId) {
 
 function describeTarget(target) {
   return target.targetType === "duration"
-    ? `${target.durationSeconds} sec`
+    ? formatDurationLabel(target.durationSeconds)
     : `${target.minReps}–${target.maxReps} reps`;
 }
 
@@ -479,7 +481,7 @@ function TodaysWorkoutPage() {
       )
     ) {
       setFormError(
-        "Enter a valid duration in seconds."
+        "Enter a valid duration (up to 60 minutes)."
       );
       return;
     }
@@ -1068,23 +1070,12 @@ function TodaysWorkoutPage() {
                   <div className="today-quick-fields">
                     {target.targetType ===
                     "duration" ? (
-                      <label>
-                        Actual Seconds
-
-                        <input
-                          type="number"
-                          min="1"
-                          max="3600"
-                          step="1"
-                          value={durationInput}
-                          disabled={timedSetBusy}
-                          onChange={(event) =>
-                            setDurationInput(
-                              event.target.value
-                            )
-                          }
-                        />
-                      </label>
+                      <DurationMinutesSecondsInput
+                        label="Actual Duration"
+                        value={durationInput}
+                        onChange={setDurationInput}
+                        disabled={timedSetBusy}
+                      />
                     ) : (
                       <label>
                         Reps

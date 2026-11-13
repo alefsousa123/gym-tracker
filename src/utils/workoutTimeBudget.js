@@ -1,6 +1,7 @@
 import {
   exerciseAssessmentById,
 } from "../data/exerciseAssessments";
+import { getDefaultTargetType, getDefaultDurationSeconds } from "../data/exerciseTimingDefaults";
 
 /**
  * D1.15 - Workout Time Budget
@@ -195,10 +196,8 @@ export function estimateExerciseTime(
 
   const isTimed =
     target?.targetType === "duration" ||
-    (
-      target?.targetType == null &&
-      exercise.id === "plank"
-    );
+    (target?.targetType == null &&
+      getDefaultTargetType(exercise.id) === "duration");
 
   const reps = validNumber(
     target?.maxReps ??
@@ -210,8 +209,8 @@ export function estimateExerciseTime(
 
   const durationSeconds = validNumber(
     target?.durationSeconds,
-    30,
-    5,
+    getDefaultDurationSeconds(exercise.id),
+    1,
     3600
   );
 
@@ -265,6 +264,7 @@ export function estimateExerciseTime(
     exerciseId: exercise.id,
     sets,
     reps: isTimed ? null : reps,
+    durationSeconds: isTimed ? durationSeconds : null,
 
     targetType:
       isTimed ? "duration" : "reps",

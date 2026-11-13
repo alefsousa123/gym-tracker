@@ -8,6 +8,8 @@ import {
   useWorkoutSession,
 } from "../../context/WorkoutSessionContext";
 
+import { formatDurationLabel } from "../../utils/workoutDuration";
+
 import "./TimedSetTimer.css";
 
 // ==========================================
@@ -261,7 +263,7 @@ function TimedSetTimer({
         <span>EXERCISE TIMER</span>
 
         <span>
-          Target: {seconds} sec
+          Target: {formatDurationLabel(seconds)}
         </span>
       </div>
 
