@@ -48,6 +48,11 @@ import {
   roleMatchPreference,
 } from "./workoutSelectionQuality";
 
+import {
+  optimizeWorkoutSession,
+  auditSelectedWorkoutSessions,
+} from "./workoutPreflightOptimizer";
+
 /**
  * D1.19 - Exercise selection.
  *
@@ -116,6 +121,18 @@ export function supportsExerciseSlot(
     );
   }
 
+
+  // D2.3U: Face Pull is an optional upper-back accessory.
+  // Keep rows and pulldowns as preferred back movements.
+  if (
+    role === "back" &&
+    exercise.id === "dumbbell-face-pull" &&
+    family === "shoulder-isolation" &&
+    primary.includes("back") &&
+    anatomical.includes("rhomboids")
+  ) {
+    return true;
+  }
 
   if (role === "calves") {
     return (
@@ -517,6 +534,32 @@ export function createSelectedWorkoutProposal(
           keys: new Set(),
         };
 
+      const preflight = options.disablePreflightOptimization === true
+        ? { choices: [], diagnostics: [], matchedCount: 0,
+            plannedCount: session.slots.length, algorithm: 'disabled' }
+        : optimizeWorkoutSession({
+            slots: session.slots,
+            ranking,
+            profile,
+            budgetSeconds: budget.availableExerciseMinutes * 60,
+            supports: supportsExerciseSlot,
+            appropriate: isAppropriateForAutomaticSelection,
+            estimate: estimateExerciseTime,
+            variationKey,
+            similarityKey: getNearDuplicateKey,
+            movementFamily: getSelectionMovementFamily,
+            candidateScore: (item, slot, state) =>
+              adjustedRankingScore(
+                item, usedInWeek, usedVariations,
+                state.variations, slot.role, state.families,
+                state.similarity, previousDay.ids, previousDay.keys
+              ) +
+              getDefaultRolePriority(item.exercise, slot.role) * 25 +
+              (item.exercise.recommendationTags?.includes(
+                CURATED_RECOMMENDATION_TAG
+              ) ? 70 : 0),
+          });
+
       const selected = [];
       const missingSlots = [];
 
@@ -528,13 +571,21 @@ export function createSelectedWorkoutProposal(
       let exerciseSeconds = 0;
       const targetsById = {};
 
-      for (const slot of session.slots) {
+      for (const [slotIndex, slot] of session.slots.entries()) {
+        const futureChoices = preflight.choices.slice(slotIndex + 1).filter(Boolean);
+        const reservedFutureIds = new Set(
+          futureChoices.map((entry) => entry.item.exercise.id)
+        );
+        const reservedFutureSeconds = futureChoices.reduce(
+          (sum, entry) => sum + entry.estimate.estimatedSeconds, 0
+        );
         const compatible = ranking
           .filter(
             (item) =>
               !usedInSession.has(
                 item.exercise.id
               ) &&
+              !reservedFutureIds.has(item.exercise.id) &&
               isAppropriateForAutomaticSelection(
                 item.exercise,
                 profile
@@ -599,6 +650,19 @@ export function createSelectedWorkoutProposal(
         }
 
         let choice = null;
+        const plannedChoice = preflight.choices[slotIndex];
+        if (plannedChoice) {
+          const plannedItem = compatible.find((item) =>
+            item.exercise.id === plannedChoice.item.exercise.id
+          );
+          if (plannedItem &&
+              exerciseSeconds + plannedChoice.estimate.estimatedSeconds +
+              reservedFutureSeconds <=
+                budget.availableExerciseMinutes * 60 + 0.0001) {
+            choice = { item: plannedItem,
+              estimate: plannedChoice.estimate, sets: plannedChoice.sets };
+          }
+        }
 
         // Preserve planned sets when possible.
         // If time is insufficient, attempt
@@ -618,8 +682,8 @@ export function createSelectedWorkoutProposal(
 
             if (
               exerciseSeconds +
-                estimate.estimatedSeconds <=
-              budget.availableExerciseMinutes * 60
+                estimate.estimatedSeconds + reservedFutureSeconds <=
+              budget.availableExerciseMinutes * 60 + 0.0001
             ) {
               choice = {
                 item,
@@ -768,6 +832,12 @@ export function createSelectedWorkoutProposal(
 
         exercises: selected,
         missingSlots,
+        preflight: {
+          algorithm: preflight.algorithm ?? 'bounded-beam-search-v1',
+          plannedCount: preflight.plannedCount,
+          matchedInPreflight: preflight.matchedCount,
+          diagnostics: preflight.diagnostics,
+        },
 
         time,
 
@@ -859,6 +929,15 @@ export function createSelectedWorkoutProposal(
     }
   }
 
+  const qualityAudit = auditSelectedWorkoutSessions({
+    sessions,
+    exercises,
+    isAvailable,
+    supports: supportsExerciseSlot,
+    similarityKey: getNearDuplicateKey,
+    movementFamily: getSelectionMovementFamily,
+  });
+
   const plannedSlots =
     sessions.reduce(
       (total, session) =>
@@ -904,6 +983,14 @@ export function createSelectedWorkoutProposal(
 
     completeSelection,
     warnings,
+    preflight: {
+      enabled: options.disablePreflightOptimization !== true,
+      algorithm: 'bounded-beam-search-v1',
+      totalPreflightMatches: sessions.reduce(
+        (count, session) => count + session.preflight.matchedInPreflight, 0
+      ),
+    },
+    qualityAudit,
 
     allocationWarnings:
       balanced.warnings,

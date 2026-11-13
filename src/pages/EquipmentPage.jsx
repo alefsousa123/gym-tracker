@@ -410,7 +410,7 @@ function EquipmentPage() {
   // used by workout plans and Workout Builder.
 
   const compatibleExercises =
-    homeExerciseCatalog.filter(
+    exercises.filter(
       (exercise) =>
         isExerciseAvailable(
           exercise,

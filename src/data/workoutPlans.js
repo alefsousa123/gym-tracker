@@ -320,7 +320,18 @@ export function isExerciseAvailable(
 ) {
   // Check whether this exercise supports
   // the requested training location.
-  if (!exercise.locations.includes(location)) {
+  // D2.3V: Gym-tagged exercises may also be used
+  // at home when their required equipment is owned.
+  // Equipment-free gym-only entries stay restricted.
+  const permittedByCatalog =
+    exercise.locations.includes(location);
+
+  const permittedWithHomeEquipment =
+    location === "home" &&
+    exercise.locations.includes("gym") &&
+    exercise.equipment.length > 0;
+
+  if (!permittedByCatalog && !permittedWithHomeEquipment) {
     return false;
   }
 
@@ -504,8 +515,19 @@ export function isExerciseAvailable(
       // ALL OTHER EQUIPMENT
       // ====================================
 
-      return availableEquipment.has(
-        requiredEquipment
+      // D2.3V: Match My Equipment labels.
+      const equipmentAliases = {
+        "Dip Station": ["Dip Bars"],
+        Plates: ["Weight Plates"],
+        "Leg Press": ["Leg Press Machine"],
+        "Bosu Ball": ["BOSU Ball"],
+      };
+
+      return (
+        availableEquipment.has(requiredEquipment) ||
+        (equipmentAliases[requiredEquipment] ?? []).some(
+          (alias) => availableEquipment.has(alias)
+        )
       );
     }
   );

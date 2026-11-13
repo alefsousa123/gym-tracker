@@ -431,8 +431,14 @@ function ExercisesPage() {
 
         const matchesLocation =
           selectedLocation === DEFAULT_FILTER ||
-          exercise.locations.includes(
-            selectedLocation
+          exercise.locations.includes(selectedLocation) ||
+          (
+            selectedLocation === "home" &&
+            isExerciseAvailable(
+              exercise,
+              "home",
+              homeEquipment
+            )
           );
 
         // ----------------------------------
