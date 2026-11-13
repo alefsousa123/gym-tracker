@@ -6,6 +6,7 @@ import BackToPreviousPage from
   "../components/navigation/BackToPreviousPage";
 
 import { exercises } from "../data/exercises";
+import { getExerciseEntries } from "../utils/workoutExerciseEntries";
 
 import ExerciseMotionPreview from
   "../components/exercises/ExerciseMotionPreview";
@@ -937,14 +938,14 @@ function WeeklySchedulePage() {
                     )
                   : null;
 
-              const exerciseIds =
-                planSession?.exerciseIds ?? [];
+              const exerciseEntries =
+                getExerciseEntries(planSession);
 
               const previewExercises =
-                exerciseIds.slice(0, 2);
+                exerciseEntries.slice(0, 2);
 
               const remainingExercises =
-                exerciseIds.slice(2);
+                exerciseEntries.slice(2);
 
               return (
                 <article
@@ -1041,22 +1042,22 @@ function WeeklySchedulePage() {
 
                       {/* Exercise thumbnails */}
 
-                      {exerciseIds.length > 0 ? (
+                      {exerciseEntries.length > 0 ? (
                         <div className="schedule-day-exercises">
                           <div className="schedule-exercises-header">
                             <strong>Exercises</strong>
 
                             <span>
-                              {exerciseIds.length}
+                              {exerciseEntries.length}
                             </span>
                           </div>
 
                           <ul className="schedule-exercise-list">
                             {previewExercises.map(
-                              (exerciseId) => (
+                              (entry) => (
                                 <ScheduleExerciseRow
-                                  key={exerciseId}
-                                  exerciseId={exerciseId}
+                                  key={entry.entryId}
+                                  exerciseId={entry.exerciseId}
                                 />
                               )
                             )}
@@ -1072,10 +1073,10 @@ function WeeklySchedulePage() {
 
                               <ul className="schedule-exercise-list">
                                 {remainingExercises.map(
-                                  (exerciseId) => (
+                                  (entry) => (
                                     <ScheduleExerciseRow
-                                      key={exerciseId}
-                                      exerciseId={exerciseId}
+                                      key={entry.entryId}
+                                      exerciseId={entry.exerciseId}
                                     />
                                   )
                                 )}
