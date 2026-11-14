@@ -43,9 +43,9 @@ function HomePage() {
           />
 
           <FeatureCard
-            icon="🤖"
-            title="AI Personal Trainer"
-            description="Get workout guidance with the help of artificial intelligence."
+            icon="📚"
+            title="Exercise Library"
+            description="Explore exercises with instructions, images, and video tutorials when available."
           />
         </div>
 
